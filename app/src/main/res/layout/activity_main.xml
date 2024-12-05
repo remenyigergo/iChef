@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:text="iChef"
             android:textSize="25dp"
-            android:textColor="@color/background"
+            android:textColor="@color/cardview_dark_background"
             android:layout_gravity="center|top"
             android:id="@+id/toolbar_title" />
 
@@ -30,7 +30,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -42,7 +42,10 @@
             app:itemTextColor="@color/background"
             app:layout_constraintBottom_toBottomOf="parent"
             app:labelVisibilityMode="labeled"
-            app:menu="@menu/bottom_navigation_menu"/>
+            app:menu="@menu/bottom_navigation_menu"
+            app:itemIconTint="@color/bottom_bar_icons_selector"
+            app:itemIconSize="35dp"
+            app:itemActiveIndicatorStyle="@style/App.Custom.Indicator"/>
 
     </RelativeLayout>
 

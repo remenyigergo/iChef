@@ -3,18 +3,19 @@
         android:id="@+id/home_button"
         android:enabled="true"
         android:icon="@mipmap/home_foreground"
-        android:title="Home"
+        android:title=""
         />
     <item
         android:id="@+id/search_button"
         android:enabled="true"
         android:icon="@mipmap/search_foreground"
-        android:title="@string/search"/>
+        android:title=""/>
     <item
         android:id="@+id/profile_button"
         android:enabled="true"
         android:icon="@mipmap/profile_foreground"
-        android:title="@string/profile"
+        android:title=""
+        android:iconTint="@color/white"
         />
 <!--    <item-->
 <!--        android:id="@+id/meals_button"-->

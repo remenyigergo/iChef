@@ -1,3 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--    Style of the BottomNavBar background shape-->
+    <style name="App.Custom.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:width">0dp</item>
+        <item name="android:height">0dp</item>
+    </style>
+
+
 </resources>

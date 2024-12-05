@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<!--    Light mode colors-->
+    <color name="colorPrimary">#CAFFB9</color>
+    <color name="colorPrimaryDark">#2E4057</color>
+    <color name="colorAccent">#66A182</color>
+
+<!--    colors brownish-->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="background">#E4E0E1</color>
