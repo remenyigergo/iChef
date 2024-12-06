@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.LinearLayout
-import android.widget.LinearLayout.LayoutParams
 import androidx.fragment.app.Fragment
 import com.example.ichef.R
 
@@ -20,23 +19,29 @@ class ShoppingFragment : Fragment() {
         // Inflate the layout
         val rootView = inflater.inflate(R.layout.shopping_fragment, container, false)
 
-        // Access the LinearLayout after inflating the layout
-        val shoppingListLayout = rootView.findViewById<LinearLayout>(R.id.shopping_list)
+        val shoppingList: LinearLayout = rootView.findViewById(R.id.shopping_list)
+        AddIngredientsToCheckboxList(shoppingList)
 
-        // Create a new CheckBox
-        val newCheckBox = CheckBox(context).apply {
-            text = "Tomato"
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
+        return rootView
+    }
+
+    private fun AddIngredientsToCheckboxList(shoppingList: LinearLayout) {
+        val ingredients = listOf(
+            "Tomato", "Bread", "Hummus", "Mayonnaise", "Mustard", "Ketchup", "Pork",
+            "Sausage", "Paprika", "Garlic", "Butter", "Sugar", "Sugar", "Sugar", "Sugar", "Sugar", "Sugar", "Sugar", "Sugar", "Sugar", "Sugar", "Sugar", "Sugar", "Sugar", "Sugar", "Sugar"
+        )
+        ingredients.forEach { ingredient ->
+            // Create a new CheckBox
+            val newCheckBox = CheckBox(context).apply {
+                text = ingredient
+                textSize = 20f
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+            }
+            // Add the CheckBox to the LinearLayout
+            shoppingList.addView(newCheckBox)
         }
-
-        // Add the CheckBox to the LinearLayout
-        shoppingListLayout.addView(newCheckBox)
-
-        Log.d("ShoppingFragment", "Added new CheckBox to shopping list")
-
-        return rootView // Return the inflated layout as the fragment's view
     }
 }

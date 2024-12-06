@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/shopping_layout"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,62 +10,62 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="45sp"
+        android:orientation="horizontal"
         android:background="@color/topbar">
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:text="Shopping cart"
             android:textSize="25sp"
-            android:layout_gravity="center" />
+            android:gravity="center_vertical"
+            android:layout_marginStart="16dp" />
     </LinearLayout>
 
-    <!-- Checkboxes -->
-    <LinearLayout
-        android:id="@+id/shopping_list"
+    <!-- Scrollable shopping list -->
+    <ScrollView
+        android:id="@+id/list_scroll_view"
+        android:layout_marginTop="45sp"
+        android:layout_marginBottom="55sp"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <CheckBox
-            android:id="@+id/checkbox_meat"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/shopping_list"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Meat" />
-        <CheckBox
-            android:id="@+id/checkbox_cheese"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cheese" />
-        <CheckBox
-            android:id="@+id/checkbox_egg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Egg" />
-        <CheckBox
-            android:id="@+id/checkbox_flour"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Flour" />
-        <CheckBox
-            android:id="@+id/checkbox_jalapeno"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Jalapeno" />
-    </LinearLayout>
+            android:orientation="vertical">
+        </LinearLayout>
+    </ScrollView>
 
-    <!-- Button at the bottom -->
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/button_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal">
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:background="@android:color/transparent"
+        android:padding="8dp">
+        <!-- Floating Action Button -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:layout_constraintRight_toRightOf="@id/buttonHome"
+            android:src="@mipmap/list_icon_foreground"
+            android:contentDescription="Add Item"
+            tools:ignore="MissingConstraints" />
 
+        <!-- Purchased All Button -->
         <Button
             android:id="@+id/buttonHome"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Purchased All" />
-    </LinearLayout>
-</LinearLayout>
+            android:text="Purchased All"
+            app:layout_constraintTop_toBottomOf="@id/fab"
+            tools:ignore="MissingConstraints" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>
