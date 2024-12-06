@@ -8,7 +8,13 @@ import androidx.fragment.app.Fragment
 import com.example.ichef.R
 import com.example.ichef.fragments.HomeFragment
 import com.example.ichef.fragments.SearchFragment
+import com.example.ichef.fragments.ShoppingFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+
+val homeFragment = HomeFragment()
+val searchFragment = SearchFragment()
+val shoppingFragment = ShoppingFragment()
+val fragments = listOf(homeFragment, searchFragment, shoppingFragment)
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,10 +28,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         // If savedInstanceState is null, it means the Activity is starting for the first time
-        val homeFragment = HomeFragment()
-        val searchFragment = SearchFragment()
+
         if (savedInstanceState == null) {
-            loadFragment(homeFragment)
+            loadFragment(homeFragment,R.id.fragmentContainerView)
         }
 
         // Get the bottom navbar and set each button to load the corresponding fragment
@@ -34,11 +39,15 @@ class MainActivity : AppCompatActivity() {
             try {
                 when (it.itemId) {
                     R.id.home_button -> {
-                        loadFragment(homeFragment)
+                        loadFragment(homeFragment,R.id.fragmentContainerView)
                         true
                     }
                     R.id.search_button -> {
-                        loadFragment(searchFragment)
+                        loadFragment(searchFragment,R.id.fragmentContainerView)
+                        true
+                    }
+                    R.id.list_button -> {
+                        loadFragment(shoppingFragment,R.id.shoppingFragmentContainerView)
                         true
                     }
                     else -> {
@@ -50,21 +59,23 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
-
     }
 
     // Loads up a given fragment
-    private fun loadFragment(fragment : Fragment) {
-
+    private fun loadFragment(fragment : Fragment, containerId: Int) {
         if(fragment!=null) {
             val transaction = supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.fragmentContainerView,fragment)
+            transaction.replace(containerId,fragment)
             transaction.setReorderingAllowed(true)
+
+            fragments.forEach { frg ->
+                if (frg == fragment) transaction.show(frg) else transaction.hide(frg)
+            }
+
             transaction.commit()
         } else{
             throw Exception("Fragment was null. Cannot load.");
         }
-
     }
 
 }

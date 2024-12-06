@@ -11,5 +11,7 @@
     <color name="background">#E4E0E1</color>
     <color name="bottombar">#AB886D</color>
     <color name="topbar">#D6C0B3</color>
+    <color name="selectedButton">#FFC857</color>
+
 
 </resources>

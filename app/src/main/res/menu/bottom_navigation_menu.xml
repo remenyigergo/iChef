@@ -15,18 +15,17 @@
         android:enabled="true"
         android:icon="@mipmap/profile_foreground"
         android:title=""
-        android:iconTint="@color/white"
         />
-<!--    <item-->
-<!--        android:id="@+id/meals_button"-->
-<!--        android:enabled="true"-->
-<!--        android:icon="@drawable/ic_launcher_foreground"-->
-<!--        android:title="Meals"-->
-<!--        />-->
-<!--    <item-->
-<!--        android:id="@+id/list_button"-->
-<!--        android:enabled="true"-->
-<!--        android:icon="@drawable/ic_launcher_foreground"-->
-<!--        android:title="Todo"-->
-<!--        />-->
+    <item
+        android:id="@+id/meals_button"
+        android:enabled="true"
+        android:icon="@mipmap/fridge_icon_foreground"
+        android:title=""
+        />
+    <item
+        android:id="@+id/list_button"
+        android:enabled="true"
+        android:icon="@mipmap/list_icon_foreground"
+        android:title=""
+        />
 </menu>
