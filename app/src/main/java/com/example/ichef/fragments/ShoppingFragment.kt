@@ -5,14 +5,31 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.core.view.marginLeft
 import androidx.fragment.app.Fragment
 import com.example.ichef.R
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class ShoppingFragment : Fragment() {
+
+    private val rotateOpen: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.rotate_open_anim) }
+    private val rotateClose: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.rotate_close_anim) }
+    private val fromBottom: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.from_bottom_anim) }
+    private val toBottom: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.to_bottom_anim) }
+
+    private var clicked: Boolean = false
+
+    lateinit var fab: FloatingActionButton
+    lateinit var fabOpt1: FloatingActionButton
+    lateinit var fabOpt2: FloatingActionButton
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -24,7 +41,60 @@ class ShoppingFragment : Fragment() {
         val shoppingList: LinearLayout = rootView.findViewById(R.id.shopping_list)
         AddIngredientsToCheckboxList(shoppingList)
 
+        fab = rootView.findViewById(R.id.fab)
+        fab.setOnClickListener {
+            onAddButtonClicked()
+        }
+
+        fabOpt1 = rootView.findViewById(R.id.fab_opt1)
+        fabOpt1.setOnClickListener {
+            Toast.makeText(context,"Opt 1 pressed", Toast.LENGTH_SHORT).show()
+        }
+
+        fabOpt2 = rootView.findViewById(R.id.fab_opt2)
+        fabOpt2.setOnClickListener {
+            Toast.makeText(context,"Opt 2 pressed", Toast.LENGTH_SHORT).show()
+        }
         return rootView
+    }
+
+    private fun onAddButtonClicked() {
+        setVisibility(clicked)
+        setAnimation(clicked)
+        setClickable(clicked)
+        clicked = !clicked
+    }
+
+    private fun setAnimation(clicked: Boolean) {
+        if (!clicked) {
+            fabOpt1.startAnimation(fromBottom)
+            fabOpt2.startAnimation(fromBottom)
+            //fab.startAnimation(rotateOpen)
+        } else {
+            fabOpt1.startAnimation(toBottom)
+            fabOpt2.startAnimation(toBottom)
+            //fab.startAnimation(rotateClose)
+        }
+    }
+
+    private fun setVisibility(clicked: Boolean) {
+        if (!clicked) {
+            fabOpt1.visibility = View.VISIBLE
+            fabOpt2.visibility = View.VISIBLE
+        } else {
+            fabOpt1.visibility = View.INVISIBLE
+            fabOpt2.visibility = View.INVISIBLE
+        }
+    }
+
+    private fun setClickable(clicked: Boolean) {
+        if (!clicked) {
+            fabOpt1.isClickable = true
+            fabOpt2.isClickable = true
+        } else {
+            fabOpt1.isClickable = false
+            fabOpt2.isClickable = false
+        }
     }
 
     private fun AddIngredientsToCheckboxList(shoppingList: LinearLayout) {

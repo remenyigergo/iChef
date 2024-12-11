@@ -1,6 +1,8 @@
 package com.example.ichef.activities
 
 import android.os.Bundle
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -10,6 +12,7 @@ import com.example.ichef.fragments.HomeFragment
 import com.example.ichef.fragments.SearchFragment
 import com.example.ichef.fragments.ShoppingFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 val homeFragment = HomeFragment()
 val searchFragment = SearchFragment()
@@ -17,6 +20,7 @@ val shoppingFragment = ShoppingFragment()
 val fragments = listOf(homeFragment, searchFragment, shoppingFragment)
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //enableEdgeToEdge() to have a full top bar to edge. in future this can be enabled and top bar needs deletion.
@@ -57,8 +61,9 @@ class MainActivity : AppCompatActivity() {
             } catch (e : Exception) {
                 throw e;
             }
-
         }
+
+
     }
 
     // Loads up a given fragment
