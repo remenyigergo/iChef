@@ -5,8 +5,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.CheckBox
 import android.widget.LinearLayout
+import androidx.core.view.marginLeft
 import androidx.fragment.app.Fragment
 import com.example.ichef.R
 
@@ -38,10 +40,28 @@ class ShoppingFragment : Fragment() {
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
-                )
+                ).apply {
+                    leftMargin = 55
+                }
+                setPadding(0,0,0,30)
             }
             // Add the CheckBox to the LinearLayout
             shoppingList.addView(newCheckBox)
         }
+
+        val purchasedButton = Button(context).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                weight = 1f
+                bottomMargin = 200
+            }
+
+            text = "Purchased All"
+        }
+        shoppingList.addView(purchasedButton)
+
+
     }
 }
