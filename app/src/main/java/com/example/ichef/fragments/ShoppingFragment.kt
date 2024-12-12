@@ -13,7 +13,12 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.view.marginLeft
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.R
+import com.example.ichef.adapters.ChildItem
+import com.example.ichef.adapters.ParentAdapter
+import com.example.ichef.adapters.ParentItem
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class ShoppingFragment : Fragment() {
@@ -38,8 +43,19 @@ class ShoppingFragment : Fragment() {
         // Inflate the layout
         val rootView = inflater.inflate(R.layout.shopping_fragment, container, false)
 
-        val shoppingList: LinearLayout = rootView.findViewById(R.id.shopping_list)
-        AddIngredientsToCheckboxList(shoppingList)
+        //val shoppingList: LinearLayout = rootView.findViewById(R.id.shopping_list)
+        //AddIngredientsToCheckboxList(shoppingList)
+
+        val recyclerView: RecyclerView = rootView.findViewById(R.id.rvParent)
+
+        val parentItems = listOf(
+            ParentItem("Parent 1", listOf(ChildItem("Child 1", false), ChildItem("Child 2", false))),
+            ParentItem("Parent 2", listOf(ChildItem("Child 3", false), ChildItem("Child 4", false), ChildItem("Child 4", false), ChildItem("Child 4", false), ChildItem("Child 4", false), ChildItem("Child 4", false), ChildItem("Child 4", false), ChildItem("Child 4", false), ChildItem("Child 4", false), ChildItem("Child 4", false), ChildItem("Child 4", false))),
+            ParentItem("Parent 3", listOf(ChildItem("Child 6", false), ChildItem("Child 2", false),ChildItem("Child 8", false)))
+        )
+
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.adapter = ParentAdapter(parentItems)
 
         fab = rootView.findViewById(R.id.fab)
         fab.setOnClickListener {
