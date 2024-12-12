@@ -34,6 +34,7 @@ class ShoppingFragment : Fragment() {
     lateinit var fabOpt1: FloatingActionButton
     lateinit var fabOpt2: FloatingActionButton
 
+    private var adapter: ParentAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,14 +49,21 @@ class ShoppingFragment : Fragment() {
 
         val recyclerView: RecyclerView = rootView.findViewById(R.id.rvParent)
 
-        val parentItems = listOf(
-            ParentItem("Parent 1", listOf(ChildItem("Child 1", false), ChildItem("Child 2", false))),
-            ParentItem("Parent 2", listOf(ChildItem("Child 3", false), ChildItem("Child 4", false), ChildItem("Child 4", false), ChildItem("Child 4", false), ChildItem("Child 4", false), ChildItem("Child 4", false), ChildItem("Child 4", false), ChildItem("Child 4", false), ChildItem("Child 4", false), ChildItem("Child 4", false), ChildItem("Child 4", false))),
-            ParentItem("Parent 3", listOf(ChildItem("Child 6", false), ChildItem("Child 2", false),ChildItem("Child 8", false)))
+        val parentItems = mutableListOf(
+            ParentItem("Parent 1", mutableListOf(ChildItem("Child 1", false), ChildItem("Child 2", false))),
+            ParentItem("Parent 2", mutableListOf(ChildItem("Child 3", false), ChildItem("Child 4", false), ChildItem("Child 5", false), ChildItem("Child 6", false), ChildItem("Child 7", false), ChildItem("Child 8", false), ChildItem("Child 9", false), ChildItem("Child 10", false), ChildItem("Child 11", false), ChildItem("Child 12", false), ChildItem("Child 13", false))),
+            ParentItem("Parent 3", mutableListOf(ChildItem("Child 6", false), ChildItem("Child 2", false), ChildItem("Child 8", false)))
         )
 
+        val adapter = ParentAdapter(parentItems) { parentPosition ->
+            parentItems.removeAt(parentPosition) // Remove parent item
+            //adapter?.notifyItemRemoved(parentPosition) // Notify RecyclerView
+            //adapter?.notifyItemChanged(parentPosition) // Notify RecyclerView
+            adapter?.notifyDataSetChanged()
+        }
+
         recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.adapter = ParentAdapter(parentItems)
+        recyclerView.adapter = adapter
 
         fab = rootView.findViewById(R.id.fab)
         fab.setOnClickListener {

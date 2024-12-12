@@ -23,24 +23,13 @@
     </LinearLayout>
 
     <!-- Scrollable shopping list -->
-    <ScrollView
-        android:id="@+id/list_scroll_view"
-        android:layout_marginTop="45sp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:id="@+id/shopping_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvParent"
+                android:layout_marginTop="45sp"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </LinearLayout>
-    </ScrollView>
+                android:layout_height="match_parent"/>
+
 
     <!-- Floating Action Button -->
     <androidx.constraintlayout.widget.ConstraintLayout

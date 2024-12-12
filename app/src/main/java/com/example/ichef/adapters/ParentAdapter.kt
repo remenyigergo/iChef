@@ -3,18 +3,21 @@ package com.example.ichef.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.R
 
 class ParentAdapter(
-    private val parents: List<ParentItem>
+    private val parents: MutableList<ParentItem>,
+    private val onDeleteParent: (Int) -> Unit
 ) : RecyclerView.Adapter<ParentAdapter.ParentViewHolder>() {
 
     inner class ParentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.tvParentTitle)
         val recyclerView: RecyclerView = view.findViewById(R.id.rvChildren)
+        val deleteButton: ImageButton = view.findViewById(R.id.btnDeleteParent)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ParentViewHolder {
@@ -26,12 +29,45 @@ class ParentAdapter(
     override fun onBindViewHolder(holder: ParentViewHolder, position: Int) {
         val parent = parents[position]
         holder.title.text = parent.title
-        holder.recyclerView.layoutManager = LinearLayoutManager(holder.itemView.context)
-        holder.recyclerView.adapter = ChildAdapter(parent.children) { child, isChecked ->
-            child.isChecked = isChecked
-            // Handle checkbox state changes here if needed
+
+        // Disable scrolling for the child RecyclerView to let the parent RecyclerView handle scrolling
+        //holder.recyclerView.setNestedScrollingEnabled(false)
+
+        // Get current item's layout parameters
+        val layoutParams = holder.itemView.layoutParams as ViewGroup.MarginLayoutParams
+
+        // Apply bottom margin only to the last item
+        if (position == parents.size - 1) {
+            // Convert 20dp to pixels
+            layoutParams.bottomMargin = 320
+        } else {
+            // Reset margin for non-last items
+            layoutParams.bottomMargin = 0
         }
+
+        // Set up child RecyclerView
+        holder.recyclerView.layoutManager = LinearLayoutManager(holder.itemView.context)
+        holder.recyclerView.adapter = ChildAdapter(parent.children.toMutableList(), { child, isChecked ->
+            child.isChecked = isChecked
+        }) { childPosition ->
+            parent.children.removeAt(childPosition)
+//            notifyItemRemoved(position)
+//            notifyItemChanged(position)
+            notifyDataSetChanged()
+        }
+
+        // Handle parent deletion
+        holder.deleteButton.setOnClickListener {
+            parents.removeAt(position)
+//            notifyItemRemoved(position)
+//            notifyItemChanged(position)
+            notifyDataSetChanged()
+        }
+
+        holder.recyclerView.requestLayout()
     }
 
     override fun getItemCount() = parents.size
 }
+
+
