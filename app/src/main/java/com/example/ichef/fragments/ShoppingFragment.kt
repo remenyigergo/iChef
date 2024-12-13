@@ -1,5 +1,7 @@
 package com.example.ichef.fragments
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,10 +13,12 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.marginLeft
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.ichef.AddParentChildActivity
 import com.example.ichef.R
 import com.example.ichef.adapters.ChildItem
 import com.example.ichef.adapters.ParentAdapter
@@ -29,12 +33,38 @@ class ShoppingFragment : Fragment() {
     private val toBottom: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.to_bottom_anim) }
 
     private var clicked: Boolean = false
+    private var allChecked: Boolean = false
 
     lateinit var fab: FloatingActionButton
     lateinit var fabOpt1: FloatingActionButton
     lateinit var fabOpt2: FloatingActionButton
 
-    private var adapter: ParentAdapter? = null
+    var adapter: ParentAdapter? = null
+
+    val parentItems = mutableListOf(
+        ParentItem("Parent 1", mutableListOf(ChildItem("Child 1", false), ChildItem("Child 2", false))),
+        ParentItem("Parent 2", mutableListOf(ChildItem("Child 3", false), ChildItem("Child 4", false), ChildItem("Child 5", false), ChildItem("Child 6", false), ChildItem("Child 7", false), ChildItem("Child 8", false), ChildItem("Child 9", false), ChildItem("Child 10", false), ChildItem("Child 11", false), ChildItem("Child 12", false), ChildItem("Child 13", false))),
+        ParentItem("Parent 3", mutableListOf(ChildItem("Child 6", false), ChildItem("Child 2", false), ChildItem("Child 8", false)))
+    )
+
+    private val addParentResultLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data ?: return@registerForActivityResult
+            val parentTitle = data.getStringExtra("parentTitle") ?: return@registerForActivityResult
+            val childItems = data.getStringArrayListExtra("childItems") ?: return@registerForActivityResult
+
+            val newParent = ParentItem(
+                parentTitle,
+                childItems.map { ChildItem(it, false) }.toMutableList()
+            )
+
+            // Add the new parent item to the list and update RecyclerView
+            parentItems.add(newParent)
+            adapter?.notifyItemInserted(parentItems.size-1)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,17 +79,10 @@ class ShoppingFragment : Fragment() {
 
         val recyclerView: RecyclerView = rootView.findViewById(R.id.rvParent)
 
-        val parentItems = mutableListOf(
-            ParentItem("Parent 1", mutableListOf(ChildItem("Child 1", false), ChildItem("Child 2", false))),
-            ParentItem("Parent 2", mutableListOf(ChildItem("Child 3", false), ChildItem("Child 4", false), ChildItem("Child 5", false), ChildItem("Child 6", false), ChildItem("Child 7", false), ChildItem("Child 8", false), ChildItem("Child 9", false), ChildItem("Child 10", false), ChildItem("Child 11", false), ChildItem("Child 12", false), ChildItem("Child 13", false))),
-            ParentItem("Parent 3", mutableListOf(ChildItem("Child 6", false), ChildItem("Child 2", false), ChildItem("Child 8", false)))
-        )
-
-        val adapter = ParentAdapter(parentItems) { parentPosition ->
+        adapter = ParentAdapter(parentItems) { parentPosition ->
             parentItems.removeAt(parentPosition) // Remove parent item
-            //adapter?.notifyItemRemoved(parentPosition) // Notify RecyclerView
-            //adapter?.notifyItemChanged(parentPosition) // Notify RecyclerView
-            adapter?.notifyDataSetChanged()
+            adapter?.notifyItemRemoved(parentPosition) // Notify RecyclerView
+            adapter?.notifyItemRangeChanged(parentPosition, parentItems.size) // Adjust the subsequent items' positions
         }
 
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -72,12 +95,30 @@ class ShoppingFragment : Fragment() {
 
         fabOpt1 = rootView.findViewById(R.id.fab_opt1)
         fabOpt1.setOnClickListener {
+            if (allChecked) {
+                allChecked = false
+            } else {
+                allChecked = true
+            }
+
+            // Select All functionality
+            parentItems.forEach { parent ->
+                parent.children.forEach { child ->
+                    child.isChecked = allChecked
+                }
+            }
+
+            adapter?.notifyDataSetChanged() // Notify the adapter to update the UI
             Toast.makeText(context,"Opt 1 pressed", Toast.LENGTH_SHORT).show()
+            onAddButtonClicked()
         }
 
         fabOpt2 = rootView.findViewById(R.id.fab_opt2)
         fabOpt2.setOnClickListener {
+            val intent = Intent(context, AddParentChildActivity::class.java)
+            addParentResultLauncher.launch(intent)
             Toast.makeText(context,"Opt 2 pressed", Toast.LENGTH_SHORT).show()
+            onAddButtonClicked()
         }
         return rootView
     }

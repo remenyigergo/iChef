@@ -1,5 +1,6 @@
 package com.example.ichef.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +27,8 @@ class ParentAdapter(
         return ParentViewHolder(view)
     }
 
+    private var previousLastPosition: Int = -1 // Tracks the previous last position
+
     override fun onBindViewHolder(holder: ParentViewHolder, position: Int) {
         val parent = parents[position]
         holder.title.text = parent.title
@@ -47,18 +50,20 @@ class ParentAdapter(
 
         // Set up child RecyclerView
         holder.recyclerView.layoutManager = LinearLayoutManager(holder.itemView.context)
-        holder.recyclerView.adapter = ChildAdapter(parent.children.toMutableList(), { child, isChecked ->
-            child.isChecked = isChecked
-        }) { childPosition ->
-            parent.children.removeAt(childPosition)
-            holder.recyclerView.adapter?.notifyItemRemoved(childPosition)
-        }
+        holder.recyclerView.adapter =
+            ChildAdapter(parent.children.toMutableList(), { child, isChecked ->
+                child.isChecked = isChecked
+            }) { childPosition ->
+                parent.children.removeAt(childPosition)
+                holder.recyclerView.adapter?.notifyItemRemoved(childPosition)
+            }
 
         // Handle parent deletion
         holder.deleteButton.setOnClickListener {
+            Log.d("ParentAdapter", "Delete button clicked for position $position")
             parents.removeAt(position)
             notifyItemRemoved(position)
-            notifyItemRangeChanged(position, parents.size) // Adjust the subsequent items' positions
+            notifyItemRangeChanged(position, parents.size)
         }
     }
 
