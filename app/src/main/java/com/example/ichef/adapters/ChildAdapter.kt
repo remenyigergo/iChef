@@ -42,9 +42,8 @@ class ChildAdapter(
         holder.deleteButton.setOnClickListener {
             Log.i("ChildAdapter","Deleting child in pos: "+position)
             children.removeAt(position)
-//            notifyItemRemoved(position)
-//            notifyItemChanged(position)
-            notifyDataSetChanged()
+            notifyItemRemoved(position)
+            notifyItemRangeChanged(position, children.size) // Adjust the subsequent items' positions
         }
     }
 

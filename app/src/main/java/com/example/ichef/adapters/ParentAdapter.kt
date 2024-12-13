@@ -51,20 +51,15 @@ class ParentAdapter(
             child.isChecked = isChecked
         }) { childPosition ->
             parent.children.removeAt(childPosition)
-//            notifyItemRemoved(position)
-//            notifyItemChanged(position)
-            notifyDataSetChanged()
+            holder.recyclerView.adapter?.notifyItemRemoved(childPosition)
         }
 
         // Handle parent deletion
         holder.deleteButton.setOnClickListener {
             parents.removeAt(position)
-//            notifyItemRemoved(position)
-//            notifyItemChanged(position)
-            notifyDataSetChanged()
+            notifyItemRemoved(position)
+            notifyItemRangeChanged(position, parents.size) // Adjust the subsequent items' positions
         }
-
-        holder.recyclerView.requestLayout()
     }
 
     override fun getItemCount() = parents.size
