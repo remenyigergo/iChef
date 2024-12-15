@@ -11,6 +11,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -74,16 +75,9 @@ class ShoppingFragment : Fragment() {
         // Inflate the layout
         val rootView = inflater.inflate(R.layout.shopping_fragment, container, false)
 
-        //val shoppingList: LinearLayout = rootView.findViewById(R.id.shopping_list)
-        //AddIngredientsToCheckboxList(shoppingList)
-
         val recyclerView: RecyclerView = rootView.findViewById(R.id.rvParent)
 
-        adapter = ParentAdapter(parentItems) { parentPosition ->
-            parentItems.removeAt(parentPosition) // Remove parent item
-            adapter?.notifyItemRemoved(parentPosition) // Notify RecyclerView
-            adapter?.notifyItemRangeChanged(parentPosition, parentItems.size) // Adjust the subsequent items' positions
-        }
+        adapter = ParentAdapter(parentItems)
 
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = adapter
@@ -120,6 +114,7 @@ class ShoppingFragment : Fragment() {
             Toast.makeText(context,"Opt 2 pressed", Toast.LENGTH_SHORT).show()
             onAddButtonClicked()
         }
+
         return rootView
     }
 
