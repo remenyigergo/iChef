@@ -105,14 +105,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Your shopping list is empty"
+                android:text="@string/your_shopping_list_is_empty"
                 android:textSize="20dp"
                 />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Start adding new ingredients"
+                android:text="@string/start_adding_new_ingredients"
                 android:textAlignment="center"
                 app:layout_constraintTop_toBottomOf="@id/empty"
                 android:paddingTop="20dp"

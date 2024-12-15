@@ -21,4 +21,6 @@
     <string name="nothing_is_ticked">Nothing is ticked</string>
     <string name="add_a_new_ingredient">Add a new ingredient</string>
     <string name="ingredient_name">Ingredient name here</string>
+    <string name="your_shopping_list_is_empty">Your shopping list is empty</string>
+    <string name="start_adding_new_ingredients">Start adding new ingredients</string>
 </resources>
