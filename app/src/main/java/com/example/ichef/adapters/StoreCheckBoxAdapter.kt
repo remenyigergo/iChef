@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.R
 
-class ParentAdapter(public val parents: MutableList<ParentItem>) : RecyclerView.Adapter<ParentAdapter.ParentViewHolder>() {
+class StoreCheckBoxAdapter(private val parents: MutableList<StoreCheckBox>, private var footerAdapter: FooterAdapter) : RecyclerView.Adapter<StoreCheckBoxAdapter.ParentViewHolder>() {
 
     inner class ParentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.tvParentTitle)
@@ -26,21 +26,15 @@ class ParentAdapter(public val parents: MutableList<ParentItem>) : RecyclerView.
 
     override fun onBindViewHolder(parentViewHolder: ParentViewHolder, position: Int) {
         val parent = parents[position]
-        parentViewHolder.title.text = parent.title
-
-        // Get current item's layout parameters
-        val layoutParams = parentViewHolder.itemView.layoutParams as ViewGroup.MarginLayoutParams
-
-        // Apply bottom margin only to the last item
-        //SetLastElementMargin(position, layoutParams)
+        parentViewHolder.title.text = parent.storeName
 
         // Set up child RecyclerView
         parentViewHolder.recyclerView.layoutManager = LinearLayoutManager(parentViewHolder.itemView.context)
         parentViewHolder.recyclerView.adapter =
-            ChildAdapter(parent.children.toMutableList(), { child, isChecked ->
+            IngredientCheckBoxAdapter(parent.ingredients.toMutableList(), { child, isChecked ->
                 child.isChecked = isChecked
             }) { childPosition ->
-                parent.children.removeAt(childPosition)
+                parent.ingredients.removeAt(childPosition)
                 parentViewHolder.recyclerView.adapter?.notifyItemRemoved(childPosition)
             }
 
@@ -50,6 +44,11 @@ class ParentAdapter(public val parents: MutableList<ParentItem>) : RecyclerView.
             parents.removeAt(position)
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, parents.size)
+
+            //handle footer
+            if (parents.size == 0) {
+                footerAdapter.showFooter(false)
+            }
         }
     }
 

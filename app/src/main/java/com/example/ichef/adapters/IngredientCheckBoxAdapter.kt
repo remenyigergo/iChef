@@ -7,15 +7,14 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageButton
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.R
 
-class ChildAdapter(
-    private val children: MutableList<ChildItem>,
-    private val onChildCheckedChange: (ChildItem, Boolean) -> Unit,
+class IngredientCheckBoxAdapter(
+    private val children: MutableList<IngredientCheckbox>,
+    private val onChildCheckedChange: (IngredientCheckbox, Boolean) -> Unit,
     private val onDeleteChild: (Int) -> Unit
-) : RecyclerView.Adapter<ChildAdapter.ChildViewHolder>() {
+) : RecyclerView.Adapter<IngredientCheckBoxAdapter.ChildViewHolder>() {
 
     inner class ChildViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val ingredientLayout = view.findViewById<LinearLayout>(R.id.ingredient_layout)

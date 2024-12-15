@@ -1,15 +1,24 @@
 package com.example.ichef.adapters
 
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.R
 
-class FooterAdapter(private val onButtonClick: () -> Unit, checkboxesCount: Int?) : RecyclerView.Adapter<FooterAdapter.FooterViewHolder>() {
+class FooterAdapter(private val onButtonClick: () -> Unit) :
+    RecyclerView.Adapter<FooterAdapter.FooterViewHolder>() {
 
-    val checkboxesCount = checkboxesCount
-    inner class FooterViewHolder(val purchasedButton: Button) : RecyclerView.ViewHolder(purchasedButton)
+    private var isFooterVisible: Boolean = false
+
+    inner class FooterViewHolder(val purchasedButton: Button) :
+        RecyclerView.ViewHolder(purchasedButton) {
+            fun bind(isVisible: Boolean) {
+                itemView.visibility = if (isVisible) View.VISIBLE else View.GONE
+            }
+        }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FooterViewHolder {
         val button = Button(parent.context).apply {
@@ -22,6 +31,7 @@ class FooterAdapter(private val onButtonClick: () -> Unit, checkboxesCount: Int?
             }
             text = context.getString(R.string.purchased)
         }
+
         return FooterViewHolder(button)
     }
 
@@ -29,15 +39,20 @@ class FooterAdapter(private val onButtonClick: () -> Unit, checkboxesCount: Int?
         holder.purchasedButton.setOnClickListener {
             onButtonClick()
         }
+
+        if (holder is FooterViewHolder) {
+            holder.bind(isFooterVisible)
+        }
+    }
+
+
+    fun showFooter(show: Boolean){
+        isFooterVisible = show
+        notifyDataSetChanged()
     }
 
     // Only one footer item, when at least one parent checkbox is existing
-    override fun getItemCount() : Int {
-//        if (checkboxesCount != null && checkboxesCount >= 1) {
-//            return 1
-//        }
-//        return 0
-
-        return 1;
+    override fun getItemCount(): Int {
+        return if (isFooterVisible) 1 else 0
     }
 }

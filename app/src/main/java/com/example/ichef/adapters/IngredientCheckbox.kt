@@ -1,6 +1,6 @@
 package com.example.ichef.adapters
 
-data class ChildItem(
+data class IngredientCheckbox(
     val title: String,
     var isChecked: Boolean
 )
