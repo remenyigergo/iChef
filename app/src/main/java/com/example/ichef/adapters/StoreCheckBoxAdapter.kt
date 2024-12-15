@@ -48,6 +48,7 @@ class StoreCheckBoxAdapter(private var footerAdapter: FooterAdapter, private var
                 footerAdapter.showFooter(false)
                 //set allClicked to false because no element is presented
                 shoppingFragment.allChecked = false
+                shoppingFragment.SetEmptyPageVisibilty(shoppingFragment.emptyPageView)
             }
         }
     }

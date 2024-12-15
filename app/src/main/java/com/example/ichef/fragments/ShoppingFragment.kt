@@ -10,6 +10,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,6 +38,7 @@ class ShoppingFragment : Fragment() {
     lateinit var newStoreCheckBoxButton: FloatingActionButton
 
     private lateinit var footerAdapter: FooterAdapter
+    lateinit var emptyPageView: ConstraintLayout
 
     var adapter: StoreCheckBoxAdapter? = null
     //val stores: MutableList<StoreCheckBox> = arrayListOf()
@@ -73,6 +75,7 @@ class ShoppingFragment : Fragment() {
             if (::footerAdapter.isInitialized) {
                 // Log an error or ensure proper initialization
                 footerAdapter.showFooter(true)
+                SetEmptyPageVisibilty(emptyPageView)
             }
         }
     }
@@ -85,6 +88,11 @@ class ShoppingFragment : Fragment() {
         // Inflate the layout
         val rootView = inflater.inflate(R.layout.shopping_fragment, container, false)
 
+        // Get empty layout to make it visible if nothing in shopping list for the first time
+        emptyPageView = rootView.findViewById<ConstraintLayout>(R.id.empty_shopping_list_page)
+        SetEmptyPageVisibilty(emptyPageView)
+
+        // Set the Purchased bottom to be on the bottom of the list
         footerAdapter = FooterAdapter(onButtonClick = {
             Toast.makeText(context, getString(R.string.purchased_button_pressed), Toast.LENGTH_SHORT).show()
         })
@@ -146,6 +154,14 @@ class ShoppingFragment : Fragment() {
         }
 
         return rootView
+    }
+
+    fun SetEmptyPageVisibilty(emptyPageView: ConstraintLayout) {
+        if (stores.size == 0) {
+            emptyPageView.visibility = View.VISIBLE
+        } else {
+            emptyPageView.visibility = View.INVISIBLE
+        }
     }
 
     private fun onAddButtonClicked() {

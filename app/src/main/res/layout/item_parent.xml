@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@color/topbar"
+        android:background="@drawable/item_parent_background"
         android:padding="8dp">
 
         <!-- Parent Title -->
@@ -29,7 +29,9 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_delete"
             android:contentDescription="Delete Parent"
-            android:padding="8dp"/>
+            android:paddingRight="8dp"
+            android:layout_gravity="center"
+            />
     </LinearLayout>
 
     <!-- RecyclerView for child items -->
@@ -40,4 +42,8 @@
         android:layout_weight="1"
         android:scrollbars="vertical" />
 
+
 </LinearLayout>
+
+
+

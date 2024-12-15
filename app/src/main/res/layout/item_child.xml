@@ -26,5 +26,6 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@android:drawable/ic_delete"
         android:contentDescription="Delete Child"
-        android:padding="8dp" />
+        android:paddingRight="8dp"
+        android:layout_gravity="center"/>
 </LinearLayout>
