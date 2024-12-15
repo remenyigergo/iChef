@@ -30,16 +30,27 @@ class ShoppingFragment : Fragment() {
     private val toBottom: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.to_bottom_anim) }
 
     private var clicked: Boolean = false
-    private var allChecked: Boolean = false
+    var allChecked: Boolean = false //this is changed in storeCheckBoxAdapter. reference to this could be given only.
 
     lateinit var fab: FloatingActionButton
-    lateinit var fabOpt1: FloatingActionButton
-    lateinit var fabOpt2: FloatingActionButton
+    lateinit var tickAllButton: FloatingActionButton
+    lateinit var newStoreCheckBoxButton: FloatingActionButton
 
     private lateinit var footerAdapter: FooterAdapter
 
     var adapter: StoreCheckBoxAdapter? = null
-    val stores: MutableList<StoreCheckBox> = arrayListOf()
+    //val stores: MutableList<StoreCheckBox> = arrayListOf()
+
+    /*
+    * This is only to make a mock GET from DB
+    * */
+    val stores = mutableListOf(
+        StoreCheckBox("Aldi", mutableListOf(IngredientCheckbox("Kenyér", false), IngredientCheckbox("Római kömény", false))),
+        StoreCheckBox("Lidl", mutableListOf(IngredientCheckbox("Paradicsom", false), IngredientCheckbox("Paprika", false), IngredientCheckbox("Olaj", false), IngredientCheckbox("Narancs", false), IngredientCheckbox("Citrom", false), IngredientCheckbox("Fahéj", false))),
+        StoreCheckBox("Spar", mutableListOf(IngredientCheckbox("Mogyoróvaj", false), IngredientCheckbox("Fűszerpaprika", false), IngredientCheckbox("Alma", false)))
+    )
+
+    var tickedCount = 0
 
     private val addNewStore = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -63,7 +74,6 @@ class ShoppingFragment : Fragment() {
                 // Log an error or ensure proper initialization
                 footerAdapter.showFooter(true)
             }
-
         }
     }
 
@@ -79,7 +89,15 @@ class ShoppingFragment : Fragment() {
             Toast.makeText(context, getString(R.string.purchased_button_pressed), Toast.LENGTH_SHORT).show()
         })
 
-        adapter = StoreCheckBoxAdapter(stores, footerAdapter)
+        adapter = StoreCheckBoxAdapter(footerAdapter, this)
+
+        /*
+            TODO make http GET call to backend and upload list to stores variable
+        */
+        if (stores.size > 0) {
+            footerAdapter.showFooter(true)
+        }
+
 
         // Combine adapters using ConcatAdapter
         val concatAdapter = ConcatAdapter(adapter, footerAdapter)
@@ -93,12 +111,18 @@ class ShoppingFragment : Fragment() {
             onAddButtonClicked()
         }
 
-        fabOpt1 = rootView.findViewById(R.id.fab_opt1)
-        fabOpt1.setOnClickListener {
-            if (allChecked) {
-                allChecked = false
+        tickAllButton = rootView.findViewById(R.id.fab_opt1)
+        tickAllButton.setOnClickListener {
+            if (stores.size > 0) {
+                if (allChecked) {
+                    allChecked = false
+                    Toast.makeText(context, getString(R.string.check_all_unpressed), Toast.LENGTH_SHORT).show()
+                } else {
+                    allChecked = true
+                    Toast.makeText(context, getString(R.string.check_all_pressed), Toast.LENGTH_SHORT).show()
+                }
             } else {
-                allChecked = true
+                Toast.makeText(context, getString(R.string.nothing_to_tick_here), Toast.LENGTH_SHORT).show()
             }
 
             // Select All functionality
@@ -109,12 +133,12 @@ class ShoppingFragment : Fragment() {
             }
 
             adapter?.notifyDataSetChanged() // Notify the adapter to update the UI
-            Toast.makeText(context, getString(R.string.check_all_pressed), Toast.LENGTH_SHORT).show()
+
             onAddButtonClicked()
         }
 
-        fabOpt2 = rootView.findViewById(R.id.fab_opt2)
-        fabOpt2.setOnClickListener {
+        newStoreCheckBoxButton = rootView.findViewById(R.id.fab_opt2)
+        newStoreCheckBoxButton.setOnClickListener {
             val intent = Intent(context, AddParentChildActivity::class.java)
             addNewStore.launch(intent)
             Toast.makeText(context, getString(R.string.add_new_pressed), Toast.LENGTH_SHORT).show()
@@ -133,33 +157,33 @@ class ShoppingFragment : Fragment() {
 
     private fun setAnimation(clicked: Boolean) {
         if (!clicked) {
-            fabOpt1.startAnimation(fromBottom)
-            fabOpt2.startAnimation(fromBottom)
+            tickAllButton.startAnimation(fromBottom)
+            newStoreCheckBoxButton.startAnimation(fromBottom)
             fab.startAnimation(rotateOpen)
         } else {
-            fabOpt1.startAnimation(toBottom)
-            fabOpt2.startAnimation(toBottom)
+            tickAllButton.startAnimation(toBottom)
+            newStoreCheckBoxButton.startAnimation(toBottom)
             fab.startAnimation(rotateClose)
         }
     }
 
     private fun setVisibility(clicked: Boolean) {
         if (!clicked) {
-            fabOpt1.visibility = View.VISIBLE
-            fabOpt2.visibility = View.VISIBLE
+            tickAllButton.visibility = View.VISIBLE
+            newStoreCheckBoxButton.visibility = View.VISIBLE
         } else {
-            fabOpt1.visibility = View.INVISIBLE
-            fabOpt2.visibility = View.INVISIBLE
+            tickAllButton.visibility = View.INVISIBLE
+            newStoreCheckBoxButton.visibility = View.INVISIBLE
         }
     }
 
     private fun setClickable(clicked: Boolean) {
         if (!clicked) {
-            fabOpt1.isClickable = true
-            fabOpt2.isClickable = true
+            tickAllButton.isClickable = true
+            newStoreCheckBoxButton.isClickable = true
         } else {
-            fabOpt1.isClickable = false
-            fabOpt2.isClickable = false
+            tickAllButton.isClickable = false
+            newStoreCheckBoxButton.isClickable = false
         }
     }
 }

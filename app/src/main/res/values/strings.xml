@@ -3,8 +3,8 @@
     <string name="search">Search\n</string>
     <string name="profile">Profile</string>
     <string name="shoppinglist">Shopping list</string>
-    <string name="store_name">Store name</string>
-    <string name="new_ingredient">New ingredient</string>
+    <string name="store_name">Specify store name here</string>
+    <string name="new_ingredient">Add ingredient</string>
     <string name="save">Save</string>
     <string name="welcome_to_the_home_page">Welcome to the Home Page!</string>
     <string name="click_me">Click Me</string>
@@ -13,7 +13,12 @@
     <string name="more_options">More options</string>
     <string name="purchased_button_pressed">Purchased button pressed</string>
     <string name="check_all_pressed">All ingredients checked</string>
+    <string name="check_all_unpressed">All ingredients unchecked</string>
     <string name="add_new_pressed">Adding new items</string>
     <string name="add_at_least_one_child_item">Add at least one child item</string>
     <string name="store_cannot_be_empty">Store cannot be empty</string>
+    <string name="nothing_to_tick_here">Nothing to tick here</string>
+    <string name="nothing_is_ticked">Nothing is ticked</string>
+    <string name="add_a_new_ingredient">Add a new ingredient</string>
+    <string name="ingredient_name">Ingredient name here</string>
 </resources>

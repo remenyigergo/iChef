@@ -41,11 +41,13 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="70dp"
             android:layout_marginRight="5dp"
-            android:src="@mipmap/more_foreground"
+            android:src="@mipmap/plus_foreground"
             android:clickable="true"
             android:focusable="true"
-            android:tint="@color/white"
             android:tooltipText="@string/more_options"
+            android:theme="@style/Theme.MaterialComponents"
+            app:backgroundTint="@color/bottombar"
+            app:tint="@color/topbar"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             />
@@ -61,7 +63,7 @@
             android:focusable="true"
             android:tint="@color/white"
             android:visibility="invisible"
-
+            app:backgroundTint="@color/topbar"
             app:layout_constraintBottom_toTopOf="@id/fab"
             app:layout_constraintRight_toRightOf="parent"
             />
@@ -77,6 +79,7 @@
             android:focusable="true"
             android:tint="@color/white"
             android:visibility="invisible"
+            app:backgroundTint="@color/topbar"
             app:layout_constraintBottom_toTopOf="@id/fab_opt1"
             app:layout_constraintRight_toRightOf="parent"
             />

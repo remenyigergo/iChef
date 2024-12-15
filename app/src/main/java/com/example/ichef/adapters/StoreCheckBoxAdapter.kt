@@ -9,8 +9,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.R
+import com.example.ichef.fragments.ShoppingFragment
 
-class StoreCheckBoxAdapter(private val parents: MutableList<StoreCheckBox>, private var footerAdapter: FooterAdapter) : RecyclerView.Adapter<StoreCheckBoxAdapter.ParentViewHolder>() {
+class StoreCheckBoxAdapter(private var footerAdapter: FooterAdapter, private var shoppingFragment: ShoppingFragment) : RecyclerView.Adapter<StoreCheckBoxAdapter.ParentViewHolder>() {
 
     inner class ParentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.tvParentTitle)
@@ -25,47 +26,33 @@ class StoreCheckBoxAdapter(private val parents: MutableList<StoreCheckBox>, priv
     }
 
     override fun onBindViewHolder(parentViewHolder: ParentViewHolder, position: Int) {
-        val parent = parents[position]
-        parentViewHolder.title.text = parent.storeName
+
+        parentViewHolder.title.text = shoppingFragment.stores[position].storeName
 
         // Set up child RecyclerView
         parentViewHolder.recyclerView.layoutManager = LinearLayoutManager(parentViewHolder.itemView.context)
         parentViewHolder.recyclerView.adapter =
-            IngredientCheckBoxAdapter(parent.ingredients.toMutableList(), { child, isChecked ->
+            IngredientCheckBoxAdapter(shoppingFragment, position, { child, isChecked ->
                 child.isChecked = isChecked
-            }) { childPosition ->
-                parent.ingredients.removeAt(childPosition)
-                parentViewHolder.recyclerView.adapter?.notifyItemRemoved(childPosition)
-            }
+            }, parentViewHolder)
 
         // Handle parent deletion
         parentViewHolder.deleteButton.setOnClickListener {
             Log.d("ParentAdapter", "Delete button clicked for position $position")
-            parents.removeAt(position)
+            shoppingFragment.stores.removeAt(position)
             notifyItemRemoved(position)
-            notifyItemRangeChanged(position, parents.size)
+            notifyItemRangeChanged(position, shoppingFragment.stores.size)
 
             //handle footer
-            if (parents.size == 0) {
+            if (shoppingFragment.stores.size == 0) {
                 footerAdapter.showFooter(false)
+                //set allClicked to false because no element is presented
+                shoppingFragment.allChecked = false
             }
         }
     }
 
-    private fun SetLastElementMargin(
-        position: Int,
-        layoutParams: ViewGroup.MarginLayoutParams
-    ) {
-        if (position == parents.size - 1) {
-            // Convert 20dp to pixels
-            layoutParams.bottomMargin = 320
-        } else {
-            // Reset margin for non-last items
-            layoutParams.bottomMargin = 0
-        }
-    }
-
-    override fun getItemCount() = parents.size
+    override fun getItemCount() = shoppingFragment.stores.size
 }
 
 

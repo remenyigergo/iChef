@@ -1,11 +1,12 @@
 package com.example.ichef.adapters
-
-import android.view.View
+import android.annotation.SuppressLint
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.R
+import com.example.ichef.activities.shoppingFragment
 
 class FooterAdapter(private val onButtonClick: () -> Unit) :
     RecyclerView.Adapter<FooterAdapter.FooterViewHolder>() {
@@ -13,11 +14,7 @@ class FooterAdapter(private val onButtonClick: () -> Unit) :
     private var isFooterVisible: Boolean = false
 
     inner class FooterViewHolder(val purchasedButton: Button) :
-        RecyclerView.ViewHolder(purchasedButton) {
-            fun bind(isVisible: Boolean) {
-                itemView.visibility = if (isVisible) View.VISIBLE else View.GONE
-            }
-        }
+        RecyclerView.ViewHolder(purchasedButton)
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FooterViewHolder {
@@ -37,15 +34,16 @@ class FooterAdapter(private val onButtonClick: () -> Unit) :
 
     override fun onBindViewHolder(holder: FooterViewHolder, position: Int) {
         holder.purchasedButton.setOnClickListener {
-            onButtonClick()
-        }
-
-        if (holder is FooterViewHolder) {
-            holder.bind(isFooterVisible)
+            if (shoppingFragment.tickedCount == 0) {
+               Toast.makeText(shoppingFragment.context,
+                   shoppingFragment.getString(R.string.nothing_is_ticked), Toast.LENGTH_SHORT).show()
+            } else {
+                onButtonClick()
+            }
         }
     }
 
-
+    @SuppressLint("NotifyDataSetChanged")
     fun showFooter(show: Boolean){
         isFooterVisible = show
         notifyDataSetChanged()

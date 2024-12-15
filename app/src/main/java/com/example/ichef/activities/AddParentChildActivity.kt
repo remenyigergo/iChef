@@ -3,6 +3,7 @@ package com.example.ichef
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -23,8 +24,10 @@ class AddParentChildActivity : AppCompatActivity() {
         val childItems = mutableListOf<String>()
 
         addChildButton.setOnClickListener {
-            val newChildInput = EditText(this)
-            newChildInput.hint = applicationContext.getString(R.string.new_ingredient)
+            val newChildInput = EditText(this).apply {
+                inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS
+            }
+            newChildInput.hint = applicationContext.getString(R.string.ingredient_name)
             childContainer.addView(newChildInput)
         }
 
