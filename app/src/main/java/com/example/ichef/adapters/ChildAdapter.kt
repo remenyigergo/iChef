@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.R
@@ -17,6 +18,7 @@ class ChildAdapter(
 ) : RecyclerView.Adapter<ChildAdapter.ChildViewHolder>() {
 
     inner class ChildViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val ingredientLayout = view.findViewById<LinearLayout>(R.id.ingredient_layout)
         val checkBox: CheckBox = view.findViewById(R.id.cbChild)
         val deleteButton: ImageButton = view.findViewById(R.id.btnDeleteChild)
     }
@@ -28,7 +30,6 @@ class ChildAdapter(
     }
 
     override fun onBindViewHolder(holder: ChildViewHolder, position: Int) {
-
         val child = children[position]
         holder.checkBox.text = child.title
         holder.checkBox.isChecked = child.isChecked
@@ -36,6 +37,12 @@ class ChildAdapter(
         // Handle checkbox change
         holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
             onChildCheckedChange(child, isChecked)
+        }
+
+        // Update the checkbox when TextView is clicked
+        holder.ingredientLayout.setOnClickListener {
+            holder.checkBox.isChecked = !holder.checkBox.isChecked
+            onChildCheckedChange(child, holder.checkBox.isChecked)
         }
 
         // Handle child deletion

@@ -16,7 +16,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Shopping cart"
+            android:text="@string/shoppinglist"
             android:textSize="25sp"
             android:gravity="center_vertical"
             android:layout_marginStart="16dp" />
@@ -45,7 +45,7 @@
             android:clickable="true"
             android:focusable="true"
             android:tint="@color/white"
-            android:tooltipText="More options"
+            android:tooltipText="@string/more_options"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             />

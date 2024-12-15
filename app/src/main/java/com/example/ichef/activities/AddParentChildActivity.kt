@@ -24,7 +24,7 @@ class AddParentChildActivity : AppCompatActivity() {
 
         addChildButton.setOnClickListener {
             val newChildInput = EditText(this)
-            newChildInput.hint = "Ingredient name"
+            newChildInput.hint = applicationContext.getString(R.string.new_ingredient)
             childContainer.addView(newChildInput)
         }
 
@@ -32,7 +32,7 @@ class AddParentChildActivity : AppCompatActivity() {
             val parentTitle = parentTitleInput.text.toString()
 
             if (parentTitle.isBlank()) {
-                Toast.makeText(this, "Store cannot be empty", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.store_cannot_be_empty), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -46,7 +46,8 @@ class AddParentChildActivity : AppCompatActivity() {
             }
 
             if (childItems.isEmpty()) {
-                Toast.makeText(this, "Add at least one child item", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,
+                    getString(R.string.add_at_least_one_child_item), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 

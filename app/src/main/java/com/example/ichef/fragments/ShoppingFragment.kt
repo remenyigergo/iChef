@@ -17,11 +17,13 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.marginLeft
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.AddParentChildActivity
 import com.example.ichef.R
 import com.example.ichef.adapters.ChildItem
+import com.example.ichef.adapters.FooterAdapter
 import com.example.ichef.adapters.ParentAdapter
 import com.example.ichef.adapters.ParentItem
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -42,11 +44,12 @@ class ShoppingFragment : Fragment() {
 
     var adapter: ParentAdapter? = null
 
-    val parentItems = mutableListOf(
-        ParentItem("Parent 1", mutableListOf(ChildItem("Child 1", false), ChildItem("Child 2", false))),
-        ParentItem("Parent 2", mutableListOf(ChildItem("Child 3", false), ChildItem("Child 4", false), ChildItem("Child 5", false), ChildItem("Child 6", false), ChildItem("Child 7", false), ChildItem("Child 8", false), ChildItem("Child 9", false), ChildItem("Child 10", false), ChildItem("Child 11", false), ChildItem("Child 12", false), ChildItem("Child 13", false))),
-        ParentItem("Parent 3", mutableListOf(ChildItem("Child 6", false), ChildItem("Child 2", false), ChildItem("Child 8", false)))
-    )
+//    val parentItems = mutableListOf(
+//        ParentItem("Aldi", mutableListOf(ChildItem("Child 1", false), ChildItem("Child 2", false))),
+//        ParentItem("Parent 2", mutableListOf(ChildItem("Child 3", false), ChildItem("Child 4", false), ChildItem("Child 5", false), ChildItem("Child 6", false), ChildItem("Child 7", false), ChildItem("Child 8", false), ChildItem("Child 9", false), ChildItem("Child 10", false), ChildItem("Child 11", false), ChildItem("Child 12", false), ChildItem("Child 13", false))),
+//        ParentItem("Parent 3", mutableListOf(ChildItem("Child 6", false), ChildItem("Child 2", false), ChildItem("Child 8", false)))
+//    )
+    val parentItems: MutableList<ParentItem> = arrayListOf()
 
     private val addParentResultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -75,12 +78,18 @@ class ShoppingFragment : Fragment() {
         // Inflate the layout
         val rootView = inflater.inflate(R.layout.shopping_fragment, container, false)
 
-        val recyclerView: RecyclerView = rootView.findViewById(R.id.rvParent)
-
         adapter = ParentAdapter(parentItems)
 
+        val footerAdapter = FooterAdapter(onButtonClick = {
+            Toast.makeText(context, getString(R.string.purchased_button_pressed), Toast.LENGTH_SHORT).show()
+        },parentItems.size)
+
+        // Combine adapters using ConcatAdapter
+        val concatAdapter = ConcatAdapter(adapter, footerAdapter)
+
+        val recyclerView: RecyclerView = rootView.findViewById(R.id.rvParent)
         recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.adapter = adapter
+        recyclerView.adapter = concatAdapter
 
         fab = rootView.findViewById(R.id.fab)
         fab.setOnClickListener {
@@ -103,7 +112,7 @@ class ShoppingFragment : Fragment() {
             }
 
             adapter?.notifyDataSetChanged() // Notify the adapter to update the UI
-            Toast.makeText(context,"Opt 1 pressed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.check_all_pressed), Toast.LENGTH_SHORT).show()
             onAddButtonClicked()
         }
 
@@ -111,7 +120,7 @@ class ShoppingFragment : Fragment() {
         fabOpt2.setOnClickListener {
             val intent = Intent(context, AddParentChildActivity::class.java)
             addParentResultLauncher.launch(intent)
-            Toast.makeText(context,"Opt 2 pressed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.add_new_pressed), Toast.LENGTH_SHORT).show()
             onAddButtonClicked()
         }
 

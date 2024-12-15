@@ -2,4 +2,18 @@
     <string name="app_name">iChef</string>
     <string name="search">Search\n</string>
     <string name="profile">Profile</string>
+    <string name="shoppinglist">Shopping list</string>
+    <string name="store_name">Store name</string>
+    <string name="new_ingredient">New ingredient</string>
+    <string name="save">Save</string>
+    <string name="welcome_to_the_home_page">Welcome to the Home Page!</string>
+    <string name="click_me">Click Me</string>
+    <string name="purchased">Purchased</string>
+    <string name="welcome_to_the_search_page">Welcome to the Search Page!</string>
+    <string name="more_options">More options</string>
+    <string name="purchased_button_pressed">Purchased button pressed</string>
+    <string name="check_all_pressed">All ingredients checked</string>
+    <string name="add_new_pressed">Adding new items</string>
+    <string name="add_at_least_one_child_item">Add at least one child item</string>
+    <string name="store_cannot_be_empty">Store cannot be empty</string>
 </resources>

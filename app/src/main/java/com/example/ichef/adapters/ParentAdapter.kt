@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.R
 
-class ParentAdapter(private val parents: MutableList<ParentItem>) : RecyclerView.Adapter<ParentAdapter.ParentViewHolder>() {
+class ParentAdapter(public val parents: MutableList<ParentItem>) : RecyclerView.Adapter<ParentAdapter.ParentViewHolder>() {
 
     inner class ParentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.tvParentTitle)
@@ -32,7 +32,7 @@ class ParentAdapter(private val parents: MutableList<ParentItem>) : RecyclerView
         val layoutParams = parentViewHolder.itemView.layoutParams as ViewGroup.MarginLayoutParams
 
         // Apply bottom margin only to the last item
-        SetLastElementMargin(position, layoutParams)
+        //SetLastElementMargin(position, layoutParams)
 
         // Set up child RecyclerView
         parentViewHolder.recyclerView.layoutManager = LinearLayoutManager(parentViewHolder.itemView.context)

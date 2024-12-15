@@ -9,14 +9,14 @@
         android:id="@+id/etParentTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Store name"
+        android:hint="@string/store_name"
         android:textSize="16sp" />
 
     <Button
         android:id="@+id/btnAddChild"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New ingredient"
+        android:text="@string/new_ingredient"
         android:layout_marginTop="16dp" />
 
     <LinearLayout
@@ -30,6 +30,6 @@
         android:id="@+id/btnSaveParent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:text="@string/save"
         android:layout_marginTop="16dp" />
 </LinearLayout>

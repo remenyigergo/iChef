@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">iChef</string>
+    <string name="search">Keresés\n</string>
+    <string name="profile">Fiók</string>
+    <string name="shoppinglist">Bevásárló lista</string>
+    <string name="store_name">Írd ide a bolt nevét</string>
+    <string name="new_ingredient">Írd ide a hozzávalót</string>
+    <string name="save">Mentés</string>
+    <string name="welcome_to_the_home_page">Üdv a kezdőlapon!</string>
+    <string name="click_me">Kattints rám!</string>
+    <string name="purchased">Megvettem</string>
+    <string name="welcome_to_the_search_page">Üdv a kereső oldalon!</string>
+    <string name="more_options">Több opció</string>
+    <string name="purchased_button_pressed">Megvettem gomb megnyomva</string>
+    <string name="check_all_pressed">Minden bepipálva</string>
+    <string name="add_new_pressed">Új hozzávaló felvétele</string>
+    <string name="add_at_least_one_child_item">Adj hozzá legalább egy hozzávalót</string>
+    <string name="store_cannot_be_empty">Bolt nem lehet üres</string>
+</resources>
