@@ -43,6 +43,12 @@ class ShoppingFragment : Fragment() {
     var adapter: StoreCheckBoxAdapter? = null
     //val stores: MutableList<StoreCheckBox> = arrayListOf()
 
+
+    /*
+    * Mock to GET ingredients from backend
+    * */
+    val ingredients = arrayListOf("Só","Bors", "Sonka", "Mustár","Gesztenye","Gomba","Cékla","Leveles tészta","Vöröshagyma","Fokhagyma","Gyömbér","Szalonna","Paprika","Római Kömény", "Fűszerkömény","Fokhagymapor", "Kenyér","Paradicsom")
+
     /*
     * This is only to make a mock GET from DB
     * */
@@ -68,9 +74,15 @@ class ShoppingFragment : Fragment() {
             )
 
             // Add the new parent item to the list and update RecyclerView
-            stores.add(store)
-            adapter?.notifyItemInserted(stores.size-1)
-
+            var storeIndex = getStoreIndex(storeName)
+            if (storeIndex != -1) {
+                store.ingredients.forEach({ ingredient ->
+                    stores[storeIndex].ingredients.add(ingredient)
+                })
+            } else {
+                stores.add(store)
+                adapter?.notifyItemInserted(stores.size-1)
+            }
 
             if (::footerAdapter.isInitialized) {
                 // Log an error or ensure proper initialization
@@ -78,6 +90,19 @@ class ShoppingFragment : Fragment() {
                 SetEmptyPageVisibilty(emptyPageView)
             }
         }
+    }
+
+    private fun getStoreIndex(storeName: String): Int {
+        var positionOfStore = -1
+        var iteration = 0
+        stores.forEach({ store ->
+            if (store.storeName == storeName) {
+                positionOfStore = iteration
+            }
+            iteration++
+        })
+
+        return positionOfStore
     }
 
     override fun onCreateView(
@@ -148,12 +173,20 @@ class ShoppingFragment : Fragment() {
         newStoreCheckBoxButton = rootView.findViewById(R.id.fab_opt2)
         newStoreCheckBoxButton.setOnClickListener {
             val intent = Intent(context, AddParentChildActivity::class.java)
+            intent.putStringArrayListExtra("ingredients_list",ingredients)
+            intent.putStringArrayListExtra("stores",GetStoresNames())
             addNewStore.launch(intent)
             Toast.makeText(context, getString(R.string.add_new_pressed), Toast.LENGTH_SHORT).show()
             onAddButtonClicked()
         }
 
         return rootView
+    }
+
+    private fun GetStoresNames(): ArrayList<String>? {
+        var storesNames = ArrayList<String>()
+        stores.forEach({checkboxElement-> storesNames.add(checkboxElement.storeName)})
+        return storesNames
     }
 
     fun SetEmptyPageVisibilty(emptyPageView: ConstraintLayout) {

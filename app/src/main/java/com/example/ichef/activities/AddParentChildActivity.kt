@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -23,10 +25,16 @@ class AddParentChildActivity : AppCompatActivity() {
 
         val childItems = mutableListOf<String>()
 
+        val ingredients = intent.getStringArrayListExtra("ingredients_list")
+        val stores = intent.getStringArrayListExtra("stores")
+        SetAutoCompleteStoresField(stores)
+
+
         addChildButton.setOnClickListener {
-            val newChildInput = EditText(this).apply {
+            val newChildInput = AutoCompleteTextView(this).apply {
                 inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS
             }
+            SetAutoCompleteIngredientField(newChildInput,ingredients)
             newChildInput.hint = applicationContext.getString(R.string.ingredient_name)
             childContainer.addView(newChildInput)
         }
@@ -60,6 +68,42 @@ class AddParentChildActivity : AppCompatActivity() {
             }
             setResult(Activity.RESULT_OK, resultIntent)
             finish()
+        }
+    }
+
+    private fun SetAutoCompleteStoresField(storesToShow: ArrayList<String>?) {
+        if (storesToShow != null) {
+            val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.etParentTitle)
+
+            // Create an ArrayAdapter
+            val adapter = ArrayAdapter(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                storesToShow
+            )
+
+            // Set the adapter to the AutoCompleteTextView
+            autoCompleteTextView.setAdapter(adapter)
+
+            // Optionally set the threshold for showing suggestions (e.g., 1 character)
+            autoCompleteTextView.threshold = 1
+        }
+    }
+
+    private fun SetAutoCompleteIngredientField(textView: AutoCompleteTextView,ingredientsToShow: ArrayList<String>?) {
+        if (ingredientsToShow != null) {
+            // Create an ArrayAdapter
+            val adapter = ArrayAdapter(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                ingredientsToShow
+            )
+
+            // Set the adapter to the AutoCompleteTextView
+            textView.setAdapter(adapter)
+
+            // Optionally set the threshold for showing suggestions (e.g., 1 character)
+            textView.threshold = 1
         }
     }
 }
