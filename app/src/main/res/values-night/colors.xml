@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-
-<!--    colors brownish-->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="background">#E4E0E1</color>
-    <color name="button_color">#AB886D</color>
-    <color name="topbar">#D6C0B3</color>
+    <color name="background">#000000</color>
+
+    <color name="topbar">#493628</color>
     <color name="selectedButton">#FFC857</color>
     <color name="navbar_background">#493628</color>
-    <color name="text_color">#FF000000</color>
-
+    <color name="text_color">#FFFFFFFF</color>
 
 </resources>

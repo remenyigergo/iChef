@@ -11,8 +11,8 @@
         android:text="@string/purchased"
         android:textSize="16sp"
         android:padding="12dp"
-        android:backgroundTint="@color/bottombar"
-        android:textColor="@android:color/white"
+        android:backgroundTint="@color/button_color"
+        android:textColor="?attr/colorOnPrimary"
         android:layout_gravity="center_horizontal"
         android:elevation="4dp" />
 </LinearLayout>

@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/new_ingredient"
-            android:backgroundTint="@color/bottombar"
+            android:backgroundTint="@color/button_color"
             android:layout_marginTop="16dp" />
 
         <LinearLayout
@@ -46,7 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/save"
-            android:backgroundTint="@color/bottombar"
+            android:backgroundTint="@color/button_color"
             android:layout_marginTop="16dp" />
     </LinearLayout>
 

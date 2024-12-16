@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?attr/colorPrimary"
     tools:context=".activities.MainActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -24,7 +24,7 @@
             android:text="iChef"
             android:fontFamily="casual"
             android:textStyle="italic"
-            android:textColor="@color/cardview_dark_background"
+            android:textColor="?attr/colorOnPrimary"
             android:layout_gravity="center|top"
             android:id="@+id/toolbar_title" />
     </androidx.appcompat.widget.Toolbar>
@@ -64,7 +64,6 @@
             android:layout_margin="5dp"
             app:itemTextColor="@color/background"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:labelVisibilityMode="labeled"
             app:menu="@menu/bottom_navigation_menu"
             app:itemIconTint="@color/bottom_bar_icons_selector"
             app:itemIconSize="35dp"

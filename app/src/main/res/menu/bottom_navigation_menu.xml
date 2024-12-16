@@ -12,13 +12,13 @@
         android:title=""/>
     <item
         android:id="@+id/profile_button"
-        android:enabled="true"
+        android:enabled="false"
         android:icon="@mipmap/profile_foreground"
         android:title=""
         />
     <item
         android:id="@+id/meals_button"
-        android:enabled="true"
+        android:enabled="false"
         android:icon="@mipmap/fridge_icon_foreground"
         android:title=""
         />

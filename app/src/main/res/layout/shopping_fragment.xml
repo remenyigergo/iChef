@@ -46,7 +46,7 @@
             android:focusable="true"
             android:tooltipText="@string/more_options"
             android:theme="@style/Theme.MaterialComponents"
-            app:backgroundTint="@color/bottombar"
+            app:backgroundTint="@color/button_color"
             app:tint="@color/topbar"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"

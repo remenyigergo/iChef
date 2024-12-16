@@ -2,23 +2,20 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.IChef" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/topbar</item>
-        <item name="android:windowLightStatusBar">true</item> <!-- For dark icons -->
-    </style>
 
-    <!-- Light theme -->
-    <style name="LightMode" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
 
-    <!--    Dark theme-->
-    <style name="NightModeTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
+        <!-- Primary colors -->
+        <item name="colorPrimary">@color/background</item>
+        <item name="colorPrimaryVariant">@color/topbar</item>
+        <item name="colorOnPrimary">@color/text_color</item>
 
+        <!-- Background color -->
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorOnBackground">@color/black</item>
+
+        <!-- Text appearance -->
+        <item name="android:textColor">@color/black</item>
+    </style>
 
     <style name="Theme.IChef" parent="Base.Theme.IChef"/>
 </resources>

@@ -1,7 +1,22 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.IChef" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="android:statusBarColor">@color/topbar</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <!-- Primary colors -->
+        <item name="colorPrimary">@color/background</item>
+        <item name="colorPrimaryVariant">@color/background</item>
+        <item name="colorOnPrimary">@color/text_color</item>
+
+        <!-- Background color -->
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorOnBackground">@color/text_color</item>
+
+        <!-- Text appearance -->
+        <item name="android:textColor">@color/text_color</item>
+
     </style>
+
+    <style name="Theme.IChef" parent="Base.Theme.IChef"/>
 </resources>
