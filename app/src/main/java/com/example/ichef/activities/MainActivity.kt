@@ -1,8 +1,6 @@
 package com.example.ichef.activities
 
 import android.os.Bundle
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -12,12 +10,13 @@ import com.example.ichef.fragments.HomeFragment
 import com.example.ichef.fragments.SearchFragment
 import com.example.ichef.fragments.ShoppingFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 val homeFragment = HomeFragment()
 val searchFragment = SearchFragment()
-val shoppingFragment = ShoppingFragment()
-val fragments = listOf(homeFragment, searchFragment, shoppingFragment)
+lateinit var shoppingFragment: ShoppingFragment
+lateinit var fragments: List<Fragment>
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,6 +29,24 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        //Read all ingredients for a cold-start update
+        val ingredients = ArrayList<String>() // Create an ArrayList to hold the lines
+        try {
+            // Open file from assets
+            val inputStream = assets.open("ingredients.txt")
+            val reader = BufferedReader(InputStreamReader(inputStream))
+
+            // Read file line by line and add each line to the ArrayList
+            reader.forEachLine { line ->
+                ingredients.add(line)
+            }
+            shoppingFragment = ShoppingFragment(ingredients)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        fragments = listOf(homeFragment, searchFragment, shoppingFragment)
 
         // If savedInstanceState is null, it means the Activity is starting for the first time
 

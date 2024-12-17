@@ -62,6 +62,15 @@ class AddParentChildActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            childItems.forEach({ ingredient->
+                if (ingredients != null && !ingredients.contains(ingredient)) {
+                    Toast.makeText(this,
+                        "$ingredient is not a valid ingredient.", Toast.LENGTH_LONG).show()
+                    return@setOnClickListener
+                }
+
+            })
+
             val resultIntent = Intent().apply {
                 putExtra("parentTitle", parentTitle)
                 putStringArrayListExtra("childItems", ArrayList(childItems))
@@ -81,7 +90,6 @@ class AddParentChildActivity : AppCompatActivity() {
                 android.R.layout.simple_dropdown_item_1line,
                 storesToShow
             )
-
             // Set the adapter to the AutoCompleteTextView
             autoCompleteTextView.setAdapter(adapter)
 
@@ -104,6 +112,9 @@ class AddParentChildActivity : AppCompatActivity() {
 
             // Optionally set the threshold for showing suggestions (e.g., 1 character)
             textView.threshold = 1
+
+            //make sure the dropdown is below the textview
+            textView.dropDownVerticalOffset = 0
         }
     }
 }

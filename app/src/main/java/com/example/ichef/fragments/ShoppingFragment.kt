@@ -23,7 +23,7 @@ import com.example.ichef.adapters.StoreCheckBoxAdapter
 import com.example.ichef.adapters.StoreCheckBox
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class ShoppingFragment : Fragment() {
+class ShoppingFragment(var ingredients: ArrayList<String>) : Fragment() {
 
     private val rotateOpen: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.rotate_open_anim) }
     private val rotateClose: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.rotate_close_anim) }
@@ -47,7 +47,8 @@ class ShoppingFragment : Fragment() {
     /*
     * Mock to GET ingredients from backend
     * */
-    val ingredients = arrayListOf("Só","Bors", "Sonka", "Mustár","Gesztenye","Gomba","Cékla","Leveles tészta","Vöröshagyma","Fokhagyma","Gyömbér","Szalonna","Paprika","Római Kömény", "Fűszerkömény","Fokhagymapor", "Kenyér","Paradicsom")
+    //val ingredients = arrayListOf("Só","Bors", "Sonka", "Mustár","Gesztenye","Gomba","Cékla","Leveles tészta","Vöröshagyma","Fokhagyma","Gyömbér","Szalonna","Paprika","Római Kömény", "Fűszerkömény","Fokhagymapor", "Kenyér","Paradicsom")
+
 
     /*
     * This is only to make a mock GET from DB
