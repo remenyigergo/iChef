@@ -29,7 +29,6 @@ class AddParentChildActivity : AppCompatActivity() {
         val stores = intent.getStringArrayListExtra("stores")
         SetAutoCompleteStoresField(stores)
 
-
         addChildButton.setOnClickListener {
             val newChildInput = AutoCompleteTextView(this).apply {
                 inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS
@@ -48,6 +47,7 @@ class AddParentChildActivity : AppCompatActivity() {
             }
 
             childItems.clear()
+
             for (i in 0 until childContainer.childCount) {
                 val childInput = childContainer.getChildAt(i) as EditText
                 val childText = childInput.text.toString()

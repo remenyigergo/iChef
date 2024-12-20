@@ -26,8 +26,8 @@ class StoreCheckBoxAdapter(private var footerAdapter: FooterAdapter, private var
     }
 
     override fun onBindViewHolder(parentViewHolder: ParentViewHolder, position: Int) {
-
-        parentViewHolder.title.text = shoppingFragment.stores[position].storeName
+        var stores = shoppingFragment.getStores()
+        parentViewHolder.title.text = stores[position].storeName
 
         // Set up child RecyclerView
         parentViewHolder.recyclerView.layoutManager = LinearLayoutManager(parentViewHolder.itemView.context)
@@ -39,21 +39,22 @@ class StoreCheckBoxAdapter(private var footerAdapter: FooterAdapter, private var
         // Handle parent deletion
         parentViewHolder.deleteButton.setOnClickListener {
             Log.d("ParentAdapter", "Delete button clicked for position $position")
-            shoppingFragment.stores.removeAt(position)
+            stores = shoppingFragment.getStores()
+            stores.removeAt(position)
             notifyItemRemoved(position)
-            notifyItemRangeChanged(position, shoppingFragment.stores.size)
+            notifyItemRangeChanged(position, stores.size)
 
             //handle footer
-            if (shoppingFragment.stores.size == 0) {
+            if (stores.size == 0) {
                 footerAdapter.showFooter(false)
                 //set allClicked to false because no element is presented
-                shoppingFragment.allChecked = false
-                shoppingFragment.SetEmptyPageVisibilty(shoppingFragment.emptyPageView)
+                shoppingFragment.setAllChecked(false)
+                shoppingFragment.SetEmptyPageVisibilty()
             }
         }
     }
 
-    override fun getItemCount() = shoppingFragment.stores.size
+    override fun getItemCount() = shoppingFragment.getStores().size
 }
 
 

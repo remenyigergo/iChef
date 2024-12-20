@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -47,4 +49,15 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    // Dagger dependencies
+    implementation("com.google.dagger:hilt-android:2.53.1")
+    ksp("com.google.dagger:hilt-compiler:2.53.1")
+
+    // For instrumentation tests
+    androidTestImplementation ("com.google.dagger:hilt-android-testing:2.53.1")
+    kspAndroidTest("com.google.dagger:hilt-compiler:2.53.1")
+
+    // For local unit tests
+    testImplementation("com.google.dagger:hilt-android-testing:2.53.1")
+    kspTest("com.google.dagger:hilt-compiler:2.53.1")
 }

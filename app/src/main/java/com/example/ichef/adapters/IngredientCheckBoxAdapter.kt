@@ -32,17 +32,19 @@ class IngredientCheckBoxAdapter(
 
     override fun onBindViewHolder(holder: ChildViewHolder, position: Int) {
         parentPosition = getParentPosition()
-        val child = shoppingFragment.stores[parentPosition].ingredients[position]
+        var stores = shoppingFragment.getStores()
+        val child = stores[parentPosition].ingredients[position]
         holder.checkBox.text = child.title
         holder.checkBox.isChecked = child.isChecked
 
         // Handle child checkbox change
         holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
+            val tickedCount = shoppingFragment.getTickedCount()
             if (isChecked) {
-                shoppingFragment.tickedCount++
+                shoppingFragment.incrementTick()
             } else {
-                if(shoppingFragment.tickedCount > 0) {
-                    shoppingFragment.tickedCount--
+                if(tickedCount > 0) {
+                    shoppingFragment.decreaseTick()
                 }
             }
         }
@@ -50,9 +52,9 @@ class IngredientCheckBoxAdapter(
         // Handle child checkbox when area clicked
         holder.ingredientLayout.setOnClickListener {
             if (holder.checkBox.isChecked) {
-                shoppingFragment.tickedCount--
+                shoppingFragment.decreaseTick()
             } else {
-                shoppingFragment.tickedCount++
+                shoppingFragment.incrementTick()
             }
 
             holder.checkBox.isChecked = !holder.checkBox.isChecked
@@ -62,33 +64,37 @@ class IngredientCheckBoxAdapter(
         // Handle child deletion
         holder.deleteButton.setOnClickListener {
             Log.i("ChildAdapter","Deleting child in pos: $position")
-            shoppingFragment.stores[parentPosition].ingredients.removeAt(position)
+            var stores = shoppingFragment.getStores()
+            var tickedCount = shoppingFragment.getTickedCount()
+            stores[parentPosition].ingredients.removeAt(position)
 
             notifyItemRemoved(position)
-            notifyItemRangeChanged(position, shoppingFragment.stores[parentPosition].ingredients.size) // Adjust the subsequent items' positions
+            notifyItemRangeChanged(position, stores[parentPosition].ingredients.size) // Adjust the subsequent items' positions
 
-            if (shoppingFragment.tickedCount > 0) {
-                shoppingFragment.tickedCount--
+            if (tickedCount > 0) {
+                shoppingFragment.decreaseTick()
             }
 
-            if (shoppingFragment.stores[parentPosition].ingredients.size == 0) {
+            if (stores[parentPosition].ingredients.size == 0) {
                 parentViewHolder.deleteButton.performClick()
             }
 
             //debug toast
-            Log.d("IngredientCheckBoxAdapter","tickedCount: ${shoppingFragment.tickedCount}")
+            Log.d("IngredientCheckBoxAdapter","tickedCount: ${tickedCount}")
             //Toast.makeText(shoppingFragment.context, "${shoppingFragment.tickedCount}", Toast.LENGTH_SHORT).show()
         }
     }
 
     override fun getItemCount(): Int {
         val position = getParentPosition()
-        return shoppingFragment.stores[position].ingredients.size
+        var stores = shoppingFragment.getStores()
+        return stores[position].ingredients.size
     }
 
     //when deleting the childs, make sure we set the parentPosition to the actual value, so we dont get out of bounds later
     private fun getParentPosition(): Int {
-        if (parentPosition <= shoppingFragment.stores.size - 1) {
+        var stores = shoppingFragment.getStores()
+        if (parentPosition <= stores.size - 1) {
             return parentPosition
         }
 
