@@ -21,6 +21,7 @@ import com.example.ichef.R
 import com.example.ichef.models.IngredientCheckbox
 import com.example.ichef.adapters.FooterAdapter
 import com.example.ichef.adapters.StoreCheckBoxAdapter
+import com.example.ichef.database.ShoppingDataManager
 import com.example.ichef.models.StoreCheckBox
 import com.example.ichef.models.IngredientsViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -35,6 +36,8 @@ class ShoppingFragmentImpl : Fragment(), ShoppingFragment {
     private val rotateClose: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.rotate_close_anim) }
     private val fromBottom: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.from_bottom_anim) }
     private val toBottom: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.to_bottom_anim) }
+
+    private val storeDatabase by lazy { ShoppingDataManager(requireContext()) }
 
     private var addButtonClicked: Boolean = false
     private var allChecked: Boolean = false
@@ -72,11 +75,12 @@ class ShoppingFragmentImpl : Fragment(), ShoppingFragment {
     /*
     * This is only to make a mock GET from DB, should be empty from start or GET API should load up these
     * */
-    private val stores = mutableListOf(
-        StoreCheckBox("Aldi", mutableListOf(IngredientCheckbox("Kenyér", false), IngredientCheckbox("Római kömény", false))),
-        StoreCheckBox("Lidl", mutableListOf(IngredientCheckbox("Paradicsom", false), IngredientCheckbox("Paprika", false), IngredientCheckbox("Olaj", false), IngredientCheckbox("Narancs", false), IngredientCheckbox("Citrom", false), IngredientCheckbox("Fahéj", false))),
-        StoreCheckBox("Spar", mutableListOf(IngredientCheckbox("Mogyoróvaj", false), IngredientCheckbox("Fűszerpaprika", false), IngredientCheckbox("Alma", false)))
-    )
+    private var stores : MutableList<StoreCheckBox> = mutableListOf()
+//    private var stores = mutableListOf(
+//        StoreCheckBox("Aldi", mutableListOf(IngredientCheckbox("Kenyér", false), IngredientCheckbox("Római kömény", false))),
+//        StoreCheckBox("Lidl", mutableListOf(IngredientCheckbox("Paradicsom", false), IngredientCheckbox("Paprika", false), IngredientCheckbox("Olaj", false), IngredientCheckbox("Narancs", false), IngredientCheckbox("Citrom", false), IngredientCheckbox("Fahéj", false))),
+//        StoreCheckBox("Spar", mutableListOf(IngredientCheckbox("Mogyoróvaj", false), IngredientCheckbox("Fűszerpaprika", false), IngredientCheckbox("Alma", false)))
+//    )
 
     private val addNewStore = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -100,6 +104,7 @@ class ShoppingFragmentImpl : Fragment(), ShoppingFragment {
             } else {
                 stores.add(store)
                 checkBoxesAdapter?.notifyItemInserted(stores.size-1)
+                saveStoreToDatabase(store)
             }
 
             if (::footerAdapter.isInitialized) {
@@ -130,12 +135,14 @@ class ShoppingFragmentImpl : Fragment(), ShoppingFragment {
         // Inflate the layout
         val rootView = inflater.inflate(R.layout.shopping_fragment, container, false)
         restoreStates(savedInstanceState)
-
+        loadStoresFromDatabase() // todo temporary db while backend not ready
+        
         // Get empty layout to make it visible if nothing in shopping list for the first time
         emptyPageView = rootView.findViewById(R.id.empty_shopping_list_page)
         SetEmptyPageVisibilty()
 
         checkBoxesAdapter = StoreCheckBoxAdapter(footerAdapter, this)
+
 
         /*
             TODO make http GET call to backend and upload list to stores variable
@@ -197,6 +204,11 @@ class ShoppingFragmentImpl : Fragment(), ShoppingFragment {
         }
 
         return rootView
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        saveStoresToDatabase()
     }
 
     private fun restoreStates(savedInstanceState: Bundle?) {
@@ -296,5 +308,27 @@ class ShoppingFragmentImpl : Fragment(), ShoppingFragment {
 
     override fun setAllChecked(value: Boolean) {
         allChecked = value
+    }
+
+    private fun saveStoresToDatabase() {
+        stores.forEach { store ->
+            val storeId = storeDatabase.insertStore(store.storeName)
+            store.ingredients.forEach { ingredient ->
+                storeDatabase.insertIngredient(storeId, ingredient.title, ingredient.isChecked)
+            }
+        }
+    }
+
+    private fun saveStoreToDatabase(childParent: StoreCheckBox) {
+        val storeId = storeDatabase.insertStore(childParent.storeName)
+        childParent.ingredients.forEach { ingredient ->
+            storeDatabase.insertIngredient(storeId, ingredient.title, ingredient.isChecked)
+        }
+
+    }
+
+    private fun loadStoresFromDatabase() {
+        stores = storeDatabase.getStores().toMutableList()
+        checkBoxesAdapter?.notifyDataSetChanged()
     }
 }
