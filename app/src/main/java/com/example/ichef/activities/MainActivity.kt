@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Get the bottom navbar and set each button to load the corresponding fragment
-        val bottomNav: BottomNavigationView = findViewById(R.id.bottom_navigation);
+        val bottomNav: BottomNavigationView = findViewById(R.id.bottom_navigation)
         bottomNav.setOnItemSelectedListener {
             try {
                 when (it.itemId) {

@@ -3,6 +3,7 @@ package com.example.ichef.fragments
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ConcatAdapter
@@ -58,6 +60,12 @@ class ShoppingFragmentImpl : Fragment(), ShoppingFragment {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+
+        Log.d("ShoppingFragment", "onSaveInstanceState called")
+        Log.d("ShoppingFragment", "addButtonClicked: $addButtonClicked")
+        Log.d("ShoppingFragment", "allChecked: $allChecked")
+        Log.d("ShoppingFragment", "tickedCount: $tickedCount")
+
         outState.putBoolean("addButtonClicked", addButtonClicked)
         outState.putBoolean("allChecked", allChecked)
         outState.putInt("tickedCount", tickedCount)
@@ -67,10 +75,41 @@ class ShoppingFragmentImpl : Fragment(), ShoppingFragment {
     private fun HandleStates(outState: Bundle) {
         for (store in stores) {
             for (ingredient in store.ingredients) {
+                val key = "${store.storeName}_${ingredient.title}"
                 outState.putBoolean("${store.storeName}_${ingredient.title}", ingredient.isChecked)
+                Log.d("ShoppingFragment", "Saving ingredient state - $key: ${ingredient.isChecked}")
             }
         }
     }
+
+//    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+//        super.onViewStateRestored(savedInstanceState)
+//
+//        // Log the state before restoring
+//        Log.d("ShoppingFragment", "onRestoreInstanceState called")
+//        Log.d("ShoppingFragment", "Restoring addButtonClicked: ${savedInstanceState?.getBoolean("addButtonClicked")}")
+//        Log.d("ShoppingFragment", "Restoring allChecked: ${savedInstanceState?.getBoolean("allChecked")}")
+//        Log.d("ShoppingFragment", "Restoring tickedCount: ${savedInstanceState?.getInt("tickedCount")}")
+//
+//        // Restore the saved state
+//        addButtonClicked = savedInstanceState?.getBoolean("addButtonClicked") ?: false
+//        allChecked = savedInstanceState?.getBoolean("allChecked") ?: false
+//        tickedCount = savedInstanceState?.getInt("tickedCount") ?: 0
+//
+//        // Restore the state of the ingredients
+//        savedInstanceState?.let {
+//            stores.forEach { store ->
+//                store.ingredients.forEach { ingredient ->
+//                    val key = "${store.storeName}_${ingredient.title}"
+//                    val isChecked = it.getBoolean(key, false)
+//                    ingredient.isChecked = isChecked
+//                    Log.d("ShoppingFragment", "Restoring ingredient state - $key: $isChecked")
+//                }
+//            }
+//        }
+//
+//        SetEmptyPageVisibilty()
+//    }
 
     /*
     * This is only to make a mock GET from DB, should be empty from start or GET API should load up these
@@ -130,7 +169,7 @@ class ShoppingFragmentImpl : Fragment(), ShoppingFragment {
         // Inflate the layout
         val rootView = inflater.inflate(R.layout.shopping_fragment, container, false)
         loadStoresFromDatabase() // todo temporary db while backend not ready
-        restoreStates(savedInstanceState)
+        //restoreStates(savedInstanceState)
         
         // Get empty layout to make it visible if nothing in shopping list for the first time
         emptyPageView = rootView.findViewById(R.id.empty_shopping_list_page)
@@ -221,6 +260,7 @@ class ShoppingFragmentImpl : Fragment(), ShoppingFragment {
                 }
             }
         }
+
     }
 
     private fun GetStoresNames(): ArrayList<String>? {
