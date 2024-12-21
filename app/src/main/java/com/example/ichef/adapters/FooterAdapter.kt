@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.R
 import com.example.ichef.fragments.ShoppingFragment
 
-class FooterAdapter(private val onButtonClick: () -> Unit, private val shoppingFragment: ShoppingFragment, private val context: Context) :
+class FooterAdapter(private val onButtonClick: () -> Unit, private var shoppingFragment: ShoppingFragment, private val context: Context) :
     RecyclerView.Adapter<FooterAdapter.FooterViewHolder>() {
 
     private var isFooterVisible: Boolean = false
@@ -42,7 +42,7 @@ class FooterAdapter(private val onButtonClick: () -> Unit, private val shoppingF
         }
     }
 
-    fun showFooter(show: Boolean){
+    fun showFooter(show: Boolean){ // TODO move this to interface
         isFooterVisible = show
         notifyDataSetChanged()
     }
@@ -50,5 +50,9 @@ class FooterAdapter(private val onButtonClick: () -> Unit, private val shoppingF
     // Only one footer item, when at least one parent checkbox is existing
     override fun getItemCount(): Int {
         return if (isFooterVisible) 1 else 0
+    }
+
+    fun reloadShoppingFragment(frag: ShoppingFragment) { //TODO move this to interface
+        shoppingFragment = frag
     }
 }

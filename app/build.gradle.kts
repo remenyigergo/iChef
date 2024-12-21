@@ -60,4 +60,9 @@ dependencies {
     // For local unit tests
     testImplementation("com.google.dagger:hilt-android-testing:2.53.1")
     kspTest("com.google.dagger:hilt-compiler:2.53.1")
+
+    //for property ingredients, because it is not hanndling configuration change (eg.: light/dark mode)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
+    implementation("androidx.fragment:fragment-ktx:1.8.5")
 }

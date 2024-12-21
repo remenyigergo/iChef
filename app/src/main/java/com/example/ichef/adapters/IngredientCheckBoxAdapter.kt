@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.R
 import com.example.ichef.fragments.ShoppingFragment
+import com.example.ichef.models.IngredientCheckbox
 
 class IngredientCheckBoxAdapter(
     private var shoppingFragment: ShoppingFragment,
@@ -42,21 +43,17 @@ class IngredientCheckBoxAdapter(
             val tickedCount = shoppingFragment.getTickedCount()
             if (isChecked) {
                 shoppingFragment.incrementTick()
+                shoppingFragment.checkIngredient(parentPosition,position,true) //change the list of ingredients check state
             } else {
                 if(tickedCount > 0) {
                     shoppingFragment.decreaseTick()
+                    shoppingFragment.checkIngredient(parentPosition,position,false) //change the list of ingredients check state
                 }
             }
         }
 
         // Handle child checkbox when area clicked
         holder.ingredientLayout.setOnClickListener {
-            if (holder.checkBox.isChecked) {
-                shoppingFragment.decreaseTick()
-            } else {
-                shoppingFragment.incrementTick()
-            }
-
             holder.checkBox.isChecked = !holder.checkBox.isChecked
             onChildCheckedChange(child, holder.checkBox.isChecked)
         }

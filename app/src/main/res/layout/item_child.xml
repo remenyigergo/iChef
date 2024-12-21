@@ -4,12 +4,18 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:clickable="true"
+    android:focusable="true">
 
     <CheckBox
         android:id="@+id/cbChild"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:layout_marginEnd="8dp" />
+<!--    this change in this commit is, so they not overlap. i dont even know if this works properly or not -->
 
     <TextView
         android:id="@+id/tvChildTitle"
@@ -27,5 +33,5 @@
         android:src="@android:drawable/ic_delete"
         android:contentDescription="Delete Child"
         android:paddingRight="8dp"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center" />
 </LinearLayout>

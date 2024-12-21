@@ -12,49 +12,71 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.AddParentChildActivity
 import com.example.ichef.R
-import com.example.ichef.adapters.IngredientCheckbox
+import com.example.ichef.models.IngredientCheckbox
 import com.example.ichef.adapters.FooterAdapter
 import com.example.ichef.adapters.StoreCheckBoxAdapter
-import com.example.ichef.adapters.StoreCheckBox
+import com.example.ichef.models.StoreCheckBox
+import com.example.ichef.models.IngredientsViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-class ShoppingFragmentImpl(var ingredients: ArrayList<String>) : Fragment(), ShoppingFragment {
+
+@AndroidEntryPoint
+class ShoppingFragmentImpl : Fragment(), ShoppingFragment {
 
     private val rotateOpen: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.rotate_open_anim) }
     private val rotateClose: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.rotate_close_anim) }
     private val fromBottom: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.from_bottom_anim) }
     private val toBottom: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.to_bottom_anim) }
 
-    private var clicked: Boolean = false
-    private var allChecked: Boolean = false //this is changed in storeCheckBoxAdapter. reference to this could be given only.
+    private var addButtonClicked: Boolean = false
+    private var allChecked: Boolean = false
+    private var tickedCount = 0
 
-    lateinit var fab: FloatingActionButton
-    lateinit var tickAllButton: FloatingActionButton
-    lateinit var newStoreCheckBoxButton: FloatingActionButton
+    private lateinit var fab: FloatingActionButton
+    private lateinit var tickAllButton: FloatingActionButton
+    private lateinit var newStoreCheckBoxButton: FloatingActionButton
+
+    //by viewModels means config change is not voiding out the property
+    private val viewModel: IngredientsViewModel by viewModels()
+
+    private var checkBoxesAdapter: StoreCheckBoxAdapter? = null
 
     @Inject
     lateinit var footerAdapter: FooterAdapter
+    private lateinit var emptyPageView: ConstraintLayout
 
-    lateinit var emptyPageView: ConstraintLayout
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean("addButtonClicked", addButtonClicked)
+        outState.putBoolean("allChecked", allChecked)
+        outState.putInt("tickedCount", tickedCount)
+        HandleStates(outState)
+    }
 
-    var adapter: StoreCheckBoxAdapter? = null
+    private fun HandleStates(outState: Bundle) {
+        for (store in stores) {
+            for (ingredient in store.ingredients) {
+                outState.putBoolean("${store.storeName}_${ingredient.title}", ingredient.isChecked)
+            }
+        }
+    }
 
     /*
-    * This is only to make a mock GET from DB
+    * This is only to make a mock GET from DB, should be empty from start or GET API should load up these
     * */
     private val stores = mutableListOf(
         StoreCheckBox("Aldi", mutableListOf(IngredientCheckbox("Kenyér", false), IngredientCheckbox("Római kömény", false))),
         StoreCheckBox("Lidl", mutableListOf(IngredientCheckbox("Paradicsom", false), IngredientCheckbox("Paprika", false), IngredientCheckbox("Olaj", false), IngredientCheckbox("Narancs", false), IngredientCheckbox("Citrom", false), IngredientCheckbox("Fahéj", false))),
         StoreCheckBox("Spar", mutableListOf(IngredientCheckbox("Mogyoróvaj", false), IngredientCheckbox("Fűszerpaprika", false), IngredientCheckbox("Alma", false)))
     )
-
-    private var tickedCount = 0
 
     private val addNewStore = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -77,12 +99,11 @@ class ShoppingFragmentImpl(var ingredients: ArrayList<String>) : Fragment(), Sho
                 })
             } else {
                 stores.add(store)
-                adapter?.notifyItemInserted(stores.size-1)
+                checkBoxesAdapter?.notifyItemInserted(stores.size-1)
             }
 
             if (::footerAdapter.isInitialized) {
-                // Log an error or ensure proper initialization
-                footerAdapter.showFooter(true)
+                footerAdapter.showFooter(true) //use interface
                 SetEmptyPageVisibilty()
             }
         }
@@ -108,17 +129,13 @@ class ShoppingFragmentImpl(var ingredients: ArrayList<String>) : Fragment(), Sho
     ): View? {
         // Inflate the layout
         val rootView = inflater.inflate(R.layout.shopping_fragment, container, false)
+        restoreStates(savedInstanceState)
 
         // Get empty layout to make it visible if nothing in shopping list for the first time
         emptyPageView = rootView.findViewById(R.id.empty_shopping_list_page)
         SetEmptyPageVisibilty()
 
-        // Set the Purchased bottom to be on the bottom of the list
-        footerAdapter = FooterAdapter(onButtonClick = {
-            Toast.makeText(context, getString(R.string.purchased_button_pressed), Toast.LENGTH_SHORT).show()
-        }, this, requireContext())
-
-        adapter = StoreCheckBoxAdapter(footerAdapter, this)
+        checkBoxesAdapter = StoreCheckBoxAdapter(footerAdapter, this)
 
         /*
             TODO make http GET call to backend and upload list to stores variable
@@ -127,9 +144,8 @@ class ShoppingFragmentImpl(var ingredients: ArrayList<String>) : Fragment(), Sho
             footerAdapter.showFooter(true)
         }
 
-
         // Combine adapters using ConcatAdapter
-        val concatAdapter = ConcatAdapter(adapter, footerAdapter)
+        val concatAdapter = ConcatAdapter(checkBoxesAdapter, footerAdapter)
 
         val recyclerView: RecyclerView = rootView.findViewById(R.id.rvParent)
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -145,9 +161,12 @@ class ShoppingFragmentImpl(var ingredients: ArrayList<String>) : Fragment(), Sho
             if (stores.size > 0) {
                 if (allChecked) {
                     allChecked = false
+                    tickedCount = 0 //reset to 0 selection, when everything was ticked off with the button : FIX for button showing everything was purchased even though nothing was ticked
                     Toast.makeText(context, getString(R.string.check_all_unpressed), Toast.LENGTH_SHORT).show()
                 } else {
                     allChecked = true
+                    tickedCount = 0 //reset to 0 selection, when everything was ticked off with the button
+
                     Toast.makeText(context, getString(R.string.check_all_pressed), Toast.LENGTH_SHORT).show()
                 }
             } else {
@@ -161,13 +180,14 @@ class ShoppingFragmentImpl(var ingredients: ArrayList<String>) : Fragment(), Sho
                 }
             }
 
-            adapter?.notifyDataSetChanged() // Notify the adapter to update the UI
+            checkBoxesAdapter?.notifyDataSetChanged() // Notify the adapter to update the UI
 
             onAddButtonClicked()
         }
 
         newStoreCheckBoxButton = rootView.findViewById(R.id.fab_opt2)
         newStoreCheckBoxButton.setOnClickListener {
+            val ingredients = viewModel.ingredients
             val intent = Intent(context, AddParentChildActivity::class.java)
             intent.putStringArrayListExtra("ingredients_list",ingredients)
             intent.putStringArrayListExtra("stores",GetStoresNames())
@@ -179,6 +199,23 @@ class ShoppingFragmentImpl(var ingredients: ArrayList<String>) : Fragment(), Sho
         return rootView
     }
 
+    private fun restoreStates(savedInstanceState: Bundle?) {
+        //restoring variables if config change happens (light-dark-mode switch)
+        addButtonClicked = savedInstanceState?.getBoolean("addButtonClicked") ?: false
+        allChecked = savedInstanceState?.getBoolean("allChecked") ?: false
+        tickedCount = savedInstanceState?.getInt("tickedCount") ?: 0
+
+        // Restore the state of the checkboxes if available
+        savedInstanceState?.let {
+            for (store in stores) {
+                for (ingredient in store.ingredients) {
+                    ingredient.isChecked =
+                        it.getBoolean("${store.storeName}_${ingredient.title}", false)
+                }
+            }
+        }
+    }
+
     private fun GetStoresNames(): ArrayList<String>? {
         var storesNames = ArrayList<String>()
         stores.forEach({checkboxElement-> storesNames.add(checkboxElement.storeName)})
@@ -186,10 +223,10 @@ class ShoppingFragmentImpl(var ingredients: ArrayList<String>) : Fragment(), Sho
     }
 
     private fun onAddButtonClicked() {
-        setVisibility(clicked)
-        setAnimation(clicked)
-        setClickable(clicked)
-        clicked = !clicked
+        setVisibility(addButtonClicked)
+        setAnimation(addButtonClicked)
+        setClickable(addButtonClicked)
+        addButtonClicked = !addButtonClicked
     }
 
     private fun setAnimation(clicked: Boolean) {
@@ -230,6 +267,11 @@ class ShoppingFragmentImpl(var ingredients: ArrayList<String>) : Fragment(), Sho
         } else {
             emptyPageView.visibility = View.INVISIBLE
         }
+    }
+
+    override fun checkIngredient(storePosition: Int, ingredientPosition: Int, value: Boolean) {
+        stores[storePosition].ingredients[ingredientPosition].isChecked = value
+        footerAdapter.reloadShoppingFragment(this)
     }
 
     override fun getStores(): MutableList<StoreCheckBox> {

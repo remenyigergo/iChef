@@ -1,8 +1,12 @@
 package com.example.ichef.modules
 
 import android.app.Application
+import android.widget.Toast
+import com.example.ichef.R
+import com.example.ichef.adapters.FooterAdapter
 import com.example.ichef.fragments.HomeFragment
 import com.example.ichef.fragments.SearchFragment
+import com.example.ichef.fragments.ShoppingFragment
 import com.example.ichef.fragments.ShoppingFragmentImpl
 import dagger.Module
 import dagger.Provides
@@ -36,8 +40,9 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesShoppingFragment(ingredients: ArrayList<String>) : ShoppingFragmentImpl {
-        return ShoppingFragmentImpl(ingredients)
+    fun providesShoppingFragment() : ShoppingFragmentImpl {
+        var shoppingFragment = ShoppingFragmentImpl()
+        return shoppingFragment
     }
 
     @Provides
@@ -50,5 +55,13 @@ object AppModule {
     @Singleton
     fun providesSearchFragment() : SearchFragment {
         return SearchFragment()
+    }
+
+    @Provides
+    @Singleton
+    fun providesFooterAdapter(shoppingFragment: ShoppingFragmentImpl, app: Application) : FooterAdapter {
+        return FooterAdapter(onButtonClick = {
+            Toast.makeText(app.applicationContext, app.getString(R.string.purchased_button_pressed), Toast.LENGTH_SHORT).show()
+        }, shoppingFragment, app.applicationContext)
     }
 }
