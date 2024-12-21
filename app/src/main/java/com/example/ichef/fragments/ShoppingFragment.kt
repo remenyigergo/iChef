@@ -11,4 +11,7 @@ interface ShoppingFragment {
     fun setAllChecked(value: Boolean)
     fun SetEmptyPageVisibilty()
     fun checkIngredient(storePosition: Int, ingredientPosition: Int, value: Boolean)
+
+    //crud
+    fun removeStore(index: Int)
 }

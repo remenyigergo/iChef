@@ -40,6 +40,7 @@ class StoreCheckBoxAdapter(private var footerAdapter: FooterAdapter, private var
         parentViewHolder.deleteButton.setOnClickListener {
             Log.d("ParentAdapter", "Delete button clicked for position $position")
             stores = shoppingFragment.getStores()
+            shoppingFragment.removeStore(position)
             stores.removeAt(position)
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, stores.size)

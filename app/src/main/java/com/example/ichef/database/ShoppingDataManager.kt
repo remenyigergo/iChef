@@ -12,11 +12,30 @@ class ShoppingDataManager(context: Context) {
     // Insert a store
     fun insertStore(storeName: String): Long {
         val db = dbHelper.writableDatabase
+
+        // Check if the store already exists
+        val cursor = db.query(
+            DbHelper.TABLE_STORE,
+            arrayOf(DbHelper.COLUMN_STORE_ID),
+            "${DbHelper.COLUMN_STORE_NAME} = ?",
+            arrayOf(storeName),
+            null, null, null
+        )
+
+        // If the store already exists, return -1 (or any other indication you prefer)
+        if (cursor.moveToFirst()) {
+            cursor.close() // Don't forget to close the cursor
+            return -1 // Indicating that the store already exists
+        }
+        cursor.close()
+
+        // If the store doesn't exist, insert the store
         val values = ContentValues().apply {
             put(DbHelper.COLUMN_STORE_NAME, storeName)
         }
         return db.insert(DbHelper.TABLE_STORE, null, values)
     }
+
 
     // Insert an ingredient
     fun insertIngredient(storeId: Long, ingredientName: String, isChecked: Boolean) {
@@ -94,4 +113,51 @@ class ShoppingDataManager(context: Context) {
         db.delete(DbHelper.TABLE_INGREDIENT, "${DbHelper.COLUMN_INGREDIENT_STORE_ID} = ?", arrayOf(storeId.toString()))
         db.delete(DbHelper.TABLE_STORE, "${DbHelper.COLUMN_STORE_ID} = ?", arrayOf(storeId.toString()))
     }
+
+    fun deleteStoreWithIngredientsByName(storeName: String) {
+        val db = dbHelper.writableDatabase
+
+        // Start a transaction to ensure both deletions occur together
+        db.beginTransaction()
+        try {
+            // Get the store ID based on the store name
+            val cursor = db.query(
+                DbHelper.TABLE_STORE,
+                arrayOf(DbHelper.COLUMN_STORE_ID),
+                "${DbHelper.COLUMN_STORE_NAME} = ?",
+                arrayOf(storeName),
+                null,
+                null,
+                null
+            )
+
+            var storeId: Long? = null
+            if (cursor.moveToFirst()) {
+                storeId = cursor.getLong(cursor.getColumnIndexOrThrow(DbHelper.COLUMN_STORE_ID))
+            }
+            cursor.close()
+
+            if (storeId != null) {
+                // Delete all ingredients associated with the store
+                db.delete(
+                    DbHelper.TABLE_INGREDIENT,
+                    "${DbHelper.COLUMN_INGREDIENT_STORE_ID} = ?",
+                    arrayOf(storeId.toString())
+                )
+
+                // Delete the store itself
+                db.delete(
+                    DbHelper.TABLE_STORE,
+                    "${DbHelper.COLUMN_STORE_NAME} = ?",
+                    arrayOf(storeName)
+                )
+            }
+
+            // Mark transaction as successful
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+        }
+    }
+
 }

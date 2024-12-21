@@ -76,11 +76,6 @@ class ShoppingFragmentImpl : Fragment(), ShoppingFragment {
     * This is only to make a mock GET from DB, should be empty from start or GET API should load up these
     * */
     private var stores : MutableList<StoreCheckBox> = mutableListOf()
-//    private var stores = mutableListOf(
-//        StoreCheckBox("Aldi", mutableListOf(IngredientCheckbox("Kenyér", false), IngredientCheckbox("Római kömény", false))),
-//        StoreCheckBox("Lidl", mutableListOf(IngredientCheckbox("Paradicsom", false), IngredientCheckbox("Paprika", false), IngredientCheckbox("Olaj", false), IngredientCheckbox("Narancs", false), IngredientCheckbox("Citrom", false), IngredientCheckbox("Fahéj", false))),
-//        StoreCheckBox("Spar", mutableListOf(IngredientCheckbox("Mogyoróvaj", false), IngredientCheckbox("Fűszerpaprika", false), IngredientCheckbox("Alma", false)))
-//    )
 
     private val addNewStore = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -134,8 +129,8 @@ class ShoppingFragmentImpl : Fragment(), ShoppingFragment {
     ): View? {
         // Inflate the layout
         val rootView = inflater.inflate(R.layout.shopping_fragment, container, false)
-        restoreStates(savedInstanceState)
         loadStoresFromDatabase() // todo temporary db while backend not ready
+        restoreStates(savedInstanceState)
         
         // Get empty layout to make it visible if nothing in shopping list for the first time
         emptyPageView = rootView.findViewById(R.id.empty_shopping_list_page)
@@ -284,6 +279,12 @@ class ShoppingFragmentImpl : Fragment(), ShoppingFragment {
     override fun checkIngredient(storePosition: Int, ingredientPosition: Int, value: Boolean) {
         stores[storePosition].ingredients[ingredientPosition].isChecked = value
         footerAdapter.reloadShoppingFragment(this)
+    }
+
+    override fun removeStore(storeIndex: Int) {
+        val storeName = stores[storeIndex].storeName
+        storeDatabase.deleteStoreWithIngredientsByName(storeName)
+        Toast.makeText(context, "Store deleted successfully", Toast.LENGTH_SHORT).show()
     }
 
     override fun getStores(): MutableList<StoreCheckBox> {
