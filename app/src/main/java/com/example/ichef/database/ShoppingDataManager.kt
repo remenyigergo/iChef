@@ -4,8 +4,9 @@ import android.content.Context
 import android.content.ContentValues
 import com.example.ichef.models.IngredientCheckbox
 import com.example.ichef.models.StoreCheckBox
+import javax.inject.Inject
 
-class ShoppingDataManager(context: Context) {
+class ShoppingDataManager @Inject constructor(context: Context) {
 
     private val dbHelper = DbHelper(context)
 

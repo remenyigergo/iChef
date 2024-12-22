@@ -1,4 +1,6 @@
 package com.example.ichef.adapters
+
+import android.app.Application
 import android.content.Context
 import android.view.ViewGroup
 import android.widget.Button
@@ -6,10 +8,15 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.R
-import com.example.ichef.fragments.ShoppingFragment
+import com.example.ichef.adapters.interfaces.FooterAdapter
+import javax.inject.Inject
 
-class FooterAdapter(private val onButtonClick: () -> Unit, private var shoppingFragment: ShoppingFragment, private val context: Context) :
-    RecyclerView.Adapter<FooterAdapter.FooterViewHolder>() {
+class FooterAdapterImpl @Inject constructor(
+    private var sharedData: SharedData,
+    private val context: Application
+) :
+    FooterAdapter,
+    RecyclerView.Adapter<FooterAdapterImpl.FooterViewHolder>() {
 
     private var isFooterVisible: Boolean = false
 
@@ -33,16 +40,19 @@ class FooterAdapter(private val onButtonClick: () -> Unit, private var shoppingF
 
     override fun onBindViewHolder(holder: FooterViewHolder, position: Int) {
         holder.purchasedButton.setOnClickListener {
-            if (shoppingFragment.getTickedCount() == 0 && !shoppingFragment.isAllChecked()) {
-               Toast.makeText(context,
-                   context.getString(R.string.nothing_is_ticked), Toast.LENGTH_SHORT).show()
+            if (sharedData.tickedCount == 0 && !sharedData.isAllChecked()) {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.nothing_is_ticked), Toast.LENGTH_SHORT
+                ).show()
             } else {
-                onButtonClick()
+                // clicked button
+                Toast.makeText(context.applicationContext, context.getString(R.string.purchased_button_pressed), Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    fun showFooter(show: Boolean){ // TODO move this to interface
+    override fun showFooter(show: Boolean) {
         isFooterVisible = show
         notifyDataSetChanged()
     }
@@ -50,9 +60,5 @@ class FooterAdapter(private val onButtonClick: () -> Unit, private var shoppingF
     // Only one footer item, when at least one parent checkbox is existing
     override fun getItemCount(): Int {
         return if (isFooterVisible) 1 else 0
-    }
-
-    fun reloadShoppingFragment(frag: ShoppingFragment) { //TODO move this to interface
-        shoppingFragment = frag
     }
 }

@@ -9,9 +9,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.R
-import com.example.ichef.fragments.ShoppingFragment
+import com.example.ichef.adapters.interfaces.FooterAdapter
+import com.example.ichef.adapters.interfaces.StoreCheckboxAdapter
+import javax.inject.Inject
 
-class StoreCheckBoxAdapter(private var footerAdapter: FooterAdapter, private var shoppingFragment: ShoppingFragment) : RecyclerView.Adapter<StoreCheckBoxAdapter.ParentViewHolder>() {
+class StoreCheckBoxAdapterImpl @Inject constructor(
+    private var footerAdapter: FooterAdapter,
+    private var sharedData: SharedData
+) : StoreCheckboxAdapter, RecyclerView.Adapter<StoreCheckBoxAdapterImpl.ParentViewHolder>() {
 
     inner class ParentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.tvParentTitle)
@@ -26,21 +31,21 @@ class StoreCheckBoxAdapter(private var footerAdapter: FooterAdapter, private var
     }
 
     override fun onBindViewHolder(parentViewHolder: ParentViewHolder, position: Int) {
-        var stores = shoppingFragment.getStores()
+        var stores = sharedData.stores
         parentViewHolder.title.text = stores[position].storeName
 
         // Set up child RecyclerView
         parentViewHolder.recyclerView.layoutManager = LinearLayoutManager(parentViewHolder.itemView.context)
         parentViewHolder.recyclerView.adapter =
-            IngredientCheckBoxAdapter(shoppingFragment, position, { child, isChecked ->
+            IngredientCheckBoxAdapterImpl(sharedData, position, { child, isChecked ->
                 child.isChecked = isChecked
             }, parentViewHolder)
 
         // Handle parent deletion
         parentViewHolder.deleteButton.setOnClickListener {
             Log.d("ParentAdapter", "Delete button clicked for position $position")
-            stores = shoppingFragment.getStores()
-            shoppingFragment.removeStore(position)
+            stores = sharedData.stores
+            sharedData.removeStore(position)
             stores.removeAt(position)
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, stores.size)
@@ -49,13 +54,13 @@ class StoreCheckBoxAdapter(private var footerAdapter: FooterAdapter, private var
             if (stores.size == 0) {
                 footerAdapter.showFooter(false)
                 //set allClicked to false because no element is presented
-                shoppingFragment.setAllChecked(false)
-                shoppingFragment.SetEmptyPageVisibilty()
+                sharedData.allChecked = false
+                sharedData.SetEmptyPageVisibilty()
             }
         }
     }
 
-    override fun getItemCount() = shoppingFragment.getStores().size
+    override fun getItemCount() = sharedData.getStoresSize()
 }
 
 

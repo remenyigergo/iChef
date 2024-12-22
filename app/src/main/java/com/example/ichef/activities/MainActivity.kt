@@ -9,6 +9,7 @@ import com.example.ichef.R
 import com.example.ichef.fragments.HomeFragment
 import com.example.ichef.fragments.SearchFragment
 import com.example.ichef.fragments.ShoppingFragmentImpl
+import com.example.ichef.fragments.interfaces.ShoppingFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -16,19 +17,13 @@ import javax.inject.Inject
 lateinit var fragments: List<Fragment>
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity @Inject constructor(
+) : AppCompatActivity() {
 
-    @Inject
-    lateinit var ingredients: ArrayList<String>
-
-    @Inject
-    lateinit var shoppingFragment: ShoppingFragmentImpl
-
-    @Inject
-    lateinit var homeFragment: HomeFragment
-
-    @Inject
-    lateinit var searchFragment: SearchFragment
+    @Inject lateinit var ingredients: ArrayList<String>
+    @Inject lateinit var shoppingFragment: ShoppingFragmentImpl
+    @Inject lateinit var homeFragment: HomeFragment
+    @Inject lateinit var searchFragment: SearchFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
