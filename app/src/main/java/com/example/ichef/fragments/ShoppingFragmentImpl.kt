@@ -2,7 +2,9 @@ package com.example.ichef.fragments
 
 import android.app.Activity
 import android.app.Application
+import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -45,13 +47,15 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
     lateinit var sharedData: SharedData
     @Inject
     lateinit var app: Application
+    @Inject
+    lateinit var storeDatabase: ShoppingDataManager
 
     private val rotateOpen: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.rotate_open_anim) }
     private val rotateClose: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.rotate_close_anim) }
     private val fromBottom: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.from_bottom_anim) }
     private val toBottom: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.to_bottom_anim) }
 
-    private val storeDatabase by lazy { ShoppingDataManager(app.applicationContext) }
+
 
     private lateinit var fab: FloatingActionButton
     private lateinit var tickAllButton: FloatingActionButton
@@ -112,6 +116,7 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
                 store.ingredients.forEach({ ingredient ->
                     sharedData.stores[storeIndex].ingredients.add(ingredient)
                 })
+                storeDatabase.storeNewIngredientsInStore(store.storeName, ingredients)
             } else {
                 sharedData.stores.add(store)
                 checkBoxesAdapter?.notifyItemInserted(sharedData.stores.size-1)
@@ -120,7 +125,7 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
 
             // todo ajajj not init exception
             footerAdapter.showFooter(true) //use interface
-
+            sharedData.SetEmptyPageVisibilty()
         }
     }
 

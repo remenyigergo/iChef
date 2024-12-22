@@ -23,4 +23,5 @@
     <string name="ingredient_name">Írd ide a hozzávaló nevét</string>
     <string name="your_shopping_list_is_empty">Üres a bevásárló listád</string>
     <string name="start_adding_new_ingredients">Vegyél fel új hozzávalókat</string>
+    <string name="store_deleted_successfully">Recept/bolt törölve</string>
 </resources>

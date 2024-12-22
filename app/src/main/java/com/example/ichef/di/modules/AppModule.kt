@@ -11,6 +11,7 @@ import com.example.ichef.adapters.SharedData
 import com.example.ichef.adapters.StoreCheckBoxAdapterImpl
 import com.example.ichef.adapters.interfaces.FooterAdapter
 import com.example.ichef.adapters.interfaces.StoreCheckboxAdapter
+import com.example.ichef.database.ShoppingDataManager
 import com.example.ichef.fragments.HomeFragment
 import com.example.ichef.fragments.SearchFragment
 import com.example.ichef.fragments.ShoppingFragmentImpl
@@ -74,8 +75,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesSharedData(app: Application) : SharedData {
-        return SharedData(app)
+    fun providesSharedData(app: Application, shoppingDataManager: ShoppingDataManager) : SharedData {
+        return SharedData(app,shoppingDataManager)
     }
 
     @Provides
@@ -93,4 +94,10 @@ object AppModule {
     @Provides
     @ApplicationContext
     fun provideApplicationContext(app: Application): Context = app.applicationContext
+
+    @Provides
+    @Singleton
+    fun provideShoppingDataManager(app: Application) : ShoppingDataManager {
+        return ShoppingDataManager(app.applicationContext)
+    }
 }

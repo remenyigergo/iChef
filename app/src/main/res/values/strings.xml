@@ -23,4 +23,5 @@
     <string name="ingredient_name">Ingredient name here</string>
     <string name="your_shopping_list_is_empty">Your shopping list is empty</string>
     <string name="start_adding_new_ingredients">Start adding new ingredients</string>
+    <string name="store_deleted_successfully">Store deleted successfully</string>
 </resources>

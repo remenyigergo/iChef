@@ -4,11 +4,14 @@ import android.app.Application
 import android.view.View
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.example.ichef.R
+import com.example.ichef.database.ShoppingDataManager
 import com.example.ichef.models.StoreCheckBox
 import javax.inject.Inject
 
 class SharedData @Inject constructor(
-    private var app: Application
+    private var app: Application,
+    private var storeDb : ShoppingDataManager
 ) {
     var stores : MutableList<StoreCheckBox> = mutableListOf()
     lateinit var emptyPageView: ConstraintLayout
@@ -35,8 +38,9 @@ class SharedData @Inject constructor(
 
     fun removeStore(storeIndex: Int) {
         val storeName = stores[storeIndex].storeName
-        //storeDatabase.deleteStoreWithIngredientsByName(storeName)
-        Toast.makeText(app.applicationContext, "Store deleted successfully", Toast.LENGTH_SHORT).show()
+        storeDb.deleteStoreWithIngredientsByName(storeName)
+        Toast.makeText(app.applicationContext,
+            app.applicationContext.getString(R.string.store_deleted_successfully), Toast.LENGTH_SHORT).show()
     }
 
     fun incrementTick() {

@@ -20,9 +20,4 @@ class SearchFragment : Fragment() {
         return inflater.inflate(R.layout.search_fragment, container, false)
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        Log.d("SearchFragment", "SearchFragment onAttach called.")
-    }
 }

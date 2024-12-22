@@ -49,6 +49,49 @@ class ShoppingDataManager @Inject constructor(context: Context) {
         db.insert(DbHelper.TABLE_INGREDIENT, null, values)
     }
 
+    // update a store with a new ingredient
+    fun storeNewIngredientsInStore(storeName: String, ingredients: List<String>) {
+        val db = dbHelper.writableDatabase
+
+        // Query the store ID based on the store name
+        val cursor = db.query(
+            DbHelper.TABLE_STORE,
+            arrayOf(DbHelper.COLUMN_STORE_ID),
+            "${DbHelper.COLUMN_STORE_NAME} = ?",
+            arrayOf(storeName),
+            null, null, null
+        )
+
+        var storeId: Long? = null
+        if (cursor.moveToFirst()) {
+            storeId = cursor.getLong(cursor.getColumnIndexOrThrow(DbHelper.COLUMN_STORE_ID))
+        }
+        cursor.close()
+
+        if (storeId != null) {
+            // Store exists, insert the list of ingredients
+            db.beginTransaction()
+            try {
+                for (ingredient in ingredients) {
+                    val values = ContentValues().apply {
+                        put(DbHelper.COLUMN_INGREDIENT_NAME, ingredient)
+                        put(DbHelper.COLUMN_INGREDIENT_CHECKED, 0) // Default to unchecked
+                        put(DbHelper.COLUMN_INGREDIENT_STORE_ID, storeId)
+                    }
+                    db.insert(DbHelper.TABLE_INGREDIENT, null, values)
+                }
+                db.setTransactionSuccessful()
+            } finally {
+                db.endTransaction()
+            }
+        } else {
+            // Store does not exist, handle this scenario
+            throw IllegalArgumentException("Store with name $storeName does not exist.")
+        }
+    }
+
+
+
     // Retrieve all stores with ingredients
     fun getStores(): List<StoreCheckBox> {
         val db = dbHelper.readableDatabase

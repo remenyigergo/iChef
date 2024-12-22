@@ -74,14 +74,29 @@ class MainActivity @Inject constructor(
     // Loads up a given fragment
     private fun loadFragment(fragment: Fragment, containerId: Int) {
         val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(containerId, fragment)
         transaction.setReorderingAllowed(true)
 
-        fragments.forEach { frg ->
-            if (frg == fragment) transaction.show(frg) else transaction.hide(frg)
+        // Check if the fragment is already in the FragmentManager
+        val existingFragment = supportFragmentManager.findFragmentByTag(fragment::class.java.name)
+
+        if (existingFragment != null) {
+            // If the fragment exists, show it
+            transaction.show(existingFragment)
+        } else {
+            // If the fragment doesn't exist, add it to the FragmentManager with a tag
+            transaction.add(containerId, fragment, fragment::class.java.name)
         }
 
+        // Hide all other fragments
+        supportFragmentManager.fragments.forEach { frg ->
+            if (frg != existingFragment && frg != fragment) {
+                transaction.hide(frg)
+            }
+        }
+
+        // Commit the transaction
         transaction.commit()
     }
+
 
 }
