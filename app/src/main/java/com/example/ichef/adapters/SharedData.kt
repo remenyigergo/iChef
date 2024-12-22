@@ -43,6 +43,10 @@ class SharedData @Inject constructor(
             app.applicationContext.getString(R.string.store_deleted_successfully), Toast.LENGTH_SHORT).show()
     }
 
+    fun removeIngredient(storeName: String, ingredient: String) {
+        storeDb.deleteIngredientFromStore(storeName, ingredient)
+    }
+
     fun incrementTick() {
         tickedCount++
     }

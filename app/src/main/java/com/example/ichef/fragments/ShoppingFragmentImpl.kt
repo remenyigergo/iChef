@@ -116,12 +116,11 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
                 store.ingredients.forEach({ ingredient ->
                     if (!sharedData.stores[storeIndex].ingredients.contains(ingredient)) {
                         sharedData.stores[storeIndex].ingredients.add(ingredient)
+                        storeDatabase.storeNewIngredientsInStore(store.storeName, ingredients)
                     } else {
                         Toast.makeText(app.applicationContext, "${ingredient.title} is already added", Toast.LENGTH_SHORT).show()
                     }
-
                 })
-                storeDatabase.storeNewIngredientsInStore(store.storeName, ingredients)
             } else {
                 sharedData.stores.add(store)
                 checkBoxesAdapter?.notifyItemInserted(sharedData.stores.size-1)

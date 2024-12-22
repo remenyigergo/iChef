@@ -204,4 +204,39 @@ class ShoppingDataManager @Inject constructor(context: Context) {
         }
     }
 
+    fun deleteIngredientFromStore(storeName: String, ingredientName: String) {
+        val db = dbHelper.writableDatabase
+
+        // Query the store ID based on the store name
+        val cursor = db.query(
+            DbHelper.TABLE_STORE,
+            arrayOf(DbHelper.COLUMN_STORE_ID),
+            "${DbHelper.COLUMN_STORE_NAME} = ?",
+            arrayOf(storeName),
+            null, null, null
+        )
+
+        var storeId: Long? = null
+        if (cursor.moveToFirst()) {
+            storeId = cursor.getLong(cursor.getColumnIndexOrThrow(DbHelper.COLUMN_STORE_ID))
+        }
+        cursor.close()
+
+        if (storeId != null) {
+            // Delete the ingredient associated with the store
+            val rowsDeleted = db.delete(
+                DbHelper.TABLE_INGREDIENT,
+                "${DbHelper.COLUMN_INGREDIENT_STORE_ID} = ? AND ${DbHelper.COLUMN_INGREDIENT_NAME} = ?",
+                arrayOf(storeId.toString(), ingredientName)
+            )
+
+            if (rowsDeleted == 0) {
+                throw IllegalArgumentException("Ingredient '$ingredientName' not found in store '$storeName'.")
+            }
+        } else {
+            throw IllegalArgumentException("Store with name '$storeName' does not exist.")
+        }
+    }
+
+
 }

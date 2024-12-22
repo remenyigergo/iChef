@@ -76,6 +76,7 @@ class IngredientCheckBoxAdapterImpl @Inject constructor(
             Log.i("ChildAdapter", "Deleting child in pos: $position")
             var stores = sharedData.stores
             var tickedCount = sharedData.tickedCount
+            sharedData.removeIngredient(stores[parentPosition].storeName, stores[parentPosition].ingredients[position].title) //todo inject DB here and directly delete not through shared
             stores[parentPosition].ingredients.removeAt(position)
 
             notifyItemRemoved(position)
