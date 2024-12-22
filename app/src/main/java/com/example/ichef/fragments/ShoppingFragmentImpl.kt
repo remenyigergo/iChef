@@ -114,7 +114,12 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
             var storeIndex = getStoreIndex(storeName)
             if (storeIndex != -1) {
                 store.ingredients.forEach({ ingredient ->
-                    sharedData.stores[storeIndex].ingredients.add(ingredient)
+                    if (!sharedData.stores[storeIndex].ingredients.contains(ingredient)) {
+                        sharedData.stores[storeIndex].ingredients.add(ingredient)
+                    } else {
+                        Toast.makeText(app.applicationContext, "${ingredient.title} is already added", Toast.LENGTH_SHORT).show()
+                    }
+
                 })
                 storeDatabase.storeNewIngredientsInStore(store.storeName, ingredients)
             } else {
