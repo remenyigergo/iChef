@@ -4,20 +4,21 @@ package com.example.ichef.components
 import android.content.Context
 import android.view.LayoutInflater
 import android.widget.Button
+import android.widget.Toast
 import com.example.ichef.R
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
 
 class ShoppingFragmentBottomSheetDialogImpl @Inject constructor(
-    @ActivityContext private val context: Context?,
-    private var layoutInflater: LayoutInflater
+    @ActivityContext private val context: Context?
 ): ShoppingFragmentBottomSheetDialog {
 
     override fun show() {
 
         if (context is Context) {
 
+            val layoutInflater = LayoutInflater.from(context)
             val bottomSheetDialog = BottomSheetDialog(context)
 
             // Inflate the layout
@@ -31,17 +32,17 @@ class ShoppingFragmentBottomSheetDialogImpl @Inject constructor(
 
             button1.setOnClickListener {
                 // Handle Button 1 click
-                bottomSheetDialog.dismiss()
+                Toast.makeText(context, "Button 1 pressed", Toast.LENGTH_SHORT).show()
             }
 
             button2.setOnClickListener {
                 // Handle Button 2 click
-                bottomSheetDialog.dismiss()
+                Toast.makeText(context, "Button 2 pressed", Toast.LENGTH_SHORT).show()
             }
 
             button3.setOnClickListener {
                 // Handle Button 3 click
-                bottomSheetDialog.dismiss()
+                Toast.makeText(context, "Button 3 pressed", Toast.LENGTH_SHORT).show()
             }
 
             // Show the dialog

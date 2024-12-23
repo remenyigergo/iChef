@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    tools:context=".components.ShoppingFragmentBottomSheetDialogImpl">
+    android:layout_height="wrap_content">
 
     <!-- Handle at the top of the bottom sheet with rounded corners -->
     <View
@@ -13,7 +12,6 @@
         android:layout_height="5dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
         android:background="@drawable/bottom_sheet_dialog_handle"
         />
 
@@ -22,14 +20,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp"
-        android:paddingBottom="32dp"> <!-- Added bottom padding -->
+        android:padding="16dp">
 
         <Button
             android:id="@+id/button1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="40dp"
             android:text="Button 1" />
 
         <Button
