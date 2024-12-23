@@ -26,6 +26,7 @@ import com.example.ichef.adapters.SharedData
 import com.example.ichef.models.IngredientCheckbox
 import com.example.ichef.adapters.interfaces.FooterAdapter
 import com.example.ichef.adapters.interfaces.StoreCheckboxAdapter
+import com.example.ichef.components.ShoppingFragmentBottomSheetDialog
 import com.example.ichef.database.ShoppingDataManager
 import com.example.ichef.fragments.interfaces.ShoppingFragment
 import com.example.ichef.models.StoreCheckBox
@@ -42,13 +43,13 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
     lateinit var checkBoxesAdapter: StoreCheckboxAdapter
     @Inject
     lateinit var footerAdapter: FooterAdapter
-    //var concatAdapter: ConcatAdapter,
     @Inject
     lateinit var sharedData: SharedData
     @Inject
     lateinit var app: Application
     @Inject
     lateinit var storeDatabase: ShoppingDataManager
+
 
     private val rotateOpen: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.rotate_open_anim) }
     private val rotateClose: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.rotate_close_anim) }
@@ -153,6 +154,7 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
         val rootView = inflater.inflate(R.layout.shopping_fragment, container, false)
         loadStoresFromDatabase() // todo temporary db while backend not ready
         restoreStates(savedInstanceState)
+
         
         // Get empty layout to make it visible if nothing in shopping list for the first time
         sharedData.emptyPageView = rootView.findViewById(R.id.empty_shopping_list_page)
