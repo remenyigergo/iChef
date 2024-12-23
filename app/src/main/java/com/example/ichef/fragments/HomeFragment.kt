@@ -27,6 +27,15 @@ class HomeFragment : Fragment() {
 
         val rootView = inflater.inflate(R.layout.home_fragment, container, false)
 
+        val clickMeButton = rootView.findViewById<Button>(R.id.buttonHome)
+        clickMeButton.setOnClickListener({
+            if (isAdded) {
+                bottomSheetDialogController.show()
+            }
+        })
+
+
+
         return rootView
     }
 
@@ -34,9 +43,7 @@ class HomeFragment : Fragment() {
         super.onResume()
 
         // Handle dialog show when the fragment is resumed after configuration change (like theme change)
-        if (isAdded) {
-            bottomSheetDialogController.show()
-        }
+
     }
 
 }

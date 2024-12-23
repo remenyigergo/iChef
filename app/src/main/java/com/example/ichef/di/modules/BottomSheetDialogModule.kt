@@ -24,13 +24,6 @@ object BottomSheetDialogModule {
     fun provideShoppingFragmentBottomSheetDialog(
         homeFragment: HomeFragment
     ): ShoppingFragmentBottomSheetDialog {
-        return ShoppingFragmentBottomSheetDialogImpl(homeFragment.context, homeFragment.layoutInflater)
-    }
-
-    @Provides
-    @ActivityScoped
-    //@Named("shoppingFragmentBottomSheetDialog")
-    fun providesBottomSheetDialog(application: Application) : BottomSheetDialog {
-        return BottomSheetDialog(application.applicationContext)
+        return ShoppingFragmentBottomSheetDialogImpl(homeFragment.context)
     }
 }
