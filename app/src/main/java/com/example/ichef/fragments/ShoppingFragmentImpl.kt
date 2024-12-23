@@ -55,8 +55,6 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
     private val fromBottom: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.from_bottom_anim) }
     private val toBottom: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.to_bottom_anim) }
 
-
-
     private lateinit var fab: FloatingActionButton
     private lateinit var tickAllButton: FloatingActionButton
     private lateinit var newStoreCheckBoxButton: FloatingActionButton
@@ -114,11 +112,11 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
             var storeIndex = getStoreIndex(storeName)
             if (storeIndex != -1) {
                 store.ingredients.forEach({ ingredient ->
-                    if (!sharedData.stores[storeIndex].ingredients.contains(ingredient)) {
+                    if (sharedData.stores[storeIndex].ingredients.first{it.title == ingredient.title} == null) { //ingredient is not in sharedData's corresponding store so we can add this ingredient to the store
                         sharedData.stores[storeIndex].ingredients.add(ingredient)
                         storeDatabase.storeNewIngredientsInStore(store.storeName, ingredients)
                     } else {
-                        Toast.makeText(app.applicationContext, "${ingredient.title} is already added", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(app.applicationContext, "${ingredient.title} is already added to ${store.storeName}", Toast.LENGTH_SHORT).show()
                     }
                 })
             } else {
@@ -154,7 +152,7 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
         // Inflate the layout
         val rootView = inflater.inflate(R.layout.shopping_fragment, container, false)
         loadStoresFromDatabase() // todo temporary db while backend not ready
-        //restoreStates(savedInstanceState)
+        restoreStates(savedInstanceState)
         
         // Get empty layout to make it visible if nothing in shopping list for the first time
         sharedData.emptyPageView = rootView.findViewById(R.id.empty_shopping_list_page)

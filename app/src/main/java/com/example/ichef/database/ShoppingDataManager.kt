@@ -73,12 +73,26 @@ class ShoppingDataManager @Inject constructor(context: Context) {
             db.beginTransaction()
             try {
                 for (ingredient in ingredients) {
-                    val values = ContentValues().apply {
-                        put(DbHelper.COLUMN_INGREDIENT_NAME, ingredient)
-                        put(DbHelper.COLUMN_INGREDIENT_CHECKED, 0) // Default to unchecked
-                        put(DbHelper.COLUMN_INGREDIENT_STORE_ID, storeId)
+                    // Check if the ingredient already exists
+                    val ingredientCursor = db.query(
+                        DbHelper.TABLE_INGREDIENT,
+                        arrayOf(DbHelper.COLUMN_INGREDIENT_ID),
+                        "${DbHelper.COLUMN_INGREDIENT_NAME} = ? AND ${DbHelper.COLUMN_INGREDIENT_STORE_ID} = ?",
+                        arrayOf(ingredient, storeId.toString()),
+                        null, null, null
+                    )
+
+                    if (!ingredientCursor.moveToFirst()) {
+                        // Ingredient does not exist, so insert it
+                        val values = ContentValues().apply {
+                            put(DbHelper.COLUMN_INGREDIENT_NAME, ingredient)
+                            put(DbHelper.COLUMN_INGREDIENT_CHECKED, 0) // Default to unchecked
+                            put(DbHelper.COLUMN_INGREDIENT_STORE_ID, storeId)
+                        }
+                        db.insert(DbHelper.TABLE_INGREDIENT, null, values)
                     }
-                    db.insert(DbHelper.TABLE_INGREDIENT, null, values)
+
+                    ingredientCursor.close()
                 }
                 db.setTransactionSuccessful()
             } finally {
@@ -89,8 +103,6 @@ class ShoppingDataManager @Inject constructor(context: Context) {
             throw IllegalArgumentException("Store with name $storeName does not exist.")
         }
     }
-
-
 
     // Retrieve all stores with ingredients
     fun getStores(): List<StoreCheckBox> {
