@@ -112,7 +112,7 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
             var storeIndex = getStoreIndex(storeName)
             if (storeIndex != -1) {
                 store.ingredients.forEach({ ingredient ->
-                    if (sharedData.stores[storeIndex].ingredients.first{it.title == ingredient.title} == null) { //ingredient is not in sharedData's corresponding store so we can add this ingredient to the store
+                    if (sharedData.stores[storeIndex].ingredients.find{it.title == ingredient.title} == null) { //ingredient is not in sharedData's corresponding store so we can add this ingredient to the store
                         sharedData.stores[storeIndex].ingredients.add(ingredient)
                         storeDatabase.storeNewIngredientsInStore(store.storeName, ingredients)
                     } else {
