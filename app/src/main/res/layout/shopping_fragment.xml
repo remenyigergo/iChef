@@ -64,7 +64,7 @@
             android:tint="@color/white"
             android:visibility="invisible"
             app:backgroundTint="@color/topbar"
-            app:layout_constraintBottom_toTopOf="@id/fab"
+            app:layout_constraintBottom_toTopOf="@id/fab_opt2"
             app:layout_constraintRight_toRightOf="parent"
             />
 
@@ -80,7 +80,7 @@
             android:tint="@color/white"
             android:visibility="invisible"
             app:backgroundTint="@color/topbar"
-            app:layout_constraintBottom_toTopOf="@id/fab_opt1"
+            app:layout_constraintBottom_toTopOf="@id/fab"
             app:layout_constraintRight_toRightOf="parent"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
