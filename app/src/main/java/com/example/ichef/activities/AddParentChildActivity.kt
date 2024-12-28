@@ -37,6 +37,15 @@ class AddParentChildViewModel : ViewModel() {
             _childItems.value = this // Triggers observers
         }
     }
+
+    fun getLastChildItem() : String? {
+        if (_childItems.value != null && _childItems.value!!.size > 0) {
+            val lastChild = _childItems.value!!.lastOrNull()
+            if (lastChild == null || lastChild == "") return null
+        }
+
+        return ""
+    }
 }
 
 class AddParentChildActivity : AppCompatActivity() {
@@ -85,6 +94,11 @@ class AddParentChildActivity : AppCompatActivity() {
 
 
         addChildButton.setOnClickListener {
+            if (viewModel.getLastChildItem() == null) {
+                Toast.makeText(this, "Last item is empty.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             // Add a new child item (empty string for now)
             viewModel.addChildItem("")
 
