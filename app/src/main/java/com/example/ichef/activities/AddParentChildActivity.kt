@@ -50,10 +50,24 @@ class AddParentChildViewModel : ViewModel() {
 
 class AddParentChildActivity : AppCompatActivity() {
 
+    lateinit var recipeHintArray : ArrayList<String>
+    lateinit var ingredientHintArray : ArrayList<String>
+
     private val viewModel: AddParentChildViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        ingredientHintArray = arrayListOf(getString(R.string.tomato),
+            getString(R.string.potato),
+            getString(R.string.kiwi),
+            getString(R.string.apple), getString(R.string.broccoli), getString(R.string.avocado))
+
+        recipeHintArray = arrayListOf(getString(R.string.pad_thai),
+            getString(R.string.aldi),
+            getString(R.string.tesco), getString(R.string.french_toast),
+            getString(R.string.french_onion_soup), getString(R.string.kaufland))
+
         setContentView(R.layout.activity_add_parent_child)
 
         val parentTitleInput: EditText = findViewById(R.id.etParentTitle)
@@ -90,8 +104,6 @@ class AddParentChildActivity : AppCompatActivity() {
                 childContainer.removeViewAt(childContainer.childCount - 1)
             }
         }
-
-
 
         addChildButton.setOnClickListener {
             if (viewModel.getLastChildItem() == null) {
@@ -157,7 +169,7 @@ class AddParentChildActivity : AppCompatActivity() {
     private fun createChildInput(item: String, index: Int, ingredients: ArrayList<String>?): AutoCompleteTextView {
         return AutoCompleteTextView(this).apply {
             inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS
-            hint = applicationContext.getString(R.string.ingredient_name)
+            hint = "e.g.: ${ingredientHintArray.random()}"
             setText(item)
             SetAutoCompleteIngredientField(this, ingredients)
 
@@ -179,6 +191,7 @@ class AddParentChildActivity : AppCompatActivity() {
     private fun SetAutoCompleteStoresField(storesToShow: ArrayList<String>?) {
         if (storesToShow != null) {
             val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.etParentTitle)
+            autoCompleteTextView.hint = "e.g.: ${recipeHintArray.random()}"
 
             val adapter = ArrayAdapter(
                 this,
