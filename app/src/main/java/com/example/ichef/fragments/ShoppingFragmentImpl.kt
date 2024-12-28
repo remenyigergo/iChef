@@ -2,9 +2,7 @@ package com.example.ichef.fragments
 
 import android.app.Activity
 import android.app.Application
-import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,9 +12,9 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,13 +24,19 @@ import com.example.ichef.adapters.SharedData
 import com.example.ichef.models.IngredientCheckbox
 import com.example.ichef.adapters.interfaces.FooterAdapter
 import com.example.ichef.adapters.interfaces.StoreCheckboxAdapter
-import com.example.ichef.components.ShoppingFragmentBottomSheetDialog
+import com.example.ichef.clients.ShoppingListApi
+import com.example.ichef.clients.models.ShoppingListResult
+import com.example.ichef.clients.models.ShoppingListResultItem
 import com.example.ichef.database.ShoppingDataManager
+import com.example.ichef.di.modules.MockApi
 import com.example.ichef.fragments.interfaces.ShoppingFragment
 import com.example.ichef.models.StoreCheckBox
 import com.example.ichef.models.IngredientsViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 import javax.inject.Inject
 
 
@@ -49,6 +53,9 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
     lateinit var app: Application
     @Inject
     lateinit var storeDatabase: ShoppingDataManager
+    @Inject
+    @MockApi
+    lateinit var shoppingListApi: ShoppingListApi
 
 
     private val rotateOpen: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.rotate_open_anim) }
@@ -91,11 +98,6 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
         }
     }
 
-    /*
-    * This is only to make a mock GET from DB, should be empty from start or GET API should load up these
-    * */
-
-
     private val addNewStore = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -126,7 +128,6 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
                 saveStoreToDatabase(store)
             }
 
-            // todo ajajj not init exception
             footerAdapter.showFooter(true) //use interface
             sharedData.SetEmptyPageVisibilty()
         }
@@ -160,9 +161,23 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
         sharedData.emptyPageView = rootView.findViewById(R.id.empty_shopping_list_page)
         sharedData.SetEmptyPageVisibilty()
 
-        /*
-            TODO make http GET call to backend and upload list to stores variable
-        */
+        //var backendResponse : ShoppingListResult
+        lifecycleScope.launch {
+            val shoppingListResponse = try {
+                shoppingListApi.getShoppingList(1)
+            } catch (e: IOException) {
+                Log.e("ShoppingFragmentImpl", "onCreateView: IOException, you might not have internet access.", )
+                return@launch
+            } catch (e: HttpException) {
+                Log.e("ShoppingFragmentImpl", "onCreateView: HTTPException, unexpected response.", )
+                return@launch
+            }
+
+            Log.i("ShoppingFragmentImpl", "$shoppingListResponse")
+        }
+
+
+
         if (sharedData.stores.size > 0) {
             footerAdapter.showFooter(true)
         }

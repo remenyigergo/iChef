@@ -65,4 +65,11 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
     implementation("androidx.fragment:fragment-ktx:1.8.5")
+
+    // for API calls
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    // and for converting responses/requests
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    //mocking APIs
+    implementation("co.infinum:retromock:1.1.1")
 }
