@@ -1,7 +1,7 @@
 package com.example.ichef.di.modules
 
 import co.infinum.retromock.Retromock
-import com.example.ichef.clients.ShoppingListApi
+import com.example.ichef.clients.apis.ShoppingListApi
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
@@ -21,13 +21,13 @@ object RetrofitInstance {
     @Provides
     @Singleton
     fun providesRetrofit(): Retrofit {
-//        val gson = GsonBuilder()
-//            .setLenient() // Optional, for permissive parsing
-//            .create()
+        val gson = GsonBuilder()
+            .setLenient() // Optional, for permissive parsing
+            .create()
 
         return Retrofit.Builder()
             .baseUrl(BACKEND_URL)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
 

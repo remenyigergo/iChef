@@ -10,10 +10,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,9 +29,9 @@ import com.example.ichef.adapters.SharedData
 import com.example.ichef.models.IngredientCheckbox
 import com.example.ichef.adapters.interfaces.FooterAdapter
 import com.example.ichef.adapters.interfaces.StoreCheckboxAdapter
-import com.example.ichef.clients.ShoppingListApi
-import com.example.ichef.clients.models.ShoppingListResult
-import com.example.ichef.clients.models.ShoppingListResultItem
+import com.example.ichef.clients.apis.ApiState
+import com.example.ichef.clients.apis.ShoppingListApi
+import com.example.ichef.clients.apis.viewmodels.ShoppingListApiViewModel
 import com.example.ichef.database.ShoppingDataManager
 import com.example.ichef.di.modules.MockApi
 import com.example.ichef.fragments.interfaces.ShoppingFragment
@@ -53,10 +58,8 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
     lateinit var app: Application
     @Inject
     lateinit var storeDatabase: ShoppingDataManager
-    @Inject
-    @MockApi
-    lateinit var shoppingListApi: ShoppingListApi
 
+    private lateinit var shoppingListApiViewModel: ShoppingListApiViewModel
 
     private val rotateOpen: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.rotate_open_anim) }
     private val rotateClose: Animation by lazy { AnimationUtils.loadAnimation(context,R.anim.rotate_close_anim) }
@@ -153,30 +156,14 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
     ): View? {
         // Inflate the layout
         val rootView = inflater.inflate(R.layout.shopping_fragment, container, false)
-        loadStoresFromDatabase() // todo temporary db while backend not ready
+        //loadStoresFromDatabase() // todo temporary db while backend not ready
         restoreStates(savedInstanceState)
 
+        HandleShoppingListApiCall(rootView)
         
         // Get empty layout to make it visible if nothing in shopping list for the first time
         sharedData.emptyPageView = rootView.findViewById(R.id.empty_shopping_list_page)
         sharedData.SetEmptyPageVisibilty()
-
-        //var backendResponse : ShoppingListResult
-        lifecycleScope.launch {
-            val shoppingListResponse = try {
-                shoppingListApi.getShoppingList(1)
-            } catch (e: IOException) {
-                Log.e("ShoppingFragmentImpl", "onCreateView: IOException, you might not have internet access.", )
-                return@launch
-            } catch (e: HttpException) {
-                Log.e("ShoppingFragmentImpl", "onCreateView: HTTPException, unexpected response.", )
-                return@launch
-            }
-
-            Log.i("ShoppingFragmentImpl", "$shoppingListResponse")
-        }
-
-
 
         if (sharedData.stores.size > 0) {
             footerAdapter.showFooter(true)
@@ -234,6 +221,54 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
         }
 
         return rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
+    }
+
+    private fun HandleShoppingListApiCall(rootView: View) {
+        shoppingListApiViewModel = ViewModelProvider(this).get(ShoppingListApiViewModel::class.java)
+
+        val loadingView = rootView.findViewById<ProgressBar>(R.id.loadingView)
+        val successView = rootView.findViewById<TextView>(R.id.successView)
+        val errorView = rootView.findViewById<LinearLayout>(R.id.errorView)
+        val retryButton = rootView.findViewById<Button>(R.id.retryButton)
+
+        lifecycleScope.launch {
+            shoppingListApiViewModel.apiState.collect { state ->
+                when (state) {
+                    is ApiState.Loading -> {
+                        Log.d("ShoppingFragment", "State: Loading")
+                        loadingView?.visibility = View.VISIBLE
+                        successView?.visibility = View.GONE
+                        errorView?.visibility = View.GONE
+                    }
+                    is ApiState.Success -> {
+                        Log.d("ShoppingFragment", "State: Success")
+                        loadingView?.visibility = View.GONE
+                        //successView?.visibility = View.VISIBLE
+                        errorView?.visibility = View.GONE
+                        // Update your UI with data
+                    }
+                    is ApiState.Error -> {
+                        Log.d("ShoppingFragment", "State: Error")
+                        loadingView?.visibility = View.GONE
+                        successView?.visibility = View.GONE
+                        errorView?.visibility = View.VISIBLE
+                    }
+                }
+            }
+        }
+
+        retryButton?.setOnClickListener {
+            shoppingListApiViewModel.fetchApiData()
+        }
+
+        // Fetch data initially
+        shoppingListApiViewModel.fetchApiData()
     }
 
     override fun onDestroyView() {

@@ -122,4 +122,7 @@
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <include
+        layout="@layout/loading_screen"/>
+
 </FrameLayout>
