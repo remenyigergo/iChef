@@ -30,18 +30,14 @@ import com.example.ichef.models.IngredientCheckbox
 import com.example.ichef.adapters.interfaces.FooterAdapter
 import com.example.ichef.adapters.interfaces.StoreCheckboxAdapter
 import com.example.ichef.clients.apis.ApiState
-import com.example.ichef.clients.apis.ShoppingListApi
 import com.example.ichef.clients.apis.viewmodels.ShoppingListApiViewModel
 import com.example.ichef.database.ShoppingDataManager
-import com.example.ichef.di.modules.MockApi
 import com.example.ichef.fragments.interfaces.ShoppingFragment
 import com.example.ichef.models.StoreCheckBox
 import com.example.ichef.models.IngredientsViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import java.io.IOException
 import javax.inject.Inject
 
 
@@ -156,45 +152,76 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
     ): View? {
         // Inflate the layout
         val rootView = inflater.inflate(R.layout.shopping_fragment, container, false)
-        //loadStoresFromDatabase() // todo temporary db while backend not ready
+
         restoreStates(savedInstanceState)
 
-        HandleShoppingListApiCall(rootView)
-        
-        // Get empty layout to make it visible if nothing in shopping list for the first time
-        sharedData.emptyPageView = rootView.findViewById(R.id.empty_shopping_list_page)
-        sharedData.SetEmptyPageVisibilty()
+        HandleShoppingListApiCall(rootView) { data ->
+            //loadStoresFromDatabase() // todo temporary db while backend not ready - put this inside of the API call to actually load some data for now
 
-        if (sharedData.stores.size > 0) {
-            footerAdapter.showFooter(true)
+            // Get empty layout to make it visible if nothing in shopping list for the first time
+            sharedData.emptyPageView = rootView.findViewById(R.id.empty_shopping_list_page)
+            sharedData.SetEmptyPageVisibilty()
+            if (sharedData.stores.size > 0) {
+                footerAdapter.showFooter(true)
+            }
         }
 
         val concatAdapter = ConcatAdapter(checkBoxesAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, footerAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
 
-        val recyclerView: RecyclerView = rootView.findViewById(R.id.rvParent)
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.adapter = concatAdapter
+        val parentCheckBoxView: RecyclerView = rootView.findViewById(R.id.rvParent)
+        parentCheckBoxView.layoutManager = LinearLayoutManager(context)
+        parentCheckBoxView.adapter = concatAdapter
 
-        fab = rootView.findViewById(R.id.fab)
-        fab.setOnClickListener {
+        HandleOpenButton(rootView)
+        HandleTickButton(rootView)
+        HandleNewButton(rootView)
+
+        return rootView
+    }
+
+    private fun HandleNewButton(rootView: View) {
+        newStoreCheckBoxButton = rootView.findViewById(R.id.fab_opt2)
+        newStoreCheckBoxButton.setOnClickListener {
+            val ingredients = viewModel.ingredients
+            val intent = Intent(context, AddParentChildActivity::class.java)
+            intent.putStringArrayListExtra("ingredients_list", ingredients)
+            intent.putStringArrayListExtra("stores", GetStoresNames())
+            addNewStore.launch(intent)
+            Toast.makeText(context, getString(R.string.add_new_pressed), Toast.LENGTH_SHORT).show()
             onAddButtonClicked()
         }
+    }
 
+    private fun HandleTickButton(rootView: View) {
         tickAllButton = rootView.findViewById(R.id.fab_opt1)
         tickAllButton.setOnClickListener {
             if (sharedData.stores.size > 0) {
                 if (sharedData.allChecked) {
                     sharedData.allChecked = false
-                    sharedData.tickedCount = 0 //reset to 0 selection, when everything was ticked off with the button : FIX for button showing everything was purchased even though nothing was ticked
-                    Toast.makeText(context, getString(R.string.check_all_unpressed), Toast.LENGTH_SHORT).show()
+                    sharedData.tickedCount =
+                        0 //reset to 0 selection, when everything was ticked off with the button : FIX for button showing everything was purchased even though nothing was ticked
+                    Toast.makeText(
+                        context,
+                        getString(R.string.check_all_unpressed),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
                     sharedData.allChecked = true
-                    sharedData.tickedCount = 0 //reset to 0 selection, when everything was ticked off with the button
+                    sharedData.tickedCount =
+                        0 //reset to 0 selection, when everything was ticked off with the button
 
-                    Toast.makeText(context, getString(R.string.check_all_pressed), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.check_all_pressed),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             } else {
-                Toast.makeText(context, getString(R.string.nothing_to_tick_here), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    getString(R.string.nothing_to_tick_here),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             // Select All functionality
@@ -208,19 +235,13 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
 
             onAddButtonClicked()
         }
+    }
 
-        newStoreCheckBoxButton = rootView.findViewById(R.id.fab_opt2)
-        newStoreCheckBoxButton.setOnClickListener {
-            val ingredients = viewModel.ingredients
-            val intent = Intent(context, AddParentChildActivity::class.java)
-            intent.putStringArrayListExtra("ingredients_list",ingredients)
-            intent.putStringArrayListExtra("stores",GetStoresNames())
-            addNewStore.launch(intent)
-            Toast.makeText(context, getString(R.string.add_new_pressed), Toast.LENGTH_SHORT).show()
+    private fun HandleOpenButton(rootView: View) {
+        fab = rootView.findViewById(R.id.fab)
+        fab.setOnClickListener {
             onAddButtonClicked()
         }
-
-        return rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -229,7 +250,7 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
 
     }
 
-    private fun HandleShoppingListApiCall(rootView: View) {
+    private fun HandleShoppingListApiCall(rootView: View,  onSuccess: (data: Any) -> Unit) {
         shoppingListApiViewModel = ViewModelProvider(this).get(ShoppingListApiViewModel::class.java)
 
         val loadingView = rootView.findViewById<ProgressBar>(R.id.loadingView)
@@ -252,6 +273,7 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
                         //successView?.visibility = View.VISIBLE
                         errorView?.visibility = View.GONE
                         // Update your UI with data
+                        onSuccess(state.data)
                     }
                     is ApiState.Error -> {
                         Log.d("ShoppingFragment", "State: Error")
@@ -355,8 +377,5 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
         }
     }
 
-    private fun loadStoresFromDatabase() {
-        sharedData.stores = storeDatabase.getStores().toMutableList()
-        checkBoxesAdapter?.notifyDataSetChanged()
-    }
+
 }
