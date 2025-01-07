@@ -11,6 +11,7 @@ import com.example.ichef.adapters.SharedData
 import com.example.ichef.adapters.StoreCheckBoxAdapterImpl
 import com.example.ichef.adapters.interfaces.FooterAdapter
 import com.example.ichef.adapters.interfaces.StoreCheckboxAdapter
+import com.example.ichef.database.AddParentChildDataManager
 import com.example.ichef.database.ShoppingDataManager
 import com.example.ichef.fragments.HomeFragment
 import com.example.ichef.fragments.SearchFragment
@@ -99,5 +100,11 @@ object AppModule {
     @Singleton
     fun provideShoppingDataManager(app: Application) : ShoppingDataManager {
         return ShoppingDataManager(app.applicationContext)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAddParentChildDataManager(app: Application) : AddParentChildDataManager {
+        return AddParentChildDataManager(app.applicationContext)
     }
 }

@@ -3,18 +3,30 @@ package com.example.ichef
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
 import android.text.InputType
+import android.util.Log
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.LinearLayout.LayoutParams
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.ichef.database.AddParentChildDataManager
+import com.google.android.material.button.MaterialButton
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 class AddParentChildViewModel : ViewModel() {
 
@@ -48,7 +60,11 @@ class AddParentChildViewModel : ViewModel() {
     }
 }
 
+@AndroidEntryPoint
 class AddParentChildActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var db : AddParentChildDataManager
 
     lateinit var recipeHintArray : ArrayList<String>
     lateinit var ingredientHintArray : ArrayList<String>
@@ -57,6 +73,8 @@ class AddParentChildActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        setContentView(R.layout.activity_add_parent_child)
 
         ingredientHintArray = arrayListOf(getString(R.string.tomato),
             getString(R.string.potato),
@@ -68,11 +86,9 @@ class AddParentChildActivity : AppCompatActivity() {
             getString(R.string.tesco), getString(R.string.french_toast),
             getString(R.string.french_onion_soup), getString(R.string.kaufland))
 
-        setContentView(R.layout.activity_add_parent_child)
-
+        val linearLayoutForTopParents = findViewById<LinearLayout>(R.id.addParentLayout_layout_below_parent)
         val parentTitleInput: EditText = findViewById(R.id.etParentTitle)
-        val addChildButton: Button = findViewById(R.id.btnAddChild)
-        val childContainer: LinearLayout = findViewById(R.id.childContainer)
+
         val saveButton: Button = findViewById(R.id.btnSaveParent)
 
         val ingredients = intent.getStringArrayListExtra("ingredients_list")
@@ -80,6 +96,15 @@ class AddParentChildActivity : AppCompatActivity() {
 
         // Set up autocomplete for stores
         SetAutoCompleteStoresField(stores)
+
+        // Add top 3 parent buttons
+        CreateTopParentButtons(linearLayoutForTopParents, parentTitleInput, viewModel)
+
+        // Add the dynamically expanding ingredient list layout
+        val childContainer = CreateIngredientsDynamicLayout(linearLayoutForTopParents)
+
+        // Add the new ingredient button
+        var addChildButton = AddNewIngredientButton(linearLayoutForTopParents)
 
         // Observe LiveData for child items and update the UI
         viewModel.childItems.observe(this) { items ->
@@ -156,6 +181,12 @@ class AddParentChildActivity : AppCompatActivity() {
                 }
             }
 
+            // Increase top 3 counters accordingly
+            db.insertOrUpdateParent(parentTitle, 1)
+
+            val top3 = db.getTop3FavoriteParents()
+            Log.i("AddParentChildActivity", "Top 3: ${top3}")
+
             val resultIntent = Intent().apply {
                 putExtra("parentTitle", parentTitle)
                 putStringArrayListExtra("childItems", ArrayList(childItems))
@@ -163,6 +194,171 @@ class AddParentChildActivity : AppCompatActivity() {
             setResult(Activity.RESULT_OK, resultIntent)
             finish()
         }
+    }
+
+    private fun CreateIngredientsDynamicLayout(linearLayoutForTopParents: LinearLayout?) : LinearLayout {
+        val ingredientsListLayout = LinearLayout(this).apply {
+            id = View.generateViewId() // Generate a unique ID for the LinearLayout
+            orientation = LinearLayout.VERTICAL // Set orientation to vertical
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin = 16 // todo convert 16 dp to pixels in dimen resource
+            }
+        }
+
+        linearLayoutForTopParents?.addView(ingredientsListLayout)
+
+        return ingredientsListLayout
+    }
+
+    private fun AddNewIngredientButton(linearLayoutForTopParents: LinearLayout?) : MaterialButton {
+        val addIngredientButton: MaterialButton = MaterialButton(this).apply {
+            id = View.generateViewId()
+            text = resources.getString(R.string.new_ingredient)
+            setBackgroundColor(resources.getColor(R.color.button_color, theme))
+
+            // Set layout parameters with wrap content
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                // todo Convert 16dp to pixels and set the top margin
+                topMargin = 16
+            }
+            layoutParams = params
+        }
+        linearLayoutForTopParents?.addView(addIngredientButton) // add button to the linearLayout for showing
+        return addIngredientButton
+    }
+
+    private fun CreateTopParentButtons(rootView : LinearLayout, parentTitle: EditText, viewModel: AddParentChildViewModel) {
+        // Create the ConstraintLayout
+        val constraintLayout = ConstraintLayout(this).apply {
+            layoutParams = ConstraintLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                // Set constraints relative to the parent layout
+                topToBottom = R.id.etParentTitle // Top constraint to be below ParentTitle
+                startToStart = ConstraintSet.PARENT_ID // Align start to parent's start
+                endToEnd = ConstraintSet.PARENT_ID // Align end to parent's end
+            }
+            id = View.generateViewId()
+        }
+
+        // Create Top1 Button if theres at least one parent saved
+        val top3 = db.getTop3FavoriteParents()
+
+        var button1 : MaterialButton? = null
+        var button2 : MaterialButton? = null
+        var button3 : MaterialButton? = null
+        if (top3.size >= 1) {
+            button1 = MaterialButton(this).apply {
+                id = View.generateViewId()
+                text = top3[0]
+                setBackgroundColor(resources.getColor(R.color.gray, theme))
+                layoutParams = LayoutParams(
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT
+                ).apply {
+                    //rightMargin = 10
+                }
+            }
+            button1.setOnClickListener({
+                parentTitle.setText(button1.text)
+            })
+
+            constraintLayout.addView(button1)
+        }
+
+
+        if (top3.size >= 2) {
+            button2 = MaterialButton(this).apply {
+                id = View.generateViewId()
+                text = top3[1]
+                setBackgroundColor(resources.getColor(R.color.gray, theme))
+                layoutParams = LayoutParams(
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT
+                ).apply {
+                    //rightMargin = 10
+                }
+            }
+            button2.setOnClickListener({
+                parentTitle.setText(button2.text)
+            })
+
+            constraintLayout.addView(button2)
+        }
+
+        if (top3.size >= 3) {
+            button3 = MaterialButton(this).apply {
+                id = View.generateViewId()
+                text = top3[2]
+                setBackgroundColor(resources.getColor(R.color.gray, theme))
+            }
+            button3.setOnClickListener({
+                parentTitle.setText(button3.text)
+            })
+
+            constraintLayout.addView(button3)
+        }
+
+        // Apply constraints programmatically
+        val constraintSet = ConstraintSet()
+        constraintSet.clone(constraintLayout)
+
+        val marginGap = 10 // 10-pixel gap between buttons
+
+        // Set constraints for button1
+        button1?.let {
+            constraintSet.constrainWidth(it.id, 0) // Width set to 0dp for percentage width
+            constraintSet.constrainHeight(it.id, ConstraintSet.WRAP_CONTENT)
+            constraintSet.connect(it.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, marginGap)
+            constraintSet.connect(it.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+            constraintSet.connect(it.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+            if (button2 != null) {
+                constraintSet.connect(it.id, ConstraintSet.END, button2.id, ConstraintSet.START, marginGap)
+            } else {
+                constraintSet.connect(it.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, marginGap)
+            }
+        }
+
+        // Set constraints for button2
+        button2?.let {
+            constraintSet.constrainWidth(it.id, 0) // Width set to 0dp for percentage width
+            constraintSet.constrainHeight(it.id, ConstraintSet.WRAP_CONTENT)
+            button1?.let { btn1 ->
+                constraintSet.connect(it.id, ConstraintSet.START, btn1.id, ConstraintSet.END, marginGap)
+            } ?: constraintSet.connect(it.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, marginGap)
+
+            button3?.let { btn3 ->
+                constraintSet.connect(it.id, ConstraintSet.END, btn3.id, ConstraintSet.START, marginGap)
+            } ?: constraintSet.connect(it.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, marginGap)
+
+            constraintSet.connect(it.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+            constraintSet.connect(it.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+        }
+
+        // Set constraints for button3
+        button3?.let {
+            constraintSet.constrainWidth(it.id, 0) // Width set to 0dp for percentage width
+            constraintSet.constrainHeight(it.id, ConstraintSet.WRAP_CONTENT)
+            button2?.let { btn2 ->
+                constraintSet.connect(it.id, ConstraintSet.START, btn2.id, ConstraintSet.END, marginGap)
+            } ?: constraintSet.connect(it.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, marginGap)
+
+            constraintSet.connect(it.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, marginGap)
+            constraintSet.connect(it.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+            constraintSet.connect(it.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+        }
+
+        // Apply the constraints
+        constraintSet.applyTo(constraintLayout)
+
+        rootView.addView(constraintLayout)
     }
 
     // Create a child input dynamically

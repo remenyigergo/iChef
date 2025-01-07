@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.R
 import com.example.ichef.adapters.interfaces.FooterAdapter
+import com.google.android.material.button.MaterialButton
 import javax.inject.Inject
 
 class FooterAdapterImpl @Inject constructor(
@@ -24,7 +25,7 @@ class FooterAdapterImpl @Inject constructor(
         RecyclerView.ViewHolder(purchasedButton)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FooterViewHolder {
-        val button = Button(parent.context).apply {
+        val button = MaterialButton(parent.context).apply {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -33,6 +34,7 @@ class FooterAdapterImpl @Inject constructor(
                 bottomMargin = 200
             }
             text = context.getString(R.string.purchased)
+            setBackgroundColor(resources.getColor(R.color.button_color))
         }
 
         return FooterViewHolder(button)
