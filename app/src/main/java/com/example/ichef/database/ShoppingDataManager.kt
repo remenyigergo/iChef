@@ -2,13 +2,14 @@ package com.example.ichef.database
 
 import android.content.Context
 import android.content.ContentValues
+import com.example.ichef.database.helpers.ShoppingDatamanagerHelper
 import com.example.ichef.models.IngredientCheckbox
 import com.example.ichef.models.StoreCheckBox
 import javax.inject.Inject
 
 class ShoppingDataManager @Inject constructor(context: Context) {
 
-    private val dbHelper = DbHelper(context)
+    private val dbHelper = ShoppingDatamanagerHelper(context)
 
     // Insert a store
     fun insertStore(storeName: String): Long {
@@ -16,9 +17,9 @@ class ShoppingDataManager @Inject constructor(context: Context) {
 
         // Check if the store already exists
         val cursor = db.query(
-            DbHelper.TABLE_STORE,
-            arrayOf(DbHelper.COLUMN_STORE_ID),
-            "${DbHelper.COLUMN_STORE_NAME} = ?",
+            ShoppingDatamanagerHelper.TABLE_STORE,
+            arrayOf(ShoppingDatamanagerHelper.COLUMN_STORE_ID),
+            "${ShoppingDatamanagerHelper.COLUMN_STORE_NAME} = ?",
             arrayOf(storeName),
             null, null, null
         )
@@ -32,9 +33,9 @@ class ShoppingDataManager @Inject constructor(context: Context) {
 
         // If the store doesn't exist, insert the store
         val values = ContentValues().apply {
-            put(DbHelper.COLUMN_STORE_NAME, storeName)
+            put(ShoppingDatamanagerHelper.COLUMN_STORE_NAME, storeName)
         }
-        return db.insert(DbHelper.TABLE_STORE, null, values)
+        return db.insert(ShoppingDatamanagerHelper.TABLE_STORE, null, values)
     }
 
 
@@ -42,11 +43,11 @@ class ShoppingDataManager @Inject constructor(context: Context) {
     fun insertIngredient(storeId: Long, ingredientName: String, isChecked: Boolean) {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
-            put(DbHelper.COLUMN_INGREDIENT_NAME, ingredientName)
-            put(DbHelper.COLUMN_INGREDIENT_CHECKED, if (isChecked) 1 else 0)
-            put(DbHelper.COLUMN_INGREDIENT_STORE_ID, storeId)
+            put(ShoppingDatamanagerHelper.COLUMN_INGREDIENT_NAME, ingredientName)
+            put(ShoppingDatamanagerHelper.COLUMN_INGREDIENT_CHECKED, if (isChecked) 1 else 0)
+            put(ShoppingDatamanagerHelper.COLUMN_INGREDIENT_STORE_ID, storeId)
         }
-        db.insert(DbHelper.TABLE_INGREDIENT, null, values)
+        db.insert(ShoppingDatamanagerHelper.TABLE_INGREDIENT, null, values)
     }
 
     // update a store with a new ingredient
@@ -55,16 +56,16 @@ class ShoppingDataManager @Inject constructor(context: Context) {
 
         // Query the store ID based on the store name
         val cursor = db.query(
-            DbHelper.TABLE_STORE,
-            arrayOf(DbHelper.COLUMN_STORE_ID),
-            "${DbHelper.COLUMN_STORE_NAME} = ?",
+            ShoppingDatamanagerHelper.TABLE_STORE,
+            arrayOf(ShoppingDatamanagerHelper.COLUMN_STORE_ID),
+            "${ShoppingDatamanagerHelper.COLUMN_STORE_NAME} = ?",
             arrayOf(storeName),
             null, null, null
         )
 
         var storeId: Long? = null
         if (cursor.moveToFirst()) {
-            storeId = cursor.getLong(cursor.getColumnIndexOrThrow(DbHelper.COLUMN_STORE_ID))
+            storeId = cursor.getLong(cursor.getColumnIndexOrThrow(ShoppingDatamanagerHelper.COLUMN_STORE_ID))
         }
         cursor.close()
 
@@ -75,9 +76,9 @@ class ShoppingDataManager @Inject constructor(context: Context) {
                 for (ingredient in ingredients) {
                     // Check if the ingredient already exists
                     val ingredientCursor = db.query(
-                        DbHelper.TABLE_INGREDIENT,
-                        arrayOf(DbHelper.COLUMN_INGREDIENT_ID),
-                        "${DbHelper.COLUMN_INGREDIENT_NAME} = ? AND ${DbHelper.COLUMN_INGREDIENT_STORE_ID} = ?",
+                        ShoppingDatamanagerHelper.TABLE_INGREDIENT,
+                        arrayOf(ShoppingDatamanagerHelper.COLUMN_INGREDIENT_ID),
+                        "${ShoppingDatamanagerHelper.COLUMN_INGREDIENT_NAME} = ? AND ${ShoppingDatamanagerHelper.COLUMN_INGREDIENT_STORE_ID} = ?",
                         arrayOf(ingredient, storeId.toString()),
                         null, null, null
                     )
@@ -85,11 +86,11 @@ class ShoppingDataManager @Inject constructor(context: Context) {
                     if (!ingredientCursor.moveToFirst()) {
                         // Ingredient does not exist, so insert it
                         val values = ContentValues().apply {
-                            put(DbHelper.COLUMN_INGREDIENT_NAME, ingredient)
-                            put(DbHelper.COLUMN_INGREDIENT_CHECKED, 0) // Default to unchecked
-                            put(DbHelper.COLUMN_INGREDIENT_STORE_ID, storeId)
+                            put(ShoppingDatamanagerHelper.COLUMN_INGREDIENT_NAME, ingredient)
+                            put(ShoppingDatamanagerHelper.COLUMN_INGREDIENT_CHECKED, 0) // Default to unchecked
+                            put(ShoppingDatamanagerHelper.COLUMN_INGREDIENT_STORE_ID, storeId)
                         }
-                        db.insert(DbHelper.TABLE_INGREDIENT, null, values)
+                        db.insert(ShoppingDatamanagerHelper.TABLE_INGREDIENT, null, values)
                     }
 
                     ingredientCursor.close()
@@ -110,13 +111,15 @@ class ShoppingDataManager @Inject constructor(context: Context) {
         val stores = mutableListOf<StoreCheckBox>()
 
         val storeCursor = db.query(
-            DbHelper.TABLE_STORE,
+            ShoppingDatamanagerHelper.TABLE_STORE,
             null, null, null, null, null, null
         )
 
         while (storeCursor.moveToNext()) {
-            val storeId = storeCursor.getLong(storeCursor.getColumnIndexOrThrow(DbHelper.COLUMN_STORE_ID))
-            val storeName = storeCursor.getString(storeCursor.getColumnIndexOrThrow(DbHelper.COLUMN_STORE_NAME))
+            val storeId = storeCursor.getLong(storeCursor.getColumnIndexOrThrow(
+                ShoppingDatamanagerHelper.COLUMN_STORE_ID))
+            val storeName = storeCursor.getString(storeCursor.getColumnIndexOrThrow(
+                ShoppingDatamanagerHelper.COLUMN_STORE_NAME))
 
             val ingredients = getIngredientsForStore(storeId)
             stores.add(StoreCheckBox(storeName, ingredients))
@@ -132,16 +135,17 @@ class ShoppingDataManager @Inject constructor(context: Context) {
         val ingredients = mutableListOf<IngredientCheckbox>()
 
         val cursor = db.query(
-            DbHelper.TABLE_INGREDIENT,
+            ShoppingDatamanagerHelper.TABLE_INGREDIENT,
             null,
-            "${DbHelper.COLUMN_INGREDIENT_STORE_ID} = ?",
+            "${ShoppingDatamanagerHelper.COLUMN_INGREDIENT_STORE_ID} = ?",
             arrayOf(storeId.toString()),
             null, null, null
         )
 
         while (cursor.moveToNext()) {
-            val ingredientName = cursor.getString(cursor.getColumnIndexOrThrow(DbHelper.COLUMN_INGREDIENT_NAME))
-            val isChecked = cursor.getInt(cursor.getColumnIndexOrThrow(DbHelper.COLUMN_INGREDIENT_CHECKED)) == 1
+            val ingredientName = cursor.getString(cursor.getColumnIndexOrThrow(
+                ShoppingDatamanagerHelper.COLUMN_INGREDIENT_NAME))
+            val isChecked = cursor.getInt(cursor.getColumnIndexOrThrow(ShoppingDatamanagerHelper.COLUMN_INGREDIENT_CHECKED)) == 1
             ingredients.add(IngredientCheckbox(ingredientName, isChecked))
         }
         cursor.close()
@@ -153,12 +157,12 @@ class ShoppingDataManager @Inject constructor(context: Context) {
     fun updateIngredientChecked(ingredientId: Long, isChecked: Boolean) {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
-            put(DbHelper.COLUMN_INGREDIENT_CHECKED, if (isChecked) 1 else 0)
+            put(ShoppingDatamanagerHelper.COLUMN_INGREDIENT_CHECKED, if (isChecked) 1 else 0)
         }
         db.update(
-            DbHelper.TABLE_INGREDIENT,
+            ShoppingDatamanagerHelper.TABLE_INGREDIENT,
             values,
-            "${DbHelper.COLUMN_INGREDIENT_ID} = ?",
+            "${ShoppingDatamanagerHelper.COLUMN_INGREDIENT_ID} = ?",
             arrayOf(ingredientId.toString())
         )
     }
@@ -166,8 +170,8 @@ class ShoppingDataManager @Inject constructor(context: Context) {
     // Delete a store and its ingredients
     fun deleteStore(storeId: Long) {
         val db = dbHelper.writableDatabase
-        db.delete(DbHelper.TABLE_INGREDIENT, "${DbHelper.COLUMN_INGREDIENT_STORE_ID} = ?", arrayOf(storeId.toString()))
-        db.delete(DbHelper.TABLE_STORE, "${DbHelper.COLUMN_STORE_ID} = ?", arrayOf(storeId.toString()))
+        db.delete(ShoppingDatamanagerHelper.TABLE_INGREDIENT, "${ShoppingDatamanagerHelper.COLUMN_INGREDIENT_STORE_ID} = ?", arrayOf(storeId.toString()))
+        db.delete(ShoppingDatamanagerHelper.TABLE_STORE, "${ShoppingDatamanagerHelper.COLUMN_STORE_ID} = ?", arrayOf(storeId.toString()))
     }
 
     fun deleteStoreWithIngredientsByName(storeName: String) {
@@ -178,9 +182,9 @@ class ShoppingDataManager @Inject constructor(context: Context) {
         try {
             // Get the store ID based on the store name
             val cursor = db.query(
-                DbHelper.TABLE_STORE,
-                arrayOf(DbHelper.COLUMN_STORE_ID),
-                "${DbHelper.COLUMN_STORE_NAME} = ?",
+                ShoppingDatamanagerHelper.TABLE_STORE,
+                arrayOf(ShoppingDatamanagerHelper.COLUMN_STORE_ID),
+                "${ShoppingDatamanagerHelper.COLUMN_STORE_NAME} = ?",
                 arrayOf(storeName),
                 null,
                 null,
@@ -189,22 +193,22 @@ class ShoppingDataManager @Inject constructor(context: Context) {
 
             var storeId: Long? = null
             if (cursor.moveToFirst()) {
-                storeId = cursor.getLong(cursor.getColumnIndexOrThrow(DbHelper.COLUMN_STORE_ID))
+                storeId = cursor.getLong(cursor.getColumnIndexOrThrow(ShoppingDatamanagerHelper.COLUMN_STORE_ID))
             }
             cursor.close()
 
             if (storeId != null) {
                 // Delete all ingredients associated with the store
                 db.delete(
-                    DbHelper.TABLE_INGREDIENT,
-                    "${DbHelper.COLUMN_INGREDIENT_STORE_ID} = ?",
+                    ShoppingDatamanagerHelper.TABLE_INGREDIENT,
+                    "${ShoppingDatamanagerHelper.COLUMN_INGREDIENT_STORE_ID} = ?",
                     arrayOf(storeId.toString())
                 )
 
                 // Delete the store itself
                 db.delete(
-                    DbHelper.TABLE_STORE,
-                    "${DbHelper.COLUMN_STORE_NAME} = ?",
+                    ShoppingDatamanagerHelper.TABLE_STORE,
+                    "${ShoppingDatamanagerHelper.COLUMN_STORE_NAME} = ?",
                     arrayOf(storeName)
                 )
             }
@@ -221,24 +225,24 @@ class ShoppingDataManager @Inject constructor(context: Context) {
 
         // Query the store ID based on the store name
         val cursor = db.query(
-            DbHelper.TABLE_STORE,
-            arrayOf(DbHelper.COLUMN_STORE_ID),
-            "${DbHelper.COLUMN_STORE_NAME} = ?",
+            ShoppingDatamanagerHelper.TABLE_STORE,
+            arrayOf(ShoppingDatamanagerHelper.COLUMN_STORE_ID),
+            "${ShoppingDatamanagerHelper.COLUMN_STORE_NAME} = ?",
             arrayOf(storeName),
             null, null, null
         )
 
         var storeId: Long? = null
         if (cursor.moveToFirst()) {
-            storeId = cursor.getLong(cursor.getColumnIndexOrThrow(DbHelper.COLUMN_STORE_ID))
+            storeId = cursor.getLong(cursor.getColumnIndexOrThrow(ShoppingDatamanagerHelper.COLUMN_STORE_ID))
         }
         cursor.close()
 
         if (storeId != null) {
             // Delete the ingredient associated with the store
             val rowsDeleted = db.delete(
-                DbHelper.TABLE_INGREDIENT,
-                "${DbHelper.COLUMN_INGREDIENT_STORE_ID} = ? AND ${DbHelper.COLUMN_INGREDIENT_NAME} = ?",
+                ShoppingDatamanagerHelper.TABLE_INGREDIENT,
+                "${ShoppingDatamanagerHelper.COLUMN_INGREDIENT_STORE_ID} = ? AND ${ShoppingDatamanagerHelper.COLUMN_INGREDIENT_NAME} = ?",
                 arrayOf(storeId.toString(), ingredientName)
             )
 

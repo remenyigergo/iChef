@@ -5,6 +5,7 @@
 <!--    colors brownish-->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="gray">#c4c4c4</color>
     <color name="background">#E4E0E1</color>
     <color name="button_color">#AB886D</color>
     <color name="topbar">#D6C0B3</color>

@@ -1,4 +1,5 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/editShoppingListLayoutId"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -12,6 +13,7 @@
         app:layout_constraintBottom_toTopOf="@+id/btnSaveParent">
 
         <LinearLayout
+            android:id="@+id/addParentLayout_layout_below_parent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -40,21 +42,6 @@
                     android:inputType="textCapWords" />
 
             </LinearLayout>
-
-            <Button
-                android:id="@+id/btnAddChild"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:backgroundTint="@color/button_color"
-                android:text="@string/new_ingredient" />
-
-            <LinearLayout
-                android:id="@+id/childContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical" />
 
         </LinearLayout>
     </ScrollView>
