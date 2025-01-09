@@ -1,6 +1,8 @@
 package com.example.ichef.activities
 
+import android.content.Intent
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -9,7 +11,8 @@ import com.example.ichef.R
 import com.example.ichef.fragments.HomeFragment
 import com.example.ichef.fragments.SearchFragment
 import com.example.ichef.fragments.ShoppingFragmentImpl
-import com.example.ichef.fragments.interfaces.ShoppingFragment
+import com.example.ichef.notifications.scheduler.AlarmScheduler
+import com.example.ichef.notifications.channels.ShoppingListReminderNotificationManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -33,6 +36,8 @@ class MainActivity @Inject constructor(
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        ShoppingListReminderNotificationManager.createNotificationChannel(this)
+        AlarmScheduler.scheduleDailyNotification(this, 20, 8, 30)
 
         fragments = listOf(homeFragment, searchFragment, shoppingFragment)
 
@@ -98,5 +103,15 @@ class MainActivity @Inject constructor(
         transaction.commit()
     }
 
-
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        // Handle intent if needed
+        intent?.let {
+            // Check if the activity was launched via a notification
+            val fragmentToOpen = intent.getStringExtra("fragment_to_open")
+            if (fragmentToOpen != null && fragmentToOpen == "shoppingFragment") {
+                loadFragment(shoppingFragment, R.id.shoppingFragmentContainerView)
+            }
+        }
+    }
 }
