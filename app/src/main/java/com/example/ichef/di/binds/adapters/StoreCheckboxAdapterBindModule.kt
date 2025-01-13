@@ -8,13 +8,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-//@Module
-//@InstallIn(SingletonComponent::class)
-//abstract class StoreCheckboxAdapterBindModule {
-//
-//    @Binds
-//    @Singleton
-//    abstract fun bindStoreCheckboxAdapter(
-//        storeCheckBoxAdapterImpl: StoreCheckBoxAdapterImpl
-//    ) : StoreCheckboxAdapter
-//}
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class StoreCheckboxAdapterBindModule {
+
+    @Binds
+    abstract fun bindStoreCheckboxAdapter(
+        storeCheckBoxAdapterImpl: StoreCheckBoxAdapterImpl
+    ) : StoreCheckboxAdapter
+}

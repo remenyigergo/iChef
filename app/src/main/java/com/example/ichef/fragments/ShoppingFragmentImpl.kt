@@ -31,7 +31,8 @@ import com.example.ichef.adapters.interfaces.FooterAdapter
 import com.example.ichef.adapters.interfaces.StoreCheckboxAdapter
 import com.example.ichef.clients.apis.ApiState
 import com.example.ichef.clients.apis.viewmodels.ShoppingListApiViewModel
-import com.example.ichef.database.ShoppingDataManager
+import com.example.ichef.database.ShoppingDataManagerImpl
+import com.example.ichef.database.interfaces.ShoppingDataManager
 import com.example.ichef.fragments.interfaces.ShoppingFragment
 import com.example.ichef.models.StoreCheckBox
 import com.example.ichef.models.IngredientsViewModel
@@ -42,18 +43,13 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment {
-
-    @Inject
-    lateinit var checkBoxesAdapter: StoreCheckboxAdapter
-    @Inject
-    lateinit var footerAdapter: FooterAdapter
-    @Inject
-    lateinit var sharedData: SharedData
-    @Inject
-    lateinit var app: Application
-    @Inject
-    lateinit var storeDatabase: ShoppingDataManager
+class ShoppingFragmentImpl @Inject constructor(
+    private val checkBoxesAdapter: StoreCheckboxAdapter,
+    private val footerAdapter: FooterAdapter,
+    private val sharedData: SharedData,
+    private val app: Application,
+    private val storeDatabase: ShoppingDataManager
+) : Fragment(), ShoppingFragment {
 
     private lateinit var shoppingListApiViewModel: ShoppingListApiViewModel
 

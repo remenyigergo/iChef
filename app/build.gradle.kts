@@ -52,6 +52,7 @@ dependencies {
     // Dagger dependencies
     implementation("com.google.dagger:hilt-android:2.53.1")
     ksp("com.google.dagger:hilt-compiler:2.53.1")
+    implementation("com.google.dagger:dagger:2.53.1")
 
     // For instrumentation tests
     androidTestImplementation ("com.google.dagger:hilt-android-testing:2.53.1")

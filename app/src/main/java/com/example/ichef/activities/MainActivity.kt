@@ -21,12 +21,10 @@ lateinit var fragments: List<Fragment>
 
 @AndroidEntryPoint
 class MainActivity @Inject constructor(
+    private val shoppingFragment: ShoppingFragmentImpl,
+    private val homeFragment: HomeFragment,
+    private val searchFragment: SearchFragment
 ) : AppCompatActivity() {
-
-    @Inject lateinit var ingredients: ArrayList<String>
-    @Inject lateinit var shoppingFragment: ShoppingFragmentImpl
-    @Inject lateinit var homeFragment: HomeFragment
-    @Inject lateinit var searchFragment: SearchFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

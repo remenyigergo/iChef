@@ -5,14 +5,16 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.util.Log
+import com.example.ichef.database.interfaces.AddParentChildDataManager
+import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
 
-class AddParentChildDataManager @Inject constructor(context: Context) {
+class AddParentChildDataManagerImpl @Inject constructor(@ActivityContext context: Context) : AddParentChildDataManager {
 
     private val dbHelper = AddParentChildDataManagerHelper(context)
 
     // Insert or Update a parent in the database
-    fun insertOrUpdateParent(name: String, counter: Int) {
+    override fun insertOrUpdateParent(name: String, counter: Int) {
         val db = dbHelper.writableDatabase
 
         // Check if the parent already exists
@@ -59,7 +61,7 @@ class AddParentChildDataManager @Inject constructor(context: Context) {
     }
 
     // Retrieve top 3 parents by counter
-    fun getTop3FavoriteParents(): List<String> {
+    override fun getTop3FavoriteParents(): List<String> {
         val db = dbHelper.readableDatabase
         val topParents = mutableListOf<String>()
 

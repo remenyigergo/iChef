@@ -3,7 +3,6 @@ package com.example.ichef
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
 import android.text.InputType
 import android.util.Log
 import android.view.View
@@ -22,10 +21,9 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.ichef.database.AddParentChildDataManager
+import com.example.ichef.database.AddParentChildDataManagerImpl
 import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 class AddParentChildViewModel : ViewModel() {
@@ -64,7 +62,7 @@ class AddParentChildViewModel : ViewModel() {
 class AddParentChildActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var db : AddParentChildDataManager
+    lateinit var db : AddParentChildDataManagerImpl
 
     lateinit var recipeHintArray : ArrayList<String>
     lateinit var ingredientHintArray : ArrayList<String>

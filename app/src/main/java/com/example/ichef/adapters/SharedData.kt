@@ -1,17 +1,20 @@
 package com.example.ichef.adapters
 
 import android.app.Application
+import android.content.Context
 import android.view.View
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.ichef.R
-import com.example.ichef.database.ShoppingDataManager
+import com.example.ichef.database.interfaces.ShoppingDataManager
 import com.example.ichef.models.StoreCheckBox
 import javax.inject.Inject
+import dagger.Lazy
+
 
 class SharedData @Inject constructor(
-    private var app: Application,
-    private var storeDb : ShoppingDataManager
+    private val context: Context,
+    private val storeDb: Lazy<ShoppingDataManager>
 ) {
     var stores : MutableList<StoreCheckBox> = mutableListOf()
     lateinit var emptyPageView: ConstraintLayout
@@ -38,13 +41,13 @@ class SharedData @Inject constructor(
 
     fun removeStore(storeIndex: Int) {
         val storeName = stores[storeIndex].storeName
-        storeDb.deleteStoreWithIngredientsByName(storeName)
-        Toast.makeText(app.applicationContext,
-            app.applicationContext.getString(R.string.store_deleted_successfully), Toast.LENGTH_SHORT).show()
+        storeDb.get().deleteStoreWithIngredientsByName(storeName)
+        Toast.makeText(context,
+            context.getString(R.string.store_deleted_successfully), Toast.LENGTH_SHORT).show()
     }
 
     fun removeIngredient(storeName: String, ingredient: String) {
-        storeDb.deleteIngredientFromStore(storeName, ingredient)
+        storeDb.get().deleteIngredientFromStore(storeName, ingredient)
     }
 
     fun incrementTick() {
@@ -57,5 +60,9 @@ class SharedData @Inject constructor(
 
     fun isAllChecked(): Boolean {
         return allChecked
+    }
+
+    fun loadStoresFromDatabase() {
+        stores = storeDb.get().getStores().toMutableList()
     }
 }

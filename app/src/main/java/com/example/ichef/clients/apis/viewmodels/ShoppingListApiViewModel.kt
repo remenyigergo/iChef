@@ -1,17 +1,16 @@
 package com.example.ichef.clients.apis.viewmodels
 
-import android.app.Application
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ichef.adapters.SharedData
-import com.example.ichef.adapters.interfaces.FooterAdapter
 import com.example.ichef.adapters.interfaces.StoreCheckboxAdapter
 import com.example.ichef.clients.apis.ApiState
 import com.example.ichef.clients.apis.ShoppingListApi
 import com.example.ichef.clients.models.ShoppingListResultItem
 import com.example.ichef.constants.Constants
-import com.example.ichef.database.ShoppingDataManager
+import com.example.ichef.database.ShoppingDataManagerImpl
+import com.example.ichef.database.interfaces.ShoppingDataManager
 import com.example.ichef.di.modules.MockApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,17 +21,11 @@ import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
-class ShoppingListApiViewModel @Inject constructor() : ViewModel() {
-
-    @Inject
-    @MockApi
-    lateinit var shoppingListApi: ShoppingListApi
-    @Inject
-    lateinit var checkBoxesAdapter: StoreCheckboxAdapter
-    @Inject
-    lateinit var sharedData: SharedData
-    @Inject
-    lateinit var storeDatabase: ShoppingDataManager
+class ShoppingListApiViewModel @Inject constructor(
+    @MockApi private val shoppingListApi: ShoppingListApi,
+    private val checkBoxesAdapter: StoreCheckboxAdapter,
+    private val sharedData: SharedData,
+) : ViewModel() {
 
     private val _shoppingListApiState = MutableStateFlow<ApiState<ArrayList<ShoppingListResultItem>>>(ApiState.Loading)
     val apiState: StateFlow<ApiState<ArrayList<ShoppingListResultItem>>> = _shoppingListApiState
@@ -45,7 +38,8 @@ class ShoppingListApiViewModel @Inject constructor() : ViewModel() {
                 val response = shoppingListApi.getShoppingList(1)
                 // Simulate a delay
                 kotlinx.coroutines.delay(Constants.shoppingApiDelay)
-                loadStoresFromDatabase()
+                sharedData.loadStoresFromDatabase()
+                checkBoxesAdapter.notifyDataSetChanged()
 
                 if (response.isSuccessful && response.body() != null) {
                     val data = response.body()!!
@@ -64,8 +58,5 @@ class ShoppingListApiViewModel @Inject constructor() : ViewModel() {
         return Response.error(50000, ResponseBody.create(null, "Generic Error"))
     }
 
-    private fun loadStoresFromDatabase() {
-        sharedData.stores = storeDatabase.getStores().toMutableList()
-        checkBoxesAdapter?.notifyDataSetChanged()
-    }
+
 }

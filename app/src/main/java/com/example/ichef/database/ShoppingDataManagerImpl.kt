@@ -3,16 +3,19 @@ package com.example.ichef.database
 import android.content.Context
 import android.content.ContentValues
 import com.example.ichef.database.helpers.ShoppingDatamanagerHelper
+import com.example.ichef.database.interfaces.ShoppingDataManager
 import com.example.ichef.models.IngredientCheckbox
 import com.example.ichef.models.StoreCheckBox
+import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
 
-class ShoppingDataManager @Inject constructor(context: Context) {
+
+class ShoppingDataManagerImpl @Inject constructor(@ActivityContext context: Context) : ShoppingDataManager {
 
     private val dbHelper = ShoppingDatamanagerHelper(context)
 
     // Insert a store
-    fun insertStore(storeName: String): Long {
+    override fun insertStore(storeName: String): Long {
         val db = dbHelper.writableDatabase
 
         // Check if the store already exists
@@ -40,7 +43,7 @@ class ShoppingDataManager @Inject constructor(context: Context) {
 
 
     // Insert an ingredient
-    fun insertIngredient(storeId: Long, ingredientName: String, isChecked: Boolean) {
+    override fun insertIngredient(storeId: Long, ingredientName: String, isChecked: Boolean) {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
             put(ShoppingDatamanagerHelper.COLUMN_INGREDIENT_NAME, ingredientName)
@@ -51,7 +54,7 @@ class ShoppingDataManager @Inject constructor(context: Context) {
     }
 
     // update a store with a new ingredient
-    fun storeNewIngredientsInStore(storeName: String, ingredients: List<String>) {
+    override fun storeNewIngredientsInStore(storeName: String, ingredients: List<String>) {
         val db = dbHelper.writableDatabase
 
         // Query the store ID based on the store name
@@ -106,7 +109,7 @@ class ShoppingDataManager @Inject constructor(context: Context) {
     }
 
     // Retrieve all stores with ingredients
-    fun getStores(): List<StoreCheckBox> {
+    override fun getStores(): List<StoreCheckBox> {
         val db = dbHelper.readableDatabase
         val stores = mutableListOf<StoreCheckBox>()
 
@@ -174,7 +177,7 @@ class ShoppingDataManager @Inject constructor(context: Context) {
         db.delete(ShoppingDatamanagerHelper.TABLE_STORE, "${ShoppingDatamanagerHelper.COLUMN_STORE_ID} = ?", arrayOf(storeId.toString()))
     }
 
-    fun deleteStoreWithIngredientsByName(storeName: String) {
+    override fun deleteStoreWithIngredientsByName(storeName: String) {
         val db = dbHelper.writableDatabase
 
         // Start a transaction to ensure both deletions occur together
@@ -220,7 +223,7 @@ class ShoppingDataManager @Inject constructor(context: Context) {
         }
     }
 
-    fun deleteIngredientFromStore(storeName: String, ingredientName: String) {
+    override fun deleteIngredientFromStore(storeName: String, ingredientName: String) {
         val db = dbHelper.writableDatabase
 
         // Query the store ID based on the store name

@@ -14,8 +14,8 @@ import com.example.ichef.adapters.interfaces.StoreCheckboxAdapter
 import javax.inject.Inject
 
 class StoreCheckBoxAdapterImpl @Inject constructor(
-    private var footerAdapter: FooterAdapter,
-    private var sharedData: SharedData
+    private val footerAdapter: FooterAdapter,
+    private val sharedData: SharedData
 ) : StoreCheckboxAdapter, RecyclerView.Adapter<StoreCheckBoxAdapterImpl.ParentViewHolder>() {
 
     inner class ParentViewHolder(view: View) : RecyclerView.ViewHolder(view) {

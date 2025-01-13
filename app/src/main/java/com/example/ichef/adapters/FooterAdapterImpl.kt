@@ -13,7 +13,7 @@ import com.google.android.material.button.MaterialButton
 import javax.inject.Inject
 
 class FooterAdapterImpl @Inject constructor(
-    private var sharedData: SharedData,
+    private val sharedData: SharedData,
     private val context: Application
 ) :
     FooterAdapter,

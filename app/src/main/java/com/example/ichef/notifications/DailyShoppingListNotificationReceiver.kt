@@ -5,22 +5,19 @@ import android.content.Context
 import android.content.Intent
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.health.connect.datatypes.units.Power
 import android.os.PowerManager
 import android.util.Log
-import androidx.core.content.ContextCompat.getSystemService
 import com.example.ichef.activities.MainActivity
-import com.example.ichef.adapters.SharedData
-import com.example.ichef.database.ShoppingDataManager
+import com.example.ichef.database.ShoppingDataManagerImpl
+import com.example.ichef.database.interfaces.ShoppingDataManager
 import com.example.ichef.notifications.channels.ShoppingListReminderNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DailyShoppingListNotificationReceiver : BroadcastReceiver() {
-
-    @Inject
-    lateinit var storeDatabase: ShoppingDataManager
+class DailyShoppingListNotificationReceiver @Inject constructor(
+    private val storeDatabase: ShoppingDataManager
+) : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         Log.d("DailyShoppingListNotificationReceiver", "Notification triggered")

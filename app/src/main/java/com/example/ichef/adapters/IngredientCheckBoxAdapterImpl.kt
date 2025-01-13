@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 class IngredientCheckBoxAdapterImpl @Inject constructor(
     //private var shoppingFragment: ShoppingFragment,
-    private var sharedData: SharedData,
+    private val sharedData: SharedData,
     private var parentPosition: Int,
     private val onChildCheckedChange: (IngredientCheckbox, Boolean) -> Unit,
     private val parentViewHolder: StoreCheckBoxAdapterImpl.ParentViewHolder
@@ -106,7 +106,7 @@ class IngredientCheckBoxAdapterImpl @Inject constructor(
     }
 
     //when deleting the childs, make sure we set the parentPosition to the actual value, so we dont get out of bounds later
-    private fun getParentPosition(): Int {
+    override fun getParentPosition(): Int {
         var stores = sharedData.stores
         if (parentPosition <= stores.size - 1) {
             return parentPosition

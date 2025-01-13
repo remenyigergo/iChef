@@ -8,13 +8,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-//@Module
-//@InstallIn(SingletonComponent::class)
-//abstract class ShoppingFragmentBindModule {
-//
-//    @Binds
-//    @Singleton
-//    abstract fun bindShoppingFragment(
-//        shoppingFragmentImpl: ShoppingFragmentImpl
-//    ) : ShoppingFragment
-//}
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class ShoppingFragmentBindModule {
+
+    @Binds
+    abstract fun bindShoppingFragment(
+        shoppingFragmentImpl: ShoppingFragmentImpl
+    ) : ShoppingFragment
+}
