@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ConcatAdapter
@@ -25,7 +26,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.AddParentChildActivity
 import com.example.ichef.R
+import com.example.ichef.adapters.FooterAdapterImpl
+import com.example.ichef.adapters.FooterViewModel
 import com.example.ichef.adapters.SharedData
+import com.example.ichef.adapters.StoreCheckBoxAdapterImpl
 import com.example.ichef.models.IngredientCheckbox
 import com.example.ichef.adapters.interfaces.FooterAdapter
 import com.example.ichef.adapters.interfaces.StoreCheckboxAdapter
@@ -39,17 +43,15 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.log
 
 
 @AndroidEntryPoint
 class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment {
 
-    @Inject
-    lateinit var checkBoxesAdapter: StoreCheckboxAdapter
-    @Inject
-    lateinit var footerAdapter: FooterAdapter
-    @Inject
-    lateinit var sharedData: SharedData
+    private val footerViewModel: FooterViewModel by viewModels()
+    private val sharedData: SharedData by viewModels()
+
     @Inject
     lateinit var app: Application
     @Inject
@@ -66,11 +68,14 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
     private lateinit var tickAllButton: FloatingActionButton
     private lateinit var newStoreCheckBoxButton: FloatingActionButton
 
+    private lateinit var checkBoxesAdapter: StoreCheckboxAdapter
+
     //by viewModels means config change is not voiding out the property
     private val viewModel: IngredientsViewModel by viewModels()
 
+
     init {
-        //loadStoresFromDatabase()
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -83,7 +88,9 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
 
         outState.putBoolean("addButtonClicked", sharedData.addButtonClicked)
         outState.putBoolean("allChecked", sharedData.allChecked)
-        outState.putInt("tickedCount", sharedData.tickedCount)
+        //outState.putInt("tickedCount", sharedData.tickedCount)
+        Log.d("ShoppingFragmentImpl", "TickedCount: ${sharedData.tickedCount.value}")
+
         HandleStates(outState)
     }
 
@@ -127,7 +134,7 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
                 saveStoreToDatabase(store)
             }
 
-            footerAdapter.showFooter(true) //use interface
+            footerViewModel.showFooter(true) //use interface
             sharedData.SetEmptyPageVisibilty()
         }
     }
@@ -152,25 +159,37 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
     ): View? {
         // Inflate the layout
         val rootView = inflater.inflate(R.layout.shopping_fragment, container, false)
+        checkBoxesAdapter = StoreCheckBoxAdapterImpl(sharedData, footerViewModel, viewLifecycleOwner)
 
         restoreStates(savedInstanceState)
 
-        HandleShoppingListApiCall(rootView) { data ->
-            //loadStoresFromDatabase() // todo temporary db while backend not ready - put this inside of the API call to actually load some data for now
+        sharedData.emptyPageView = rootView.findViewById(R.id.empty_shopping_list_page)
 
-            // Get empty layout to make it visible if nothing in shopping list for the first time
-            sharedData.emptyPageView = rootView.findViewById(R.id.empty_shopping_list_page)
-            sharedData.SetEmptyPageVisibilty()
-            if (sharedData.stores.size > 0) {
-                footerAdapter.showFooter(true)
+        if (sharedData.getStoresSize() == 0) { // this way config change doesnt re-call the API. uses the stored state
+            HandleShoppingListApiCall(rootView) { onSuccess ->
+                sharedData.stores = storeDatabase.getStores().toMutableList() // todo temporary db while backend not ready - put this inside of the API call to actually load some data for now.
+                checkBoxesAdapter?.notifyDataSetChanged()
+                sharedData.SetEmptyPageVisibilty()
+
+                // Set empty layout to make it visible if needed
+                if (sharedData.stores.size > 0) {
+                    footerViewModel.showFooter(true)
+                }
             }
         }
+
+        val footerAdapter = FooterAdapterImpl(sharedData, app, viewLifecycleOwner, footerViewModel)
+        footerViewModel.setFooterAdapter(footerAdapter)
 
         val concatAdapter = ConcatAdapter(checkBoxesAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>, footerAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
 
         val parentCheckBoxView: RecyclerView = rootView.findViewById(R.id.rvParent)
         parentCheckBoxView.layoutManager = LinearLayoutManager(context)
         parentCheckBoxView.adapter = concatAdapter
+
+        // Observe the adapter (if needed)
+        footerViewModel.footerAdapter.observe(viewLifecycleOwner, Observer { footerAdapter ->
+        })
 
         HandleOpenButton(rootView)
         HandleTickButton(rootView)
@@ -198,8 +217,7 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
             if (sharedData.stores.size > 0) {
                 if (sharedData.allChecked) {
                     sharedData.allChecked = false
-                    sharedData.tickedCount =
-                        0 //reset to 0 selection, when everything was ticked off with the button : FIX for button showing everything was purchased even though nothing was ticked
+                    sharedData.setTickedCount(0) //reset to 0 selection, when everything was ticked off with the button : FIX for button showing everything was purchased even though nothing was ticked
                     Toast.makeText(
                         context,
                         getString(R.string.check_all_unpressed),
@@ -207,8 +225,7 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
                     ).show()
                 } else {
                     sharedData.allChecked = true
-                    sharedData.tickedCount =
-                        0 //reset to 0 selection, when everything was ticked off with the button
+                    sharedData.setTickedCount(0) //reset to 0 selection, when everything was ticked off with the button
 
                     Toast.makeText(
                         context,
@@ -246,11 +263,9 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
     }
 
-    private fun HandleShoppingListApiCall(rootView: View,  onSuccess: (data: Any) -> Unit) {
+    private fun HandleShoppingListApiCall(rootView: View,  onSuccess: (data: Any) -> Unit) { // THIS IS OVERWRITING THE RESTORESTATES ! MAKE SURE THIS CAN WORK TOGETHER WITH STATE RESTORING LATER ON
         shoppingListApiViewModel = ViewModelProvider(this).get(ShoppingListApiViewModel::class.java)
 
         val loadingView = rootView.findViewById<ProgressBar>(R.id.loadingView)
@@ -266,6 +281,7 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
                         loadingView?.visibility = View.VISIBLE
                         successView?.visibility = View.GONE
                         errorView?.visibility = View.GONE
+                        footerViewModel.showFooter(false)
                     }
                     is ApiState.Success -> {
                         Log.d("ShoppingFragment", "State: Success")
@@ -280,6 +296,7 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
                         loadingView?.visibility = View.GONE
                         successView?.visibility = View.GONE
                         errorView?.visibility = View.VISIBLE
+                        footerViewModel.showFooter(false)
                     }
                 }
             }
@@ -299,21 +316,23 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
     }
 
     private fun restoreStates(savedInstanceState: Bundle?) {
+        Log.d("ShoppingFragmentImpl", "Restoring state")
         //restoring variables if config change happens (light-dark-mode switch)
         sharedData.addButtonClicked = savedInstanceState?.getBoolean("addButtonClicked") ?: false
         sharedData.allChecked = savedInstanceState?.getBoolean("allChecked") ?: false
-        sharedData.tickedCount = savedInstanceState?.getInt("tickedCount") ?: 0
+        //sharedData.tickedCount = savedInstanceState?.getInt("tickedCount") ?: 0
+        Log.d("ShoppingFragmentImpl", "TickedCount: ${sharedData.tickedCount.value}")
 
         // Restore the state of the checkboxes if available
         savedInstanceState?.let {
             for (store in sharedData.stores) {
                 for (ingredient in store.ingredients) {
+                    Log.d("ShoppingFragmentImpl", "Restoring ${ingredient}")
                     ingredient.isChecked =
                         it.getBoolean("${store.storeName}_${ingredient.title}", false)
                 }
             }
         }
-
     }
 
     private fun GetStoresNames(): ArrayList<String>? {

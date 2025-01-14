@@ -4,21 +4,62 @@ import android.app.Application
 import android.view.View
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.example.ichef.R
 import com.example.ichef.database.ShoppingDataManager
 import com.example.ichef.models.StoreCheckBox
+import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@HiltViewModel
 class SharedData @Inject constructor(
     private var app: Application,
     private var storeDb : ShoppingDataManager
-) {
+) : ViewModel() {
     var stores : MutableList<StoreCheckBox> = mutableListOf()
     lateinit var emptyPageView: ConstraintLayout
 
     var addButtonClicked: Boolean = false
     var allChecked: Boolean = false
-    var tickedCount = 0
+
+    private val _tickedCount = MutableLiveData(0)
+    val tickedCount: LiveData<Int> get() = _tickedCount
+
+    /*
+    * SETTERS
+    * */
+    fun setTickedCount(value: Int) {
+        _tickedCount.value = value
+    }
+
+    /*
+    * GETTERS
+    * */
+    fun getStoresSize(): Int {
+        return stores.size
+    }
+
+    /*
+    * TickedCount handlers
+    * */
+    fun incrementTick() {
+        _tickedCount.value = (_tickedCount.value ?: 0) + 1
+    }
+
+    fun decreaseTick() {
+        _tickedCount.value = (_tickedCount.value ?: 0) - 1
+    }
+
+    /*
+    * OTHERS
+    * */
+    fun isAllChecked(): Boolean {
+        return allChecked
+    }
 
     fun SetEmptyPageVisibilty() {
         if (stores.size == 0) {
@@ -26,10 +67,6 @@ class SharedData @Inject constructor(
         } else {
             emptyPageView.visibility = View.INVISIBLE
         }
-    }
-
-    fun getStoresSize(): Int {
-        return stores.size
     }
 
     fun checkIngredient(storePosition: Int, ingredientPosition: Int, value: Boolean) {
@@ -45,17 +82,5 @@ class SharedData @Inject constructor(
 
     fun removeIngredient(storeName: String, ingredient: String) {
         storeDb.deleteIngredientFromStore(storeName, ingredient)
-    }
-
-    fun incrementTick() {
-        tickedCount++
-    }
-
-    fun decreaseTick() {
-        tickedCount--
-    }
-
-    fun isAllChecked(): Boolean {
-        return allChecked
     }
 }

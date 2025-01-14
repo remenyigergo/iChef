@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.recyclerview.widget.ConcatAdapter
 import com.example.ichef.R
 import com.example.ichef.adapters.FooterAdapterImpl
+import com.example.ichef.adapters.FooterViewModel
 import com.example.ichef.adapters.SharedData
 import com.example.ichef.adapters.StoreCheckBoxAdapterImpl
 import com.example.ichef.adapters.interfaces.FooterAdapter
@@ -51,7 +52,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesShoppingFragment(checkBoxAdapterImpl: StoreCheckBoxAdapterImpl, footerAdapterImpl: FooterAdapterImpl, concatAdapter: ConcatAdapter, sharedData: SharedData, app: Application) : ShoppingFragment {
+    fun providesShoppingFragment() : ShoppingFragment {
         var shoppingFragment = ShoppingFragmentImpl()
         return shoppingFragment
     }
@@ -70,27 +71,15 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesCheckBoxesAdapter(footerAdapter: FooterAdapter, sharedData: SharedData) : StoreCheckboxAdapter {
-        return StoreCheckBoxAdapterImpl(footerAdapter, sharedData)
-    }
-
-    @Provides
-    @Singleton
     fun providesSharedData(app: Application, shoppingDataManager: ShoppingDataManager) : SharedData {
         return SharedData(app,shoppingDataManager)
     }
 
-    @Provides
-    @Singleton
-    fun providesFooterAdapter(sharedData: SharedData, app: Application) : FooterAdapter {
-        return FooterAdapterImpl(sharedData, app)
-    }
-
-    @Provides
-    @Singleton
-    fun providesConcatAdapter(checkBoxAdapter: StoreCheckBoxAdapterImpl, footerAdapter: FooterAdapterImpl) : ConcatAdapter {
-        return ConcatAdapter(checkBoxAdapter, footerAdapter)
-    }
+//    @Provides
+//    @Singleton
+//    fun providesConcatAdapter(checkBoxAdapter: StoreCheckBoxAdapterImpl, footerAdapter: FooterAdapterImpl) : ConcatAdapter {
+//        return ConcatAdapter(checkBoxAdapter, footerAdapter)
+//    }
 
     @Provides
     @ApplicationContext

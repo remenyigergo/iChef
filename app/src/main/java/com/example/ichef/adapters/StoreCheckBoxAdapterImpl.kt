@@ -6,16 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.R
-import com.example.ichef.adapters.interfaces.FooterAdapter
 import com.example.ichef.adapters.interfaces.StoreCheckboxAdapter
 import javax.inject.Inject
 
 class StoreCheckBoxAdapterImpl @Inject constructor(
-    private var footerAdapter: FooterAdapter,
-    private var sharedData: SharedData
+    private var sharedData: SharedData,
+    private var footerViewModel: FooterViewModel,
+    private var lifecycleOwner: LifecycleOwner
 ) : StoreCheckboxAdapter, RecyclerView.Adapter<StoreCheckBoxAdapterImpl.ParentViewHolder>() {
 
     inner class ParentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -36,10 +37,11 @@ class StoreCheckBoxAdapterImpl @Inject constructor(
 
         // Set up child RecyclerView
         parentViewHolder.recyclerView.layoutManager = LinearLayoutManager(parentViewHolder.itemView.context)
+
         parentViewHolder.recyclerView.adapter =
             IngredientCheckBoxAdapterImpl(sharedData, position, { child, isChecked ->
                 child.isChecked = isChecked
-            }, parentViewHolder)
+            }, parentViewHolder, lifecycleOwner)
 
         // Handle parent deletion
         parentViewHolder.deleteButton.setOnClickListener {
@@ -52,7 +54,7 @@ class StoreCheckBoxAdapterImpl @Inject constructor(
 
             //handle footer
             if (stores.size == 0) {
-                footerAdapter.showFooter(false)
+                footerViewModel.showFooter(false)
                 //set allClicked to false because no element is presented
                 sharedData.allChecked = false
                 sharedData.SetEmptyPageVisibilty()

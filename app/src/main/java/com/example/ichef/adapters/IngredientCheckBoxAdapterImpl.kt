@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.R
 import com.example.ichef.adapters.interfaces.IngredientCheckboxAdapter
@@ -20,9 +22,12 @@ class IngredientCheckBoxAdapterImpl @Inject constructor(
     private var sharedData: SharedData,
     private var parentPosition: Int,
     private val onChildCheckedChange: (IngredientCheckbox, Boolean) -> Unit,
-    private val parentViewHolder: StoreCheckBoxAdapterImpl.ParentViewHolder
+    private val parentViewHolder: StoreCheckBoxAdapterImpl.ParentViewHolder,
+    private val lifecycleOwner: LifecycleOwner // To observe LiveData
 ) : IngredientCheckboxAdapter,
     RecyclerView.Adapter<IngredientCheckBoxAdapterImpl.ChildViewHolder>() {
+
+    private var currentTickedCount: Int = 0 // Cache ticked count for the click listener
 
     inner class ChildViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val ingredientLayout: LinearLayout = view.findViewById(R.id.ingredient_layout)
@@ -33,7 +38,17 @@ class IngredientCheckBoxAdapterImpl @Inject constructor(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChildViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_child, parent, false)
+
+        SetupObserver()
+
         return ChildViewHolder(view)
+    }
+
+    private fun SetupObserver() {
+        // Observe tickedCount changes here
+        sharedData.tickedCount.observe(lifecycleOwner, Observer { tickedCount ->
+            currentTickedCount = tickedCount ?: 0
+        })
     }
 
     override fun onBindViewHolder(holder: ChildViewHolder, position: Int) {
@@ -54,7 +69,7 @@ class IngredientCheckBoxAdapterImpl @Inject constructor(
                     true
                 ) //change the list of ingredients check state
             } else {
-                if (tickedCount > 0) {
+                if (currentTickedCount > 0) {
                     sharedData.decreaseTick()
                     sharedData.checkIngredient(
                         parentPosition,
@@ -85,7 +100,7 @@ class IngredientCheckBoxAdapterImpl @Inject constructor(
                 stores[parentPosition].ingredients.size
             ) // Adjust the subsequent items' positions
 
-            if (tickedCount > 0) {
+            if (currentTickedCount > 0) {
                 sharedData.decreaseTick()
             }
 

@@ -27,8 +27,8 @@ class ShoppingListApiViewModel @Inject constructor() : ViewModel() {
     @Inject
     @MockApi
     lateinit var shoppingListApi: ShoppingListApi
-    @Inject
-    lateinit var checkBoxesAdapter: StoreCheckboxAdapter
+//    @Inject
+//    lateinit var checkBoxesAdapter: StoreCheckboxAdapter
     @Inject
     lateinit var sharedData: SharedData
     @Inject
@@ -45,7 +45,6 @@ class ShoppingListApiViewModel @Inject constructor() : ViewModel() {
                 val response = shoppingListApi.getShoppingList(1)
                 // Simulate a delay
                 kotlinx.coroutines.delay(Constants.shoppingApiDelay)
-                loadStoresFromDatabase()
 
                 if (response.isSuccessful && response.body() != null) {
                     val data = response.body()!!
@@ -62,10 +61,5 @@ class ShoppingListApiViewModel @Inject constructor() : ViewModel() {
         }
 
         return Response.error(50000, ResponseBody.create(null, "Generic Error"))
-    }
-
-    private fun loadStoresFromDatabase() {
-        sharedData.stores = storeDatabase.getStores().toMutableList()
-        checkBoxesAdapter?.notifyDataSetChanged()
     }
 }
