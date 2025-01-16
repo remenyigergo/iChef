@@ -73,6 +73,8 @@ class FooterAdapterImpl @Inject constructor(
             ).apply {
                 weight = 1f
                 bottomMargin = 200
+                leftMargin = 30
+                rightMargin = 30
             }
             text = context.getString(R.string.purchased)
             setBackgroundColor(resources.getColor(R.color.button_color))

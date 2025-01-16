@@ -81,17 +81,18 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
     private lateinit var checkBoxesAdapter: StoreCheckboxAdapter
 
     /*
+    * Private properties
+    * */
+    private var addButtonClicked: Boolean = false
+
+    /*
     * Observer properties
     * */
     private var allChecked: Boolean = false
 
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         Log.d("ShoppingFragment", "onSaveInstanceState called")
-        Log.d("ShoppingFragment", "addButtonClicked: ${sharedDataViewModel.addButtonClicked}")
-
-        outState.putBoolean("addButtonClicked", sharedDataViewModel.addButtonClicked)
 
         HandleStates(outState)
     }
@@ -163,6 +164,11 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
 
         // Inflate the layout
         val rootView = inflater.inflate(R.layout.shopping_fragment, container, false)
+
+        HandleOpenButton(rootView) // these need to be before api call, so FAB button is initialized to make it invisible while API call is happening
+        HandleTickButton(rootView)
+        HandleNewButton(rootView)
+
         checkBoxesAdapter = StoreCheckBoxAdapterImpl(sharedDataViewModel, footerViewModel, viewLifecycleOwner)
 
         restoreStates(savedInstanceState)
@@ -174,8 +180,8 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
                 sharedDataViewModel.stores = storeDatabase.getStores().toMutableList() // todo temporary db while backend not ready - put this inside of the API call to actually load some data for now.
                 checkBoxesAdapter?.notifyDataSetChanged()
                 sharedDataViewModel.SetEmptyPageVisibilty()
+                fab.visibility = View.VISIBLE
 
-                // Set empty layout to make it visible if needed
                 if (sharedDataViewModel.stores.size > 0) {
                     footerViewModel.showFooter(true)
                 }
@@ -194,10 +200,6 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
         // Observe the adapter (if needed)
         footerViewModel.footerAdapter.observe(viewLifecycleOwner, Observer { footerAdapter ->
         })
-
-        HandleOpenButton(rootView)
-        HandleTickButton(rootView)
-        HandleNewButton(rootView)
 
         return rootView
     }
@@ -276,8 +278,6 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
     }
 
     private fun HandleShoppingListApiCall(rootView: View,  onSuccess: (data: Any) -> Unit) { // THIS IS OVERWRITING THE RESTORESTATES ! MAKE SURE THIS CAN WORK TOGETHER WITH STATE RESTORING LATER ON
-//        shoppingListApiViewModel = ViewModelProvider(this).get(ShoppingListApiViewModel::class.java)
-
         val loadingView = rootView.findViewById<ProgressBar>(R.id.loadingView)
         val successView = rootView.findViewById<TextView>(R.id.successView)
         val errorView = rootView.findViewById<LinearLayout>(R.id.errorView)
@@ -292,6 +292,9 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
                         successView?.visibility = View.GONE
                         errorView?.visibility = View.GONE
                         footerViewModel.showFooter(false)
+
+                        if (fab != null)
+                            fab.visibility = View.GONE
                     }
                     is ApiState.Success -> {
                         Log.d("ShoppingFragment", "State: Success")
@@ -307,6 +310,8 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
                         successView?.visibility = View.GONE
                         errorView?.visibility = View.VISIBLE
                         footerViewModel.showFooter(false)
+                        if (fab != null)
+                            fab.visibility = View.GONE
                     }
                 }
             }
@@ -327,11 +332,6 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
 
     private fun restoreStates(savedInstanceState: Bundle?) {
         Log.d("ShoppingFragmentImpl", "Restoring state")
-        //restoring variables if config change happens (light-dark-mode switch)
-        sharedDataViewModel.addButtonClicked = savedInstanceState?.getBoolean("addButtonClicked") ?: false
-        //sharedData.allChecked = savedInstanceState?.getBoolean("allChecked") ?: false
-        //sharedData.tickedCount = savedInstanceState?.getInt("tickedCount") ?: 0
-        Log.d("ShoppingFragmentImpl", "TickedCount: ${sharedDataViewModel.tickedCount.value}")
 
         // Restore the state of the checkboxes if available
         savedInstanceState?.let {
@@ -352,10 +352,10 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
     }
 
     private fun onAddButtonClicked() {
-        setVisibility(sharedDataViewModel.addButtonClicked)
-        setAnimation(sharedDataViewModel.addButtonClicked)
-        setClickable(sharedDataViewModel.addButtonClicked)
-        sharedDataViewModel.addButtonClicked = !sharedDataViewModel.addButtonClicked
+        setVisibility(addButtonClicked)
+        setAnimation(addButtonClicked)
+        setClickable(addButtonClicked)
+        addButtonClicked = !addButtonClicked
     }
 
     private fun setAnimation(clicked: Boolean) {
@@ -405,6 +405,4 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
             storeDatabase.insertIngredient(storeId, ingredient.title, ingredient.isChecked)
         }
     }
-
-
 }
