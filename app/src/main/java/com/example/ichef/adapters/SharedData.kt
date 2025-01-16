@@ -24,7 +24,9 @@ class SharedData @Inject constructor(
     lateinit var emptyPageView: ConstraintLayout
 
     var addButtonClicked: Boolean = false
-    var allChecked: Boolean = false
+
+    private val _allChecked = MutableLiveData(false)
+    val allChecked: LiveData<Boolean> get() = _allChecked
 
     private val _tickedCount = MutableLiveData(0)
     val tickedCount: LiveData<Int> get() = _tickedCount
@@ -36,11 +38,19 @@ class SharedData @Inject constructor(
         _tickedCount.value = value
     }
 
+    fun setAllChecked(value: Boolean) {
+        _allChecked.value = value
+    }
+
     /*
     * GETTERS
     * */
     fun getStoresSize(): Int {
         return stores.size
+    }
+
+    fun isAllChecked(): Boolean {
+        return _allChecked.value ?: false
     }
 
     /*
@@ -52,13 +62,6 @@ class SharedData @Inject constructor(
 
     fun decreaseTick() {
         _tickedCount.value = (_tickedCount.value ?: 0) - 1
-    }
-
-    /*
-    * OTHERS
-    * */
-    fun isAllChecked(): Boolean {
-        return allChecked
     }
 
     fun SetEmptyPageVisibilty() {

@@ -56,7 +56,7 @@ class StoreCheckBoxAdapterImpl @Inject constructor(
             if (stores.size == 0) {
                 footerViewModel.showFooter(false)
                 //set allClicked to false because no element is presented
-                sharedData.allChecked = false
+                sharedData.setAllChecked(false)
                 sharedData.SetEmptyPageVisibilty()
             }
         }
