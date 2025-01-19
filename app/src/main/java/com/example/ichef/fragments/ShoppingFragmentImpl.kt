@@ -18,7 +18,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ConcatAdapter
@@ -85,26 +84,9 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
     * */
     private var addButtonClicked: Boolean = false
 
-    /*
-    * Observer properties
-    * */
-    private var allChecked: Boolean = false
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         Log.d("ShoppingFragment", "onSaveInstanceState called")
-
-        HandleStates(outState)
-    }
-
-    private fun HandleStates(outState: Bundle) {
-        for (store in sharedDataViewModel.stores) {
-            for (ingredient in store.ingredients) {
-                val key = "${store.storeName}_${ingredient.title}"
-                outState.putBoolean("${store.storeName}_${ingredient.title}", ingredient.isChecked)
-                Log.d("ShoppingFragment", "Saving ingredient state - $key: ${ingredient.isChecked}")
-            }
-        }
     }
 
     private val addNewStore = registerForActivityResult(
@@ -117,42 +99,33 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
 
             val store = StoreCheckBox(
                 storeName,
-                ingredients.map { IngredientCheckbox(it, false) }.toMutableList()
-            )
+                ingredients.map { IngredientCheckbox(it, false) }
+                    .distinct()
+                    .toMutableList())
 
             // Add the new parent item to the list and update RecyclerView
-            var storeIndex = getStoreIndex(storeName)
-            if (storeIndex != -1) {
+            var storeIndex = sharedDataViewModel.findStoreIndex { store -> store.storeName == storeName }
+            Log.d("ShoppingFragmentImpl", "Storeindex ${storeIndex }")
+
+            if (storeIndex != -1 && storeIndex != null) {
                 store.ingredients.forEach({ ingredient ->
-                    if (sharedDataViewModel.stores[storeIndex].ingredients.find{it.title == ingredient.title} == null) { //ingredient is not in sharedData's corresponding store so we can add this ingredient to the store
-                        sharedDataViewModel.stores[storeIndex].ingredients.add(ingredient)
+                    if (!sharedDataViewModel.doesStoreContainIngredient(storeIndex, ingredient.title)) { //ingredient is not in sharedData's corresponding store so we can add this ingredient to the store
+                        Log.d("ShoppingFragmentImpl", "Store ${store.storeName} doesnt contain ${ingredient.title}")
+                        sharedDataViewModel.addIngredientToStore(storeIndex, ingredient)
                         storeDatabase.storeNewIngredientsInStore(store.storeName, ingredients)
                     } else {
                         Toast.makeText(app.applicationContext, "${ingredient.title} is already added to ${store.storeName}", Toast.LENGTH_SHORT).show()
                     }
                 })
             } else {
-                sharedDataViewModel.stores.add(store)
-                checkBoxesAdapter?.notifyItemInserted(sharedDataViewModel.stores.size-1)
+                sharedDataViewModel.addStore(store)
+                checkBoxesAdapter?.notifyItemInserted(sharedDataViewModel.getStoresSize()-1)
                 saveStoreToDatabase(store)
             }
 
             footerViewModel.showFooter(true) //use interface
-            sharedDataViewModel.SetEmptyPageVisibilty()
+            sharedDataViewModel.updateEmptyPageVisibility()
         }
-    }
-
-    private fun getStoreIndex(storeName: String): Int {
-        var positionOfStore = -1
-        var iteration = 0
-        sharedDataViewModel.stores.forEach({ store ->
-            if (store.storeName == storeName) {
-                positionOfStore = iteration
-            }
-            iteration++
-        })
-
-        return positionOfStore
     }
 
     override fun onCreateView(
@@ -160,8 +133,6 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        SetupObservers()
-
         // Inflate the layout
         val rootView = inflater.inflate(R.layout.shopping_fragment, container, false)
 
@@ -171,18 +142,16 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
 
         checkBoxesAdapter = StoreCheckBoxAdapterImpl(sharedDataViewModel, footerViewModel, viewLifecycleOwner)
 
-        restoreStates(savedInstanceState)
-
         sharedDataViewModel.emptyPageView = rootView.findViewById(R.id.empty_shopping_list_page)
 
         if (sharedDataViewModel.getStoresSize() == 0) { // this way config change doesnt re-call the API. uses the stored state
             HandleShoppingListApiCall(rootView) { onSuccess ->
-                sharedDataViewModel.stores = storeDatabase.getStores().toMutableList() // todo temporary db while backend not ready - put this inside of the API call to actually load some data for now.
+                sharedDataViewModel.setStores(storeDatabase.getStores().toMutableList())  // todo temporary db while backend not ready - put this inside of the API call to actually load some data for now.
                 checkBoxesAdapter?.notifyDataSetChanged()
-                sharedDataViewModel.SetEmptyPageVisibilty()
+                sharedDataViewModel.updateEmptyPageVisibility()
                 fab.visibility = View.VISIBLE
 
-                if (sharedDataViewModel.stores.size > 0) {
+                if (sharedDataViewModel.getStoresSize() > 0) {
                     footerViewModel.showFooter(true)
                 }
             }
@@ -204,11 +173,6 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
         return rootView
     }
 
-    private fun SetupObservers() {
-        sharedDataViewModel.allChecked.observe(viewLifecycleOwner) { _allChecked ->
-            allChecked = _allChecked
-        }
-    }
 
     private fun HandleNewButton(rootView: View) {
         newStoreCheckBoxButton = rootView.findViewById(R.id.fab_opt2)
@@ -226,42 +190,9 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
     private fun HandleTickButton(rootView: View) {
         tickAllButton = rootView.findViewById(R.id.fab_opt1)
         tickAllButton.setOnClickListener {
-            if (sharedDataViewModel.stores.size > 0) {
-                if (allChecked) {
-                    sharedDataViewModel.setAllChecked(false)
-                    sharedDataViewModel.setTickedCount(0) //reset to 0 selection, when everything was ticked off with the button : FIX for button showing everything was purchased even though nothing was ticked
-                    Toast.makeText(
-                        context,
-                        getString(R.string.check_all_unpressed),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    sharedDataViewModel.setAllChecked(true)
-                    sharedDataViewModel.setTickedCount(0) //reset to 0 selection, when everything was ticked off with the button
-
-                    Toast.makeText(
-                        context,
-                        getString(R.string.check_all_pressed),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            } else {
-                Toast.makeText(
-                    context,
-                    getString(R.string.nothing_to_tick_here),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
             // Select All functionality
-            sharedDataViewModel.stores.forEach { parent ->
-                parent.ingredients.forEach { child ->
-                    child.isChecked = allChecked
-                }
-            }
-
+            sharedDataViewModel.setAllIngredientChecked()
             checkBoxesAdapter?.notifyDataSetChanged() // Notify the adapter to update the UI
-
             onAddButtonClicked()
         }
     }
@@ -271,10 +202,6 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
         fab.setOnClickListener {
             onAddButtonClicked()
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
     }
 
     private fun HandleShoppingListApiCall(rootView: View,  onSuccess: (data: Any) -> Unit) { // THIS IS OVERWRITING THE RESTORESTATES ! MAKE SURE THIS CAN WORK TOGETHER WITH STATE RESTORING LATER ON
@@ -299,9 +226,8 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
                     is ApiState.Success -> {
                         Log.d("ShoppingFragment", "State: Success")
                         loadingView?.visibility = View.GONE
-                        //successView?.visibility = View.VISIBLE
                         errorView?.visibility = View.GONE
-                        // Update your UI with data
+
                         onSuccess(state.data)
                     }
                     is ApiState.Error -> {
@@ -330,25 +256,8 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
         saveStoresToDatabase()
     }
 
-    private fun restoreStates(savedInstanceState: Bundle?) {
-        Log.d("ShoppingFragmentImpl", "Restoring state")
-
-        // Restore the state of the checkboxes if available
-        savedInstanceState?.let {
-            for (store in sharedDataViewModel.stores) {
-                for (ingredient in store.ingredients) {
-                    Log.d("ShoppingFragmentImpl", "Restoring ${ingredient}")
-                    ingredient.isChecked =
-                        it.getBoolean("${store.storeName}_${ingredient.title}", false)
-                }
-            }
-        }
-    }
-
-    private fun GetStoresNames(): ArrayList<String>? {
-        var storesNames = ArrayList<String>()
-        sharedDataViewModel.stores.forEach({ checkboxElement-> storesNames.add(checkboxElement.storeName)})
-        return storesNames
+    private fun GetStoresNames(): ArrayList<String> {
+        return sharedDataViewModel.getStoresNames()
     }
 
     private fun onAddButtonClicked() {
@@ -391,7 +300,7 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
     }
 
     private fun saveStoresToDatabase() {
-        sharedDataViewModel.stores.forEach { store ->
+        sharedDataViewModel.getAllStores().forEach { store ->
             val storeId = storeDatabase.insertStore(store.storeName)
             store.ingredients.forEach { ingredient ->
                 storeDatabase.insertIngredient(storeId, ingredient.title, ingredient.isChecked)

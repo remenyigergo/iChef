@@ -12,15 +12,12 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ichef.R
 import com.example.ichef.adapters.interfaces.IngredientCheckboxAdapter
-import com.example.ichef.fragments.ShoppingFragmentImpl
-import com.example.ichef.fragments.interfaces.ShoppingFragment
 import com.example.ichef.models.IngredientCheckbox
 import javax.inject.Inject
 
 class IngredientCheckBoxAdapterImpl @Inject constructor(
-    //private var shoppingFragment: ShoppingFragment,
     private var sharedData: SharedData,
-    private var parentPosition: Int,
+    private var storeIndex: Int,
     private val onChildCheckedChange: (IngredientCheckbox, Boolean) -> Unit,
     private val parentViewHolder: StoreCheckBoxAdapterImpl.ParentViewHolder,
     private val lifecycleOwner: LifecycleOwner // To observe LiveData
@@ -51,29 +48,27 @@ class IngredientCheckBoxAdapterImpl @Inject constructor(
         })
     }
 
-    override fun onBindViewHolder(holder: ChildViewHolder, position: Int) {
-        parentPosition = getParentPosition()
-        var stores = sharedData.stores
-        val child = stores[parentPosition].ingredients[position]
-        holder.checkBox.text = child.title
-        holder.checkBox.isChecked = child.isChecked
+    override fun onBindViewHolder(holder: ChildViewHolder, ingredientIndex: Int) {
+        storeIndex = getParentPosition()
+        val child = sharedData.getIngredientCheckboxByIndex(storeIndex, ingredientIndex)
+        holder.checkBox.text = child?.title
+        holder.checkBox.isChecked = child?.isChecked ?: false
 
         // Handle child checkbox change
         holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
-            val tickedCount = sharedData.tickedCount
             if (isChecked) {
                 sharedData.incrementTick()
                 sharedData.checkIngredient(
-                    parentPosition,
-                    position,
+                    storeIndex,
+                    ingredientIndex,
                     true
                 ) //change the list of ingredients check state
             } else {
                 if (currentTickedCount > 0) {
                     sharedData.decreaseTick()
                     sharedData.checkIngredient(
-                        parentPosition,
-                        position,
+                        storeIndex,
+                        ingredientIndex,
                         false
                     ) //change the list of ingredients check state
                 }
@@ -83,51 +78,47 @@ class IngredientCheckBoxAdapterImpl @Inject constructor(
         // Handle child checkbox when area clicked
         holder.ingredientLayout.setOnClickListener {
             holder.checkBox.isChecked = !holder.checkBox.isChecked
-            onChildCheckedChange(child, holder.checkBox.isChecked)
+            if (child != null)
+                onChildCheckedChange(child, holder.checkBox.isChecked)
         }
 
         // Handle child deletion
         holder.deleteButton.setOnClickListener {
-            Log.i("ChildAdapter", "Deleting child in pos: $position")
-            var stores = sharedData.stores
-            var tickedCount = sharedData.tickedCount
-            sharedData.removeIngredient(stores[parentPosition].storeName, stores[parentPosition].ingredients[position].title) //todo inject DB here and directly delete not through shared
-            stores[parentPosition].ingredients.removeAt(position)
+            Log.i("ChildAdapter", "Deleting child in pos: $ingredientIndex")
+            sharedData.removeIngredient(sharedData.getStoreByIndex(storeIndex)?.storeName, sharedData.getIngredientCheckboxByIndex(storeIndex,ingredientIndex)?.title) //todo inject DB here and directly delete not through shared
 
-            notifyItemRemoved(position)
+            notifyItemRemoved(ingredientIndex)
             notifyItemRangeChanged(
-                position,
-                stores[parentPosition].ingredients.size
+                ingredientIndex,
+                sharedData.getStoreByIndex(storeIndex)?.ingredients?.size ?: 0
             ) // Adjust the subsequent items' positions
 
             if (currentTickedCount > 0) {
                 sharedData.decreaseTick()
             }
 
-            if (stores[parentPosition].ingredients.size == 0) {
+            if (sharedData.getStoreByIndex(storeIndex)?.ingredients?.size == 0) {
                 parentViewHolder.deleteButton.performClick()
             }
 
             //debug toast
-            Log.d("IngredientCheckBoxAdapter", "tickedCount: ${tickedCount}")
+            Log.d("IngredientCheckBoxAdapter", "tickedCount: ${sharedData.tickedCount}")
             //Toast.makeText(shoppingFragment.context, "${shoppingFragment.tickedCount}", Toast.LENGTH_SHORT).show()
         }
     }
 
     override fun getItemCount(): Int {
         val position = getParentPosition()
-        var stores = sharedData.stores
-        return stores[position].ingredients.size
+        return sharedData.getStoreByIndex(position)?.ingredients?.size ?: 0
     }
 
     //when deleting the childs, make sure we set the parentPosition to the actual value, so we dont get out of bounds later
     private fun getParentPosition(): Int {
-        var stores = sharedData.stores
-        if (parentPosition <= stores.size - 1) {
-            return parentPosition
+        if (storeIndex <= sharedData.getStoresSize() - 1) {
+            return storeIndex
         }
 
-        return parentPosition - 1
+        return storeIndex - 1
     }
 }
 

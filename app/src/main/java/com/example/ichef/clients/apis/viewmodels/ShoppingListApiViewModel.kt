@@ -27,8 +27,6 @@ class ShoppingListApiViewModel @Inject constructor() : ViewModel() {
     @Inject
     @MockApi
     lateinit var shoppingListApi: ShoppingListApi
-//    @Inject
-//    lateinit var checkBoxesAdapter: StoreCheckboxAdapter
     @Inject
     lateinit var sharedData: SharedData
     @Inject

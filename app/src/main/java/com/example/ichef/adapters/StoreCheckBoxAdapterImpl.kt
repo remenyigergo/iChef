@@ -32,8 +32,7 @@ class StoreCheckBoxAdapterImpl @Inject constructor(
     }
 
     override fun onBindViewHolder(parentViewHolder: ParentViewHolder, position: Int) {
-        var stores = sharedData.stores
-        parentViewHolder.title.text = stores[position].storeName
+        parentViewHolder.title.text = sharedData.getStoreByIndex(position)?.storeName
 
         // Set up child RecyclerView
         parentViewHolder.recyclerView.layoutManager = LinearLayoutManager(parentViewHolder.itemView.context)
@@ -46,18 +45,18 @@ class StoreCheckBoxAdapterImpl @Inject constructor(
         // Handle parent deletion
         parentViewHolder.deleteButton.setOnClickListener {
             Log.d("ParentAdapter", "Delete button clicked for position $position")
-            stores = sharedData.stores
             sharedData.removeStore(position)
-            stores.removeAt(position)
             notifyItemRemoved(position)
-            notifyItemRangeChanged(position, stores.size)
+
+            val storesSize = sharedData.getStoresSize()
+            notifyItemRangeChanged(position, storesSize)
 
             //handle footer
-            if (stores.size == 0) {
+            if (storesSize == 0) {
                 footerViewModel.showFooter(false)
                 //set allClicked to false because no element is presented
                 sharedData.setAllChecked(false)
-                sharedData.SetEmptyPageVisibilty()
+                sharedData.updateEmptyPageVisibility()
             }
         }
     }
