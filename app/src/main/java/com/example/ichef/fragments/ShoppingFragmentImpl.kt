@@ -133,10 +133,10 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout
         val rootView = inflater.inflate(R.layout.shopping_fragment, container, false)
+        fab = rootView.findViewById(R.id.fab) //init fab before changing its functionality with observer
+        SetupObservers(rootView)
 
-        HandleOpenButton(rootView) // these need to be before api call, so FAB button is initialized to make it invisible while API call is happening
         HandleTickButton(rootView)
         HandleNewButton(rootView)
 
@@ -171,6 +171,29 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
         })
 
         return rootView
+    }
+
+    private fun SetupObservers(rootView: View) {
+        sharedDataViewModel.stores.observe(viewLifecycleOwner) { stores ->
+            updateFabBehavior(stores.size, rootView)
+        }
+    }
+
+    private fun updateFabBehavior(storeCount: Int, rootView: View) {
+        if (storeCount == 0) {
+            fab.setOnClickListener {
+                val ingredients = ingredientsViewModel.ingredients
+                val intent = Intent(context, AddParentChildActivity::class.java)
+                intent.putStringArrayListExtra("ingredients_list", ingredients)
+                intent.putStringArrayListExtra("stores", GetStoresNames())
+                addNewStore.launch(intent)
+                Toast.makeText(context, getString(R.string.add_new_pressed), Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            fab.setOnClickListener {
+                onAddButtonClicked()
+            }
+        }
     }
 
 

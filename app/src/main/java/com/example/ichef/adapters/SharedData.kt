@@ -22,6 +22,7 @@ class SharedData @Inject constructor(
 ) : ViewModel() {
 
     private val _stores = MutableLiveData<MutableList<StoreCheckBox>>(mutableListOf())
+    val stores : LiveData<MutableList<StoreCheckBox>> get() = _stores
 
     lateinit var emptyPageView: ConstraintLayout
 

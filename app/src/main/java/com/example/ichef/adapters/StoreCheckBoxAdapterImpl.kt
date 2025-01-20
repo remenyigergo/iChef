@@ -45,18 +45,28 @@ class StoreCheckBoxAdapterImpl @Inject constructor(
         // Handle parent deletion
         parentViewHolder.deleteButton.setOnClickListener {
             Log.d("ParentAdapter", "Delete button clicked for position $position")
+
             sharedData.removeStore(position)
             notifyItemRemoved(position)
 
             val storesSize = sharedData.getStoresSize()
             notifyItemRangeChanged(position, storesSize)
 
-            //handle footer
             if (storesSize == 0) {
                 footerViewModel.showFooter(false)
-                //set allClicked to false because no element is presented
                 sharedData.setAllChecked(false)
+                sharedData.setTickedCount(0)
                 sharedData.updateEmptyPageVisibility()
+            } else {
+                //decrement tickedCount because of deletion
+                val store = sharedData.getStoreByIndex(position)
+                var newTickedCount = 0
+                if (sharedData.tickedCount.value!! - store?.ingredients?.size!! < 0) {
+                    newTickedCount = 0
+                } else {
+                    newTickedCount = sharedData.tickedCount.value!! - store?.ingredients?.size!!
+                }
+                sharedData.setTickedCount(newTickedCount)
             }
         }
     }
