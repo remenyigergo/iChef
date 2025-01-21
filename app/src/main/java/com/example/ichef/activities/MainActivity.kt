@@ -2,19 +2,17 @@ package com.example.ichef.activities
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.ichef.R
-import com.example.ichef.components.ShoppingFragmentBottomSheetDialogImpl
 import com.example.ichef.fragments.HomeFragment
 import com.example.ichef.fragments.MoreFragment
 import com.example.ichef.fragments.SearchFragment
 import com.example.ichef.fragments.ShoppingFragmentImpl
-import com.example.ichef.notifications.scheduler.AlarmScheduler
 import com.example.ichef.notifications.channels.ShoppingListReminderNotificationManager
+import com.example.ichef.notifications.scheduler.AlarmScheduler
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

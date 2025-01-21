@@ -1,7 +1,5 @@
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import android.database.Cursor
-import android.content.ContentValues
 import android.database.sqlite.SQLiteOpenHelper
 
 class AddParentChildDataManagerHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {

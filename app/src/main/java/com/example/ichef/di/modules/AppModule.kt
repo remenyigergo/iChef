@@ -2,16 +2,7 @@ package com.example.ichef.di.modules
 
 import android.app.Application
 import android.content.Context
-import android.widget.Toast
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.recyclerview.widget.ConcatAdapter
-import com.example.ichef.R
-import com.example.ichef.adapters.FooterAdapterImpl
-import com.example.ichef.adapters.FooterViewModel
 import com.example.ichef.adapters.SharedData
-import com.example.ichef.adapters.StoreCheckBoxAdapterImpl
-import com.example.ichef.adapters.interfaces.FooterAdapter
-import com.example.ichef.adapters.interfaces.StoreCheckboxAdapter
 import com.example.ichef.database.AddParentChildDataManager
 import com.example.ichef.database.ShoppingDataManager
 import com.example.ichef.fragments.HomeFragment
@@ -23,7 +14,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.FragmentScoped
 import dagger.hilt.components.SingletonComponent
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -81,12 +71,6 @@ object AppModule {
     fun providesSharedData(app: Application, shoppingDataManager: ShoppingDataManager) : SharedData {
         return SharedData(app,shoppingDataManager)
     }
-
-//    @Provides
-//    @Singleton
-//    fun providesConcatAdapter(checkBoxAdapter: StoreCheckBoxAdapterImpl, footerAdapter: FooterAdapterImpl) : ConcatAdapter {
-//        return ConcatAdapter(checkBoxAdapter, footerAdapter)
-//    }
 
     @Provides
     @ApplicationContext

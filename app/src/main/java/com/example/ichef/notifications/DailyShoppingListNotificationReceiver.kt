@@ -1,16 +1,13 @@
 package com.example.ichef.notifications
 
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.health.connect.datatypes.units.Power
 import android.os.PowerManager
 import android.util.Log
-import androidx.core.content.ContextCompat.getSystemService
 import com.example.ichef.activities.MainActivity
-import com.example.ichef.adapters.SharedData
 import com.example.ichef.database.ShoppingDataManager
 import com.example.ichef.notifications.channels.ShoppingListReminderNotificationManager
 import dagger.hilt.android.AndroidEntryPoint

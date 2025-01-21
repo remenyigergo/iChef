@@ -1,7 +1,6 @@
 package com.example.ichef.adapters
 
 import android.app.Application
-import android.content.Context
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout

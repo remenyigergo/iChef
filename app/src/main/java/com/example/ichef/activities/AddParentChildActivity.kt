@@ -3,7 +3,6 @@ package com.example.ichef
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
 import android.text.InputType
 import android.util.Log
 import android.view.View
@@ -25,7 +24,6 @@ import androidx.lifecycle.ViewModel
 import com.example.ichef.database.AddParentChildDataManager
 import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 class AddParentChildViewModel : ViewModel() {
