@@ -1,15 +1,17 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Shadow Layer -->
-    <item android:left="0dp" android:right="0dp" android:top="0dp">
+    <!-- Shadow Layer with Gradient -->
+    <item android:left="0dp" android:right="0dp" android:top="0dp" android:height="200dp"> <!-- Top margin for the shadow -->
         <shape>
-            <solid android:color="@color/navbar_background" /> <!-- Shadow color -->
-            <corners android:topLeftRadius="30dp" android:topRightRadius="30dp" />
+            <gradient
+                android:startColor="@color/black"
+                android:endColor="@android:color/transparent"
+                android:angle="90" />
         </shape>
     </item>
 
     <!-- Main Shape with Top Margin -->
-    <item android:left="0dp" android:right="0dp" android:top="3dp"> <!-- Top margin -->
+    <item android:left="0dp" android:right="0dp" android:top="15dp"> <!-- Top margin for the main shape -->
         <shape>
             <solid android:color="@color/topbar" />
             <corners android:topLeftRadius="30dp" android:topRightRadius="30dp" />

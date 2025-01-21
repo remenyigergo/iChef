@@ -71,6 +71,15 @@
             app:itemActiveIndicatorStyle="@style/App.Custom.Indicator"
             />
 
+        <!-- Gradient Overlay -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="15dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/white_gradient_bottom_to_top"
+            android:layout_gravity="bottom" />
+
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
