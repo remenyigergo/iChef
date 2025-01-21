@@ -60,7 +60,7 @@ class StoreCheckBoxAdapterImpl @Inject constructor(
             } else {
                 //decrement tickedCount because of deletion
                 val store = sharedData.getStoreByIndex(position)
-                var newTickedCount = 0
+                var newTickedCount: Int
                 if (sharedData.tickedCount.value!! - store?.ingredients?.size!! < 0) {
                     newTickedCount = 0
                 } else {

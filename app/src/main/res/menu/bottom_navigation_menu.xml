@@ -10,12 +10,7 @@
         android:enabled="true"
         android:icon="@mipmap/search_foreground"
         android:title=""/>
-    <item
-        android:id="@+id/profile_button"
-        android:enabled="false"
-        android:icon="@mipmap/profile_foreground"
-        android:title=""
-        />
+
     <item
         android:id="@+id/meals_button"
         android:enabled="false"
@@ -26,6 +21,12 @@
         android:id="@+id/list_button"
         android:enabled="true"
         android:icon="@mipmap/list_icon_foreground"
+        android:title=""
+        />
+    <item
+        android:id="@+id/more_button"
+        android:enabled="true"
+        android:icon="@mipmap/more_foreground"
         android:title=""
         />
 </menu>

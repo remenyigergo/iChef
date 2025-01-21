@@ -15,6 +15,7 @@ import com.example.ichef.adapters.interfaces.StoreCheckboxAdapter
 import com.example.ichef.database.AddParentChildDataManager
 import com.example.ichef.database.ShoppingDataManager
 import com.example.ichef.fragments.HomeFragment
+import com.example.ichef.fragments.MoreFragment
 import com.example.ichef.fragments.SearchFragment
 import com.example.ichef.fragments.ShoppingFragmentImpl
 import com.example.ichef.fragments.interfaces.ShoppingFragment
@@ -67,6 +68,12 @@ object AppModule {
     @Singleton
     fun providesSearchFragment() : SearchFragment {
         return SearchFragment()
+    }
+
+    @Provides
+    @Singleton
+    fun providesMoreFragment() : MoreFragment {
+        return MoreFragment()
     }
 
     @Provides

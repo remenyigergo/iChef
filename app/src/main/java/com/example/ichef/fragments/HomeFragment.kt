@@ -27,15 +27,6 @@ class HomeFragment : Fragment() {
 
         val rootView = inflater.inflate(R.layout.home_fragment, container, false)
 
-        val clickMeButton = rootView.findViewById<Button>(R.id.buttonHome)
-        clickMeButton.setOnClickListener({
-            if (isAdded) {
-                bottomSheetDialogController.show()
-            }
-        })
-
-
-
         return rootView
     }
 

@@ -8,7 +8,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.ichef.R
+import com.example.ichef.components.ShoppingFragmentBottomSheetDialogImpl
 import com.example.ichef.fragments.HomeFragment
+import com.example.ichef.fragments.MoreFragment
 import com.example.ichef.fragments.SearchFragment
 import com.example.ichef.fragments.ShoppingFragmentImpl
 import com.example.ichef.notifications.scheduler.AlarmScheduler
@@ -27,6 +29,7 @@ class MainActivity @Inject constructor(
     @Inject lateinit var shoppingFragment: ShoppingFragmentImpl
     @Inject lateinit var homeFragment: HomeFragment
     @Inject lateinit var searchFragment: SearchFragment
+    @Inject lateinit var moreFragment: MoreFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +66,10 @@ class MainActivity @Inject constructor(
 
                     R.id.list_button -> {
                         loadFragment(shoppingFragment, R.id.shoppingFragmentContainerView)
+                        true
+                    }
+                    R.id.more_button -> {
+                        showBottomSheetDialog()
                         true
                     }
 
@@ -113,5 +120,10 @@ class MainActivity @Inject constructor(
                 loadFragment(shoppingFragment, R.id.shoppingFragmentContainerView)
             }
         }
+    }
+
+    private fun showBottomSheetDialog() {
+        val bottomSheet = MoreFragment()
+        bottomSheet.show(supportFragmentManager, bottomSheet.tag)
     }
 }

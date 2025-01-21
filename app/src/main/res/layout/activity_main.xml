@@ -66,8 +66,10 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:menu="@menu/bottom_navigation_menu"
             app:itemIconTint="@color/bottom_bar_icons_selector"
+            app:elevation="10dp"
             app:itemIconSize="35dp"
-            app:itemActiveIndicatorStyle="@style/App.Custom.Indicator"/>
+            app:itemActiveIndicatorStyle="@style/App.Custom.Indicator"
+            />
 
     </RelativeLayout>
 

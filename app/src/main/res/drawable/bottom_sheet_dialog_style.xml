@@ -1,0 +1,19 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Shadow Layer -->
+    <item android:left="0dp" android:right="0dp" android:top="0dp">
+        <shape>
+            <solid android:color="@color/navbar_background" /> <!-- Shadow color -->
+            <corners android:topLeftRadius="30dp" android:topRightRadius="30dp" />
+        </shape>
+    </item>
+
+    <!-- Main Shape with Top Margin -->
+    <item android:left="0dp" android:right="0dp" android:top="3dp"> <!-- Top margin -->
+        <shape>
+            <solid android:color="@color/topbar" />
+            <corners android:topLeftRadius="30dp" android:topRightRadius="30dp" />
+        </shape>
+    </item>
+
+</layer-list>

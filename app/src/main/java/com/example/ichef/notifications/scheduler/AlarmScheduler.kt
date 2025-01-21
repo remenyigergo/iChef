@@ -23,7 +23,6 @@ object AlarmScheduler {
         )
 
         val calendar = Calendar.getInstance().apply {
-            timeInMillis = System.currentTimeMillis()
             set(Calendar.HOUR_OF_DAY, hour)
             set(Calendar.MINUTE, minute)
             set(Calendar.SECOND, second)
@@ -32,7 +31,7 @@ object AlarmScheduler {
         alarmManager.setInexactRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            EIGHT_HOURS_IN_MILLIS,
+            AlarmManager.INTERVAL_DAY,
             pendingIntent
         )
     }
