@@ -2,7 +2,7 @@ package com.example.ichef.clients.apis
 
 import co.infinum.retromock.meta.Mock
 import co.infinum.retromock.meta.MockResponse
-import com.example.ichef.clients.models.ShoppingListResultItem
+import com.example.ichef.clients.models.ShoppingList.ShoppingListResultItem
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

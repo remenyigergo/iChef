@@ -37,4 +37,7 @@
     <string name="french_onion_soup">Francia hagymaleves</string>
     <string name="kaufland">Lidl</string>
     <string name="options">Beállítások</string>
+    <string name="my_recipes">My Recipes</string>
+    <string name="done_recipes">Cooked recipes</string>
+    <string name="logout">Log out</string>
 </resources>

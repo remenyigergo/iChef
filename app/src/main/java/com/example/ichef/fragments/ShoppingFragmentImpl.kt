@@ -267,11 +267,11 @@ class ShoppingFragmentImpl @Inject constructor() : Fragment(), ShoppingFragment 
         }
 
         retryButton?.setOnClickListener {
-            shoppingListApiViewModel.fetchApiData()
+            shoppingListApiViewModel.getShoppingList()
         }
 
         // Fetch data initially
-        shoppingListApiViewModel.fetchApiData()
+        shoppingListApiViewModel.getShoppingList()
     }
 
     override fun onDestroyView() {

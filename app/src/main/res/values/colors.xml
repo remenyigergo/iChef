@@ -12,6 +12,6 @@
     <color name="selectedButton">#FFC857</color>
     <color name="navbar_background">#493628</color>
     <color name="text_color">#FF000000</color>
-
+    <color name="warning_red">#eb3528</color>
 
 </resources>

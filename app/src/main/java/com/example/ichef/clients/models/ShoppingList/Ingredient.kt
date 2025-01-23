@@ -1,4 +1,4 @@
-package com.example.ichef.clients.models
+package com.example.ichef.clients.models.ShoppingList
 
 data class Ingredient(
     val ingredientName: String,

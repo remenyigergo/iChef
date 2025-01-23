@@ -2,6 +2,7 @@ package com.example.ichef.fragments
 
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,7 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import com.example.ichef.AddParentChildActivity
 import com.example.ichef.R
+import com.example.ichef.activities.more.OptionsActivity
+import com.example.ichef.activities.more.ProfileActivity
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,6 +53,10 @@ class MoreFragment : BottomSheetDialogFragment() {
             button1.setOnClickListener {
                 // Handle Button 1 click
                 Toast.makeText(context, "${resources.getString(R.string.profile)} pressed", Toast.LENGTH_SHORT).show()
+                val intent = Intent(context, ProfileActivity::class.java)
+//                intent.putStringArrayListExtra("ingredients_list", ingredients)
+//                intent.putStringArrayListExtra("stores", GetStoresNames())
+                profileIntent.launch(intent)
             }
 
             button2.setOnClickListener {
@@ -58,9 +67,25 @@ class MoreFragment : BottomSheetDialogFragment() {
             button3.setOnClickListener {
                 // Handle Button 3 click
                 Toast.makeText(context, "${resources.getString(R.string.options)} pressed", Toast.LENGTH_SHORT).show()
+                val intent = Intent(context, OptionsActivity::class.java)
+//                intent.putStringArrayListExtra("ingredients_list", ingredients)
+//                intent.putStringArrayListExtra("stores", GetStoresNames())
+                optionsIntent.launch(intent)
             }
         }
 
         return rootView
+    }
+
+    private val profileIntent = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+
+    }
+
+    private val optionsIntent = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+
     }
 }

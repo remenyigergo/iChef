@@ -37,4 +37,7 @@
     <string name="french_onion_soup">French Onion Soup</string>
     <string name="kaufland">Kaufland</string>
     <string name="options">Options</string>
+    <string name="my_recipes">My Recipes</string>
+    <string name="done_recipes">Cooked recipes</string>
+    <string name="logout">Log out</string>
 </resources>

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Toolbar with Back Button -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:background="@color/topbar"
+        android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
+
+        <ImageView
+            android:id="@+id/back_button_options"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@mipmap/arrow_back_foreground"
+            android:layout_marginStart="16dp" />
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Options"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:textSize="20sp" />
+
+    </com.google.android.material.appbar.MaterialToolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="56dp"
+    android:padding="16dp">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+<!--        <TextView-->
+<!--            android:id="@+id/options_title"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Options"-->
+<!--            android:textSize="30sp"-->
+<!--            android:textColor="?attr/colorOnPrimary"-->
+<!--            android:textStyle="bold"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:layout_marginBottom="40dp" />-->
+
+        <!-- Section Title -->
+        <TextView
+            android:id="@+id/section_title_dietary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dietary Preferences"
+            android:textSize="20sp"
+            android:textColor="?attr/colorOnPrimary"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Lactose Intolerant Toggle -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/label_lactose_intolerant"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Lactose Intolerant"
+                android:textSize="16sp"
+                android:textColor="?attr/colorOnPrimary" />
+
+            <Switch
+                android:id="@+id/switch_lactose_intolerant"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- No Sugar Toggle -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/label_no_sugar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sugar-free"
+                android:textSize="16sp"
+                android:textColor="?attr/colorOnPrimary" />
+
+            <Switch
+                android:id="@+id/switch_no_sugar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- Vegetarian Toggle -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/label_vegetarian"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Vegetarian"
+                android:textSize="16sp"
+                android:textColor="?attr/colorOnPrimary" />
+
+            <Switch
+                android:id="@+id/switch_vegetarian"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray"
+            android:layout_marginVertical="16dp" />
+
+        <!-- Filtering Search Section -->
+        <TextView
+            android:id="@+id/section_title_filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search Filters"
+            android:textSize="20sp"
+            android:textColor="?attr/colorOnPrimary"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Gluten-Free Toggle -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/label_gluten_free"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Gluten-Free"
+                android:textSize="16sp"
+                android:textColor="?attr/colorOnPrimary" />
+
+            <Switch
+                android:id="@+id/switch_gluten_free"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray"
+            android:layout_marginVertical="16dp" />
+
+        <!-- Unit Preference Section -->
+        <TextView
+            android:id="@+id/section_title_units"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Units"
+            android:textSize="20sp"
+            android:textColor="?attr/colorOnPrimary"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Units Dropdown -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/label_units"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Preferred Unit"
+                android:textSize="16sp"
+                android:textColor="?attr/colorOnPrimary" />
+
+            <Spinner
+                android:id="@+id/spinner_units"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@array/units_array" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

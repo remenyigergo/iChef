@@ -1,15 +1,12 @@
 package com.example.ichef.clients.apis.viewmodels
 
-import android.app.Application
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ichef.adapters.SharedData
-import com.example.ichef.adapters.interfaces.FooterAdapter
-import com.example.ichef.adapters.interfaces.StoreCheckboxAdapter
 import com.example.ichef.clients.apis.ApiState
 import com.example.ichef.clients.apis.ShoppingListApi
-import com.example.ichef.clients.models.ShoppingListResultItem
+import com.example.ichef.clients.models.ShoppingList.ShoppingListResultItem
 import com.example.ichef.constants.Constants
 import com.example.ichef.database.ShoppingDataManager
 import com.example.ichef.di.modules.MockApi
@@ -35,7 +32,7 @@ class ShoppingListApiViewModel @Inject constructor() : ViewModel() {
     private val _shoppingListApiState = MutableStateFlow<ApiState<ArrayList<ShoppingListResultItem>>>(ApiState.Loading)
     val apiState: StateFlow<ApiState<ArrayList<ShoppingListResultItem>>> = _shoppingListApiState
 
-    fun fetchApiData() : Response<ArrayList<ShoppingListResultItem>> {
+    fun getShoppingList() : Response<ArrayList<ShoppingListResultItem>> {
         viewModelScope.launch {
             _shoppingListApiState.value = ApiState.Loading
             try {

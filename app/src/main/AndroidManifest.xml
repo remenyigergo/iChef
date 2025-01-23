@@ -36,6 +36,9 @@
         </activity>
 
         <activity android:name=".AddParentChildActivity"/>
+        <activity android:name=".activities.more.ProfileActivity"/>
+        <activity android:name=".activities.more.OptionsActivity"/>
+        <activity android:name=".activities.more.RecipeActivity"/>
 
         <receiver android:name="com.example.ichef.notifications.DailyShoppingListNotificationReceiver" android:enabled="true"/>
 
