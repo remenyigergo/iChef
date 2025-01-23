@@ -5,9 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ichef.clients.apis.ApiState
 import com.example.ichef.clients.apis.MyRecipesApi
+import com.example.ichef.clients.models.MyRecipes.MyRecipeResult
 import com.example.ichef.clients.models.MyRecipes.MyRecipesResultItem
 import com.example.ichef.constants.Constants
 import com.example.ichef.di.modules.MockApi
+import com.example.ichef.mappers.RecipeDtoBlaMapper
 import com.example.ichef.models.activities.more.Recipe
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +29,7 @@ class MyRecipesApiViewModel @Inject constructor() : ViewModel() {
     private val _myRecipesApiState = MutableStateFlow<ApiState<ArrayList<Recipe>>>(ApiState.Loading)
     val apiState: StateFlow<ApiState<ArrayList<Recipe>>> = _myRecipesApiState
 
-    fun getUserRecipes(userId: Long) : Response<ArrayList<Recipe>> {
+    fun getUserRecipes(userId: Long) : Response<ArrayList<MyRecipeResult>> {
         viewModelScope.launch {
             _myRecipesApiState.value = ApiState.Loading
             try {
@@ -39,7 +41,14 @@ class MyRecipesApiViewModel @Inject constructor() : ViewModel() {
                 if (response.isSuccessful && response.body() != null) {
                     val data = response.body()!!
                     Log.i("MyRecipesApiViewModel", "getUserRecipes result: $data")
-                    _myRecipesApiState.value = ApiState.Success(data)
+
+                    val mapped = data.map { recipeDto ->
+                        RecipeDtoBlaMapper.ToBla(recipeDto)
+                    }.toCollection(ArrayList())
+
+                    _myRecipesApiState.value = ApiState.Success(mapped)
+
+                    Response.success(200, mapped)
                 } else {
                     _myRecipesApiState.value =
                         ApiState.Error("Failed to load data. Error code: ${response.code()}")
