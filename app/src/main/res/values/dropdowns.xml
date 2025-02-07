@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="units_array">
+        <item>g</item>
+        <item>dkg</item>
+        <item>kg</item>
+    </string-array>
+
+    <string-array name="country_options">
+        <item>All</item>
+        <item>American</item>
+        <item>Arabian</item>
+        <item>Australian</item>
+        <item>Belgian</item>
+        <item>Bulgarian</item>
+        <item>Czech</item>
+        <item>South-American</item>
+        <item>Romanian</item>
+        <item>French</item>
+        <item>Fusion</item>
+        <item>Greek</item>
+        <item>Dutch</item>
+        <item>Croatian</item>
+        <item>Indian</item>
+        <item>Japanese</item>
+        <item>Polish</item>
+        <item>Maltan</item>
+        <item>Mexican</item>
+        <item>German</item>
+        <item>Russian</item>
+        <item>Osterreich</item>
+        <item>Pakistan</item>
+        <item>Portugese</item>
+        <item>Spanish</item>
+        <item>Switz</item>
+        <item>Serbian</item>
+        <item>Slovakian</item>
+        <item>Slovenien</item>
+        <item>Eastern</item>
+        <item>Turkish</item>
+        <item>English</item>
+        <item>Hungarian</item>
+    </string-array>
+
+    <string-array name="dish_type_options">
+        <item>All</item>
+        <item>Breakfast</item>
+        <item>Ten o\'clock</item>
+        <item>Lunch</item>
+        <item>Dinner</item>
+    </string-array>
+
+    <string-array name="price_options">
+        <item>All</item>
+        <item>Cheap</item>
+        <item>Affordable</item>
+        <item>Expensive</item>
+    </string-array>
+
+    <string-array name="special_diet_options">
+        <item>None</item>
+        <item>Gluten-free</item>
+        <item>Sugar-free</item>
+        <item>Vegan</item>
+        <item>Vegetarian</item>
+        <item>Milk-free</item>
+        <item>Egg-free</item>
+        <item>Lactose-free</item>
+    </string-array>
+
+    <string-array name="meal_type_options">
+        <item>Soup</item>
+        <item>Meat</item>
+        <item>Noodle</item>
+        <item>Breads</item>
+        <item>One pan</item>
+        <item>Fish</item>
+        <item>Pizza</item>
+        <item>Christmas</item>
+    </string-array>
+</resources>

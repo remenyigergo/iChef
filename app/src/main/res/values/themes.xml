@@ -5,7 +5,7 @@
 
 
         <!-- Primary colors -->
-        <item name="colorPrimary">@color/background</item>
+        <item name="colorPrimary">@color/button_color</item>
         <item name="colorPrimaryVariant">@color/topbar</item>
         <item name="colorOnPrimary">@color/text_color</item>
 
@@ -17,5 +17,8 @@
         <item name="android:textColor">@color/black</item>
     </style>
 
-    <style name="Theme.IChef" parent="Base.Theme.IChef"/>
+    <style name="Theme.IChef" parent="Base.Theme.IChef">
+    </style>
+
+
 </resources>

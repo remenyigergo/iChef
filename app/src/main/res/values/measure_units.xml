@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string-array name="units_array">
-        <item>g</item>
-        <item>dkg</item>
-        <item>kg</item>
-    </string-array>
-</resources>
