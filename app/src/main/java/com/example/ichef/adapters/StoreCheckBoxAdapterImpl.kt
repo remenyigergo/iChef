@@ -59,7 +59,7 @@ class StoreCheckBoxAdapterImpl @Inject constructor(
                 sharedData.updateEmptyPageVisibility()
             } else {
                 //decrement tickedCount because of deletion
-                val store = sharedData.getStoreByIndex(position)
+                val store = sharedData.getStoreByIndex(position-1)
                 var newTickedCount = 0
                 if (sharedData.tickedCount.value!! - store?.ingredients?.size!! < 0) {
                     newTickedCount = 0
