@@ -6,30 +6,58 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Top bar -->
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="45sp"
-        android:orientation="horizontal"
-        android:background="@color/topbar">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/shoppinglist"
-            android:textStyle="italic"
-            android:textSize="20sp"
-            android:gravity="center_vertical"
-            android:layout_marginStart="16dp" />
-    </LinearLayout>
+        <!-- Top Bar -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/topBar"
+            android:layout_width="match_parent"
+            android:layout_height="45sp"
+            android:background="@color/topbar"
+            app:layout_constraintTop_toTopOf="parent">
 
-    <!-- Scrollable shopping list -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvParent"
-        android:layout_marginTop="45sp"
-        android:background="@color/background"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/shoppinglist"
+                android:textStyle="italic"
+                android:textSize="20sp"
+                android:gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- FrameLayout to Layer View on top of RecyclerView -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/topBar"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <!-- RecyclerView (Scrollable Shopping List) -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvParent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/background"/>
+
+            <!-- Gradient Overlay (Inside RecyclerView, Transparent Effect) -->
+            <View
+                android:id="@+id/gradientView"
+                android:layout_width="match_parent"
+                android:layout_height="7dp"
+                android:background="@drawable/shadow_gradient_top_to_bottom"
+                android:layout_gravity="top"/> <!-- Ensures it overlays the RecyclerView -->
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
 
     <!-- Floating Action Button -->

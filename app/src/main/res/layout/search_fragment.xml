@@ -3,77 +3,200 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="70dp">
+
+        <!-- Top Bar -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/topBar"
+            android:layout_width="match_parent"
+            android:layout_height="45sp"
+            android:background="@color/topbar"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/what_would_you_like_to_eat"
+                android:textStyle="italic"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:layout_marginStart="15dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Search Bar -->
         <EditText
             android:id="@+id/search_bar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Search Recipes"
+            android:hint="@string/filter_by_any_word"
             android:inputType="text"
             android:padding="20dp"
             android:layout_margin="20dp"
             android:background="@drawable/item_parent_background"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/topBar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- Divider -->
+        <View
+            android:id="@+id/filter_by_name_include_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray"
+            android:layout_marginVertical="15dp"
+            app:layout_constraintTop_toBottomOf="@id/search_bar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
         <!-- Ingredient Input Box -->
-        <EditText
-            android:id="@+id/ingredient_input"
+        <AutoCompleteTextView
+            android:id="@+id/ingredient_include"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Enter Ingredient"
+            android:hint="@string/include_ingredient"
             android:inputType="text"
             android:padding="20dp"
             android:layout_margin="20dp"
-            android:layout_marginTop="16dp"
             android:background="@drawable/item_parent_background"
             android:backgroundTint="@color/gray"
-            app:layout_constraintTop_toBottomOf="@id/search_bar"
+            app:layout_constraintTop_toBottomOf="@id/filter_by_name_include_divider"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+        <GridLayout
+            android:id="@+id/include_ingredient_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:rowCount="100"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:columnCount="3"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/ingredient_include"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+
+        <!-- Divider -->
+        <View
+            android:id="@+id/include_exclude_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray"
+            android:layout_marginVertical="15dp"
+            app:layout_constraintTop_toBottomOf="@id/include_ingredient_layout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+        <!-- Ingredient Input Box -->
+        <AutoCompleteTextView
+            android:id="@+id/ingredient_exclude"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/exclude_ingredient"
+            android:inputType="text"
+            android:padding="20dp"
+            android:layout_margin="20dp"
+            android:background="@drawable/item_parent_background"
+            android:backgroundTint="@color/warning_red"
+            app:layout_constraintTop_toBottomOf="@id/include_exclude_divider"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <GridLayout
+            android:id="@+id/exclude_ingredient_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:rowCount="100"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:columnCount="3"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/ingredient_exclude"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+        <!-- Divider -->
+        <View
+            android:id="@+id/exclude_filter_toggle_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray"
+            android:layout_marginVertical="15dp"
+            app:layout_constraintTop_toBottomOf="@id/exclude_ingredient_layout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
 
         <!-- Expand Filters Button -->
         <Button
-            android:id="@+id/btn_toggle_filters"
+            android:id="@+id/btn_toggle_include_filters"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Advanced Filters ▼"
-            android:layout_marginTop="16dp"
+            android:text="@string/include_filters_expand"
+            android:layout_marginTop="15dp"
             android:backgroundTint="@color/topbar"
-            app:layout_constraintTop_toBottomOf="@id/ingredient_input"
+            app:layout_constraintTop_toBottomOf="@id/exclude_filter_toggle_divider"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Expandable Filters Section -->
         <LinearLayout
-            android:id="@+id/filters_section"
+            android:id="@+id/include_filters_section"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:visibility="gone"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/btn_toggle_filters"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/nav_background_curved"
+            android:backgroundTint="@color/gray"
+            app:layout_constraintTop_toBottomOf="@id/btn_toggle_include_filters"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Reset Filters Button -->
+            <Button
+                android:id="@+id/btn_reset_filters"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/reset_include_filters"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:backgroundTint="@color/button_color"
+                app:layout_constraintTop_toBottomOf="@id/btn_toggle_include_filters"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
                 android:id="@+id/search_country_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Country"
+                android:paddingLeft="30dp"
+                android:text="@string/select_desired_country"
                 android:textStyle="italic|bold"
                 android:gravity="left"
-                android:paddingTop="20dp"
+                android:paddingTop="25dp"
                 android:textSize="16sp"
                 android:textColor="?attr/colorOnPrimary"
-                app:layout_constraintTop_toBottomOf="@id/filters_section"
+                app:layout_constraintTop_toBottomOf="@id/btn_reset_filters"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 />
@@ -83,22 +206,28 @@
                 android:id="@+id/spinner_country"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@color/topbar"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:padding="12dp"
                 android:entries="@array/country_options"
+                style="@style/CustomSpinnerStyle"
+                android:background="@drawable/spinner_item_selector"
                 app:layout_constraintTop_toBottomOf="@id/search_country_text"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"/>
+
 
             <TextView
                 android:id="@+id/search_dish_type_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Dish type"
+                android:paddingLeft="30dp"
+                android:text="@string/select_dish_type"
                 android:textStyle="italic|bold"
                 android:gravity="left"
-                android:paddingTop="20dp"
+                android:paddingTop="25dp"
                 android:textSize="16sp"
                 android:textColor="?attr/colorOnPrimary"
                 app:layout_constraintTop_toBottomOf="@id/spinner_country"
@@ -111,8 +240,12 @@
                 android:id="@+id/spinner_dish_type"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@color/topbar"
+                android:layout_marginTop="5dp"
+                android:padding="12dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                style="@style/CustomSpinnerStyle"
+                android:background="@drawable/spinner_item_selector"
                 android:entries="@array/dish_type_options"
                 app:layout_constraintTop_toBottomOf="@id/search_dish_type_text"
                 app:layout_constraintStart_toStartOf="parent"
@@ -123,10 +256,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Kitchen"
+                android:paddingLeft="30dp"
+                android:text="@string/select_price_range"
                 android:textStyle="italic|bold"
                 android:gravity="left"
-                android:paddingTop="20dp"
+                android:paddingTop="25dp"
                 android:textSize="16sp"
                 android:textColor="?attr/colorOnPrimary"
                 app:layout_constraintTop_toBottomOf="@id/spinner_dish_type"
@@ -139,8 +273,12 @@
                 android:id="@+id/spinner_kitchen"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@color/topbar"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:padding="12dp"
+                style="@style/CustomSpinnerStyle"
+                android:background="@drawable/spinner_item_selector"
                 android:entries="@array/price_options"
                 app:layout_constraintTop_toBottomOf="@id/search_kitchen_type_text"
                 app:layout_constraintStart_toStartOf="parent"
@@ -151,10 +289,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Meal type"
+                android:paddingLeft="30dp"
+                android:text="@string/select_meal_type"
                 android:textStyle="italic|bold"
                 android:gravity="left"
-                android:paddingTop="20dp"
+                android:paddingTop="25dp"
                 android:textSize="16sp"
                 android:textColor="?attr/colorOnPrimary"
                 app:layout_constraintTop_toBottomOf="@id/spinner_kitchen"
@@ -167,8 +306,12 @@
                 android:id="@+id/spinner_meal_type"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@color/topbar"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:padding="12dp"
+                style="@style/CustomSpinnerStyle"
+                android:background="@drawable/spinner_item_selector"
                 android:entries="@array/meal_type_options"
                 app:layout_constraintTop_toBottomOf="@id/search_meal_type_text"
                 app:layout_constraintStart_toStartOf="parent"
@@ -179,10 +322,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Special diet"
+                android:paddingLeft="30dp"
+                android:text="@string/select_your_diet_plan"
                 android:textStyle="italic|bold"
                 android:gravity="left"
-                android:paddingTop="20dp"
+                android:paddingTop="25dp"
                 android:textSize="16sp"
                 android:textColor="?attr/colorOnPrimary"
                 app:layout_constraintTop_toBottomOf="@id/spinner_meal_type"
@@ -195,12 +339,232 @@
                 android:id="@+id/spinner_special_diet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@color/topbar"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginBottom="15dp"
+                android:padding="12dp"
+                style="@style/CustomSpinnerStyle"
+                android:background="@drawable/spinner_item_selector"
                 android:entries="@array/special_diet_options"
                 app:layout_constraintTop_toBottomOf="@id/search_special_diet_text"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
+
+
+        </LinearLayout>
+
+
+        <!-- Expand Filters Button -->
+        <Button
+            android:id="@+id/btn_toggle_exclude_filters"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/exclude_filters_expand"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:backgroundTint="@color/topbar"
+            app:layout_constraintTop_toBottomOf="@id/include_filters_section"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Expandable Filters Section -->
+        <LinearLayout
+            android:id="@+id/exclude_filters_section"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:background="@drawable/nav_background_curved"
+            android:backgroundTint="@color/gray"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            app:layout_constraintTop_toBottomOf="@id/btn_toggle_exclude_filters"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Reset Filters Button -->
+            <Button
+                android:id="@+id/btn_reset_exclude_filters"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/reset_exclude_filters"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:backgroundTint="@color/button_color"
+                app:layout_constraintTop_toBottomOf="@id/exclude_filters_section"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/search_country_text_exclude"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="30dp"
+                android:text="@string/select_desired_country"
+                android:textStyle="italic|bold"
+                android:gravity="left"
+                android:paddingTop="25dp"
+                android:textSize="16sp"
+                android:textColor="?attr/colorOnPrimary"
+                app:layout_constraintTop_toBottomOf="@id/btn_reset_filters"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+            <!-- Country Dropdown -->
+            <Spinner
+                android:id="@+id/spinner_country_exclude"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:padding="12dp"
+                android:entries="@array/country_options"
+                style="@style/CustomSpinnerStyle"
+                android:background="@drawable/spinner_item_selector"
+                app:layout_constraintTop_toBottomOf="@id/search_country_text"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+
+            <TextView
+                android:id="@+id/search_dish_type_text_exclude"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="30dp"
+                android:text="@string/select_dish_type"
+                android:textStyle="italic|bold"
+                android:gravity="left"
+                android:paddingTop="25dp"
+                android:textSize="16sp"
+                android:textColor="?attr/colorOnPrimary"
+                app:layout_constraintTop_toBottomOf="@id/spinner_country"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+            <!-- Dish Type Dropdown -->
+            <Spinner
+                android:id="@+id/spinner_dish_type_exclude"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:padding="12dp"
+                style="@style/CustomSpinnerStyle"
+                android:background="@drawable/spinner_item_selector"
+                android:entries="@array/dish_type_options"
+                app:layout_constraintTop_toBottomOf="@id/search_dish_type_text"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/search_kitchen_type_text_exclude"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="30dp"
+                android:text="@string/select_price_range"
+                android:textStyle="italic|bold"
+                android:gravity="left"
+                android:paddingTop="25dp"
+                android:textSize="16sp"
+                android:textColor="?attr/colorOnPrimary"
+                app:layout_constraintTop_toBottomOf="@id/spinner_dish_type"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+            <!-- Kitchen Dropdown -->
+            <Spinner
+                android:id="@+id/spinner_kitchen_exclude"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:padding="12dp"
+                style="@style/CustomSpinnerStyle"
+                android:background="@drawable/spinner_item_selector"
+                android:entries="@array/price_options"
+                app:layout_constraintTop_toBottomOf="@id/search_kitchen_type_text"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/search_meal_type_text_exclude"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="30dp"
+                android:text="@string/select_meal_type"
+                android:textStyle="italic|bold"
+                android:gravity="left"
+                android:paddingTop="25dp"
+                android:textSize="16sp"
+                android:textColor="?attr/colorOnPrimary"
+                app:layout_constraintTop_toBottomOf="@id/spinner_kitchen"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+            <!-- Meal Type Dropdown -->
+            <Spinner
+                android:id="@+id/spinner_meal_type_exclude"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:padding="12dp"
+                style="@style/CustomSpinnerStyle"
+                android:background="@drawable/spinner_item_selector"
+                android:entries="@array/meal_type_options"
+                app:layout_constraintTop_toBottomOf="@id/search_meal_type_text"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/search_special_diet_text_exclude"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="30dp"
+                android:text="@string/select_your_diet_plan"
+                android:textStyle="italic|bold"
+                android:gravity="left"
+                android:paddingTop="25dp"
+                android:textSize="16sp"
+                android:textColor="?attr/colorOnPrimary"
+                app:layout_constraintTop_toBottomOf="@id/spinner_meal_type"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+            <!-- Special Diet Dropdown -->
+            <Spinner
+                android:id="@+id/spinner_special_diet_exclude"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginBottom="15dp"
+                android:padding="12dp"
+                style="@style/CustomSpinnerStyle"
+                android:background="@drawable/spinner_item_selector"
+                android:entries="@array/special_diet_options"
+                app:layout_constraintTop_toBottomOf="@id/search_special_diet_text"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
         </LinearLayout>
 
         <!-- Search Button -->
@@ -208,12 +572,12 @@
             android:id="@+id/btn_search"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Search"
+            android:text="@string/search"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            app:layout_constraintTop_toBottomOf="@id/filters_section"
+            app:layout_constraintTop_toBottomOf="@id/exclude_filters_section"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="15dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

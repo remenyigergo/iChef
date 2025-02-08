@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">iChef</string>
-    <string name="search">Search\n</string>
+    <string name="search">Search</string>
     <string name="profile">Profile</string>
     <string name="shoppinglist">Shopping list</string>
     <string name="store_name">Specify store name here</string>
@@ -42,4 +42,19 @@
     <string name="logout">Log out</string>
     <string name="favorite_recipes">Favorites</string>
     <string name="add_recipes">Create new recipe</string>
+    <string name="what_would_you_like_to_eat">What would you like to eat?</string>
+    <string name="filter_by_any_word">Filter by any word</string>
+    <string name="include_ingredient">Include ingredient</string>
+    <string name="exclude_ingredient">Exclude ingredient</string>
+    <string name="include_filters_expand">Include Filters ▼</string>
+    <string name="include_filters_collapse">Include Filters ▲</string>
+    <string name="reset_include_filters">Reset Include Filters</string>
+    <string name="select_desired_country">Select desired country</string>
+    <string name="select_dish_type">Select dish type</string>
+    <string name="select_price_range">Select price range</string>
+    <string name="select_meal_type">Select meal type</string>
+    <string name="select_your_diet_plan">Select your diet plan</string>
+    <string name="exclude_filters_expand">Exclude Filters ▼</string>
+    <string name="exclude_filters_collapse">Exclude Filters ▲</string>
+    <string name="reset_exclude_filters">Reset Exclude Filters</string>
 </resources>

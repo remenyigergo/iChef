@@ -13,12 +13,6 @@ import com.example.ichef.R
 import com.example.ichef.adapters.interfaces.StoreCheckboxAdapter
 import javax.inject.Inject
 
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Path
-import android.graphics.RectF
-import androidx.core.content.ContextCompat
-
 class StoreCheckBoxAdapterImpl @Inject constructor(
     private var sharedData: SharedData,
     private var footerViewModel: FooterViewModel,
@@ -35,7 +29,10 @@ class StoreCheckBoxAdapterImpl @Inject constructor(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ParentViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_parent, parent, false)
-        return ParentViewHolder(view)
+        val parentViewHolder = ParentViewHolder(view)
+        parentViewHolder.title.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_expand_more, 0) // Expand icon
+
+        return parentViewHolder
     }
 
     override fun onBindViewHolder(parentViewHolder: ParentViewHolder, position: Int) {
@@ -58,7 +55,7 @@ class StoreCheckBoxAdapterImpl @Inject constructor(
                 child.isChecked = isChecked
             }, parentViewHolder, lifecycleOwner)
 
-        // Handle Expand/Collapse on Title Click
+        // Handle Expand/Collapse on Title Clicks
         parentViewHolder.title.setOnClickListener {
             parentViewHolder.isExpanded = !parentViewHolder.isExpanded
             toggleVisibility(parentViewHolder)

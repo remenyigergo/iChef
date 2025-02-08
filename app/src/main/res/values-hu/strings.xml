@@ -42,4 +42,19 @@
     <string name="logout">Kijelentkezés</string>
     <string name="favorite_recipes">Kedvencek</string>
     <string name="add_recipes">Új recept</string>
+    <string name="what_would_you_like_to_eat">Mit ennél ma?</string>
+    <string name="filter_by_any_word">Szűrés recept cím szerint</string>
+    <string name="include_ingredient">Hozzávalót tartalmazzon</string>
+    <string name="exclude_ingredient">Hozzávalót ne tartalmazzon</string>
+    <string name="include_filters_expand">Szűrés ▼</string>
+    <string name="include_filters_collapse">Szűrés ▲</string>
+    <string name="reset_include_filters">Belevalók alapértelmezése</string>
+    <string name="select_desired_country">Válassz konyhát</string>
+    <string name="select_dish_type">Válassz napszakot</string>
+    <string name="select_price_range">Válassz költséget</string>
+    <string name="select_meal_type">Válassz kategóriát</string>
+    <string name="select_your_diet_plan">Válassz diétát</string>
+    <string name="exclude_filters_expand">Belevalók kiszűrése ▼</string>
+    <string name="exclude_filters_collapse">Belevalók kiszűrése ▲</string>
+    <string name="reset_exclude_filters">Kiszűrés alapértelmezés</string>
 </resources>

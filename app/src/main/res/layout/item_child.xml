@@ -27,11 +27,13 @@
 
     <ImageButton
         android:id="@+id/btnDeleteChild"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:scaleType="centerCrop"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@android:drawable/ic_delete"
+        android:src="@mipmap/close_foreground"
         android:contentDescription="Delete Child"
         android:paddingRight="8dp"
+
         android:layout_gravity="center" />
 </LinearLayout>
