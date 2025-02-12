@@ -2,6 +2,7 @@ package com.example.ichef.di.modules
 
 import co.infinum.retromock.Retromock
 import com.example.ichef.clients.apis.MyRecipesApi
+import com.example.ichef.clients.apis.SearchApi
 import com.example.ichef.clients.apis.ShoppingListApi
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -64,6 +65,23 @@ object RetrofitInstance {
             .retrofit(retrofit)
             .build()
         return retromock.create(MyRecipesApi::class.java)
+    }
+
+    @RealApi
+    @Provides
+    @Singleton
+    fun providesSearchApi(retrofit: Retrofit): SearchApi {
+        return retrofit.create(SearchApi::class.java)
+    }
+
+    @MockApi
+    @Provides
+    @Singleton
+    fun providesMockSearchApi(retrofit: Retrofit): SearchApi {
+        val retromock = Retromock.Builder()
+            .retrofit(retrofit)
+            .build()
+        return retromock.create(SearchApi::class.java)
     }
 }
 

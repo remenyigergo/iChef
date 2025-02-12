@@ -39,6 +39,7 @@
         <activity android:name=".activities.more.ProfileActivity"/>
         <activity android:name=".activities.more.OptionsActivity"/>
         <activity android:name=".activities.more.RecipeActivity"/>
+        <activity android:name=".activities.SearchResultActivity"/>
 
         <receiver android:name="com.example.ichef.notifications.DailyShoppingListNotificationReceiver" android:enabled="true"/>
 

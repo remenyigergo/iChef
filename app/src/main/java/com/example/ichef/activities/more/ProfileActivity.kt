@@ -7,7 +7,6 @@ import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ichef.R
-import com.example.ichef.models.activities.more.Recipe
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

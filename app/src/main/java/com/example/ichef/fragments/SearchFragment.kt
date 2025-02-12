@@ -1,7 +1,7 @@
 package com.example.ichef.fragments
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,9 +11,11 @@ import android.widget.Button
 import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.ichef.R
+import com.example.ichef.activities.SearchResultActivity
 import com.example.ichef.models.IngredientsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -34,7 +36,19 @@ class SearchFragment : Fragment() {
         HandleInclude(view)
         HandleExclude(view)
 
+        val searchButton: Button = view.findViewById(R.id.btn_search)
+        searchButton.setOnClickListener({
+            val intent = Intent(context, SearchResultActivity::class.java)
+            searchIntent.launch(intent)
+        })
+
         return view
+    }
+
+    private val searchIntent = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+
     }
 
     private fun HandleExclude(view: View) {
@@ -111,12 +125,6 @@ class SearchFragment : Fragment() {
 
         // Add the button to the GridLayout
         container.addView(newButton)
-    }
-
-    private fun getScreenWidth(): Int {
-        val displayMetrics = DisplayMetrics()
-        requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
-        return displayMetrics.widthPixels
     }
 
     private fun HandleExcludeIncludeFilterToggles(
