@@ -19,7 +19,6 @@ import com.example.ichef.R
 import com.example.ichef.adapters.SearchAdapter
 import com.example.ichef.clients.apis.ApiState
 import com.example.ichef.clients.apis.viewmodels.SearchApiViewModel
-import com.example.ichef.models.activities.more.MyRecipe
 import com.example.ichef.models.activities.search.SearchRecipe
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -28,7 +27,13 @@ import kotlinx.coroutines.launch
 class SearchResultActivity : AppCompatActivity() {
 
     private val searchApi: SearchApiViewModel by viewModels()
-    lateinit var searchAdapter: RecyclerView.Adapter<SearchAdapter.SearchResultViewHolder>
+    lateinit var searchAdapter: SearchAdapter
+    private var isLoading = false
+    private var currentPage = 1
+    private var isLastPage = false
+    private val pageSize = 6
+    private val recipeList: ArrayList<SearchRecipe> = arrayListOf()
+    private var isFirstLoad = true  // Track if it's the first API call
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,25 +42,46 @@ class SearchResultActivity : AppCompatActivity() {
         val recyclerView: RecyclerView = findViewById(R.id.searchResultRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // Initialize empty list and adapter
-        val recipeList: ArrayList<SearchRecipe> = arrayListOf()
+        // Initialize adapter
         searchAdapter = SearchAdapter(this, recipeList)
         recyclerView.adapter = searchAdapter
 
-        // Fetch data and handle the API response
         val view: CoordinatorLayout = findViewById(R.id.search_result_layout)
-        HandleSearchApiCall(view, "RECIPE TITLE HERE") { result ->
-            // Update the list and notify the adapter
-            recipeList.clear()
+
+        // Initial API call
+        HandleSearchApiCall(view, "RECIPE TITLE HERE", currentPage) { result ->
             recipeList.addAll(result as ArrayList<SearchRecipe>)
             searchAdapter.notifyDataSetChanged()
-
-            Log.d("RecipeActivity", "Updated recipeList: $recipeList")
         }
+
+        // Add ScrollListener for infinite scroll
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
+                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+
+                if (!isLoading && !isLastPage) {
+                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount &&
+                        firstVisibleItemPosition >= 0 &&
+                        totalItemCount >= pageSize
+                    ) {
+
+                        searchAdapter.addLoadingFooter()
+                        loadMoreRecipes()
+                        Log.w("SearchResultActivity", "Loading page $currentPage")
+                    }
+                } else {
+                    Log.w("SearchResultActivity", "End of page")
+                }
+            }
+        })
 
         val backButton = findViewById<ImageView>(R.id.back_button_search_result)
         backButton.setOnClickListener {
-            // Go back to the previous page
             onBackPressedDispatcher.onBackPressed()
         }
     }
@@ -63,10 +89,10 @@ class SearchResultActivity : AppCompatActivity() {
     private fun HandleSearchApiCall(
         rootView: View,
         title: String,
+        page: Int,
         onSuccess: (data: Any) -> Unit
     ) {
         val loadingView = rootView.findViewById<ProgressBar>(R.id.loadingView)
-        val successView = rootView.findViewById<TextView>(R.id.successView)
         val errorView = rootView.findViewById<LinearLayout>(R.id.errorView)
         val retryButton = rootView.findViewById<Button>(R.id.retryButton)
 
@@ -74,35 +100,55 @@ class SearchResultActivity : AppCompatActivity() {
             searchApi.apiState.collect { state ->
                 when (state) {
                     is ApiState.Loading -> {
-                        Log.d("SearchResultActivity", "searchResult State: Loading")
-                        loadingView?.visibility = View.VISIBLE
-                        successView?.visibility = View.GONE
-                        errorView?.visibility = View.GONE
+                        if (isFirstLoad) {
+                            // Show full-screen loading only for the first load
+                            loadingView?.visibility = View.VISIBLE
+                            errorView?.visibility = View.GONE
+                        } else if(currentPage == 3) {  //TODO delete the currentPage check later. It is just mock to stop the loading as we reach the mocked last page (3)
+                            Log.w("SearchResultActivity", "Page 3 is reached. Removing loading icon.")
+                            searchAdapter.removeLoadingFooter()
+                        } else {
+                            searchAdapter.addLoadingFooter()
+                        }
                     }
 
                     is ApiState.Success -> {
-                        Log.d("SearchResultActivity", "searchResult State: Success")
+                        isLoading = false
                         loadingView?.visibility = View.GONE
                         errorView?.visibility = View.GONE
 
-                        onSuccess(state.data)
+                        val resultData = state.data as ArrayList<SearchRecipe>
+                        if (resultData.size < pageSize) {
+                            isLastPage = true
+                        }
+
+                        searchAdapter.removeLoadingFooter()
+                        onSuccess(resultData)
+
+                        isFirstLoad = false // First load is complete
                     }
 
                     is ApiState.Error -> {
-                        Log.d("SearchResultActivity", "searchResult State: Error")
+                        isLoading = false
                         loadingView?.visibility = View.GONE
-                        successView?.visibility = View.GONE
                         errorView?.visibility = View.VISIBLE
+                        searchAdapter.removeLoadingFooter()
                     }
                 }
             }
         }
 
         retryButton?.setOnClickListener {
-            searchApi.searchRecipes(title)
+            searchApi.searchRecipes(title, page)
         }
 
         // Fetch data initially
-        searchApi.searchRecipes(title)
+        searchApi.searchRecipes(title, page)
+    }
+
+    private fun loadMoreRecipes() {
+        isLoading = true
+        val page = currentPage++
+        searchApi.loadNextPage("RECIPE TITLE HERE", page)
     }
 }

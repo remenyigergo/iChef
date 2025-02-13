@@ -56,6 +56,6 @@ interface SearchApi {
         """
     )
     @GET("/search")
-    suspend fun search(@Query("title") title: String) : Response<SearchResult>
+    suspend fun search(@Query("title") title: String, @Query("page") page: Int, @Query("pageSize") pageSize: Int) : Response<SearchResult>
 
 }

@@ -14,8 +14,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import okhttp3.ResponseBody
-import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,36 +26,59 @@ class SearchApiViewModel @Inject constructor() : ViewModel() {
     private val _searchApiState = MutableStateFlow<ApiState<ArrayList<SearchRecipe>>>(ApiState.Loading)
     val apiState: StateFlow<ApiState<ArrayList<SearchRecipe>>> = _searchApiState
 
-    fun searchRecipes(title: String) : Response<ArrayList<SearchResult>> {
+    private var currentPage = 1
+    private var isLoading = false
+    private val pageSize = 3
+    private val allRecipes = ArrayList<SearchRecipe>()
+
+    fun searchRecipes(title: String, page: Int = 1) {
+        if (isLoading) return
+
+        /*
+        * HACK FOR IMITATING THERE IS ONLY 4 PAGES
+        * */
+        if (page == 3) {
+            return
+        }
+
+        isLoading = true
+        _searchApiState.value = ApiState.Loading
+
         viewModelScope.launch {
-            _searchApiState.value = ApiState.Loading
             try {
-                // Simulate API Call
-                val response = client.search(title)
-                // Simulate a delay
+                val response = client.search(title, page, pageSize)
                 kotlinx.coroutines.delay(Constants.recipeApiDelay)
 
                 if (response.isSuccessful && response.body() != null) {
                     val data = response.body()!!
-                    Log.i("SearchApiViewModel", "searchRecipes result: $data")
+                    Log.i("SearchApiViewModel", "searchRecipes Page $page result: $data")
 
                     val mapped = data.map { recipeDto ->
                         SearchResultDtoBlaMapper.ToBla(recipeDto)
-                    }.toCollection(ArrayList())
+                    }
 
-                    _searchApiState.value = ApiState.Success(mapped)
+                    if (page == 1) {
+                        allRecipes.clear() // Clear only on first load
+                    }
 
-                    Response.success(200, mapped)
+                    allRecipes.addAll(mapped)
+
+                    _searchApiState.value = ApiState.Success(ArrayList(allRecipes))
+
+                    currentPage = page
                 } else {
-                    _searchApiState.value =
-                        ApiState.Error("Failed to load data. Error code: ${response.code()}")
+                    _searchApiState.value = ApiState.Error("Failed to load data. Error code: ${response.code()}")
                 }
             } catch (e: Exception) {
-                Log.e("SearchApiViewModel", "searchRecipes: $e", )
+                Log.e("SearchApiViewModel", "searchRecipes: $e")
                 _searchApiState.value = ApiState.Error("Failed to load data. Please try again.")
+            } finally {
+                isLoading = false
             }
         }
+    }
 
-        return Response.error(50000, ResponseBody.create(null, "Generic Error"))
+    fun loadNextPage(title: String, page : Int) {
+        searchRecipes(title, page)
     }
 }
