@@ -7,10 +7,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -69,10 +67,15 @@ class SearchResultActivity : AppCompatActivity() {
                         firstVisibleItemPosition >= 0 &&
                         totalItemCount >= pageSize
                     ) {
+                        // Check if there's actually more data to load before showing the loading footer
+                        if (searchApi.hasMorePages()) {
+                            searchAdapter.addLoadingFooter()
+                            loadMoreRecipes()
 
-                        searchAdapter.addLoadingFooter()
-                        loadMoreRecipes()
-                        Log.w("SearchResultActivity", "Loading page $currentPage")
+                        } else {
+                            isLastPage = true // Mark as the last page to prevent unnecessary calls
+                            Log.w("SearchResultActivity", "No more pages to load")
+                        }
                     }
                 } else {
                     Log.w("SearchResultActivity", "End of page")
@@ -117,13 +120,13 @@ class SearchResultActivity : AppCompatActivity() {
                         loadingView?.visibility = View.GONE
                         errorView?.visibility = View.GONE
 
-                        val resultData = state.data as ArrayList<SearchRecipe>
-                        if (resultData.size < pageSize) {
+                        val loadedContent = state.data
+                        if (loadedContent.size < pageSize) {
                             isLastPage = true
                         }
 
                         searchAdapter.removeLoadingFooter()
-                        onSuccess(resultData)
+                        onSuccess(loadedContent)
 
                         isFirstLoad = false // First load is complete
                     }
@@ -148,7 +151,8 @@ class SearchResultActivity : AppCompatActivity() {
 
     private fun loadMoreRecipes() {
         isLoading = true
-        val page = currentPage++
-        searchApi.loadNextPage("RECIPE TITLE HERE", page)
+        currentPage += 1
+        Log.w("SearchResultActivity", "Loading page $currentPage")
+        searchApi.loadNextPage("RECIPE TITLE HERE", currentPage)
     }
 }

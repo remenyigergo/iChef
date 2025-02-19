@@ -14,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,33 +29,42 @@ class SearchApiViewModel @Inject constructor() : ViewModel() {
 
     private var currentPage = 1
     private var isLoading = false
-    private val pageSize = 3
-    private val allRecipes = ArrayList<SearchRecipe>()
+    private var pageSize = 3
+    private var totalPages = 2; //make it more initially so the search activity tries to download data at first
 
-    fun searchRecipes(title: String, page: Int = 1) {
+    fun searchRecipes(title: String, page: Int) {
         if (isLoading) return
 
         /*
         * HACK FOR IMITATING THERE IS ONLY 4 PAGES
         * */
-        if (page == 3) {
+        if (page == 3 || page < currentPage) {
             return
         }
+
+        Log.i("SearchApiViewModel", "in api call loading page $page")
 
         isLoading = true
         _searchApiState.value = ApiState.Loading
 
         viewModelScope.launch {
             try {
-                val response = client.search(title, page, pageSize)
+                val allRecipes = ArrayList<SearchRecipe>()
+                var response: Response<SearchResult>? = null
+                if (page==1) {
+                    response = client.searchPage1(title, page, pageSize)
+                } else if (page==2) {
+                    response = client.searchPage2(title, page, pageSize)
+                }
+
                 kotlinx.coroutines.delay(Constants.recipeApiDelay)
 
-                if (response.isSuccessful && response.body() != null) {
+                if (response!!.isSuccessful && response.body() != null) {
                     val data = response.body()!!
                     Log.i("SearchApiViewModel", "searchRecipes Page $page result: $data")
 
-                    val mapped = data.map { recipeDto ->
-                        SearchResultDtoBlaMapper.ToBla(recipeDto)
+                    val mapped = data.results.map { recipe ->
+                        SearchResultDtoBlaMapper.ToBla(recipe)
                     }
 
                     if (page == 1) {
@@ -80,5 +90,16 @@ class SearchApiViewModel @Inject constructor() : ViewModel() {
 
     fun loadNextPage(title: String, page : Int) {
         searchRecipes(title, page)
+    }
+
+    fun hasMorePages(): Boolean {
+        return currentPage < totalPages // Ensure `totalPages` is set from API response
+    }
+
+    fun reload() {
+        currentPage = 1
+        isLoading = false
+        pageSize = 3
+        totalPages = 2
     }
 }

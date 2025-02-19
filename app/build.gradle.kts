@@ -73,5 +73,8 @@ dependencies {
     //mocking APIs
     implementation("co.infinum:retromock:1.1.1")
 
+    //pull-to-refresh
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
 
 }

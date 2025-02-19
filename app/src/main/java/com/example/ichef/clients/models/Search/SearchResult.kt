@@ -1,4 +1,13 @@
 package com.example.ichef.clients.models.Search
 
-class SearchResult : ArrayList<SearchResultItem>() {
+import com.google.gson.annotations.SerializedName
+
+data class SearchResult(
+    @SerializedName("results")
+    val results: ArrayList<SearchResultItem>,
+    @SerializedName("page")
+    val page: Int,
+    @SerializedName("totalPage")
+    val totalPage: Int
+) {
 }
