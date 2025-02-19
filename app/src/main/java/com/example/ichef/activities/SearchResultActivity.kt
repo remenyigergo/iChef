@@ -13,6 +13,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.ichef.R
 import com.example.ichef.adapters.SearchAdapter
 import com.example.ichef.clients.apis.ApiState
@@ -32,25 +33,30 @@ class SearchResultActivity : AppCompatActivity() {
     private val pageSize = 6
     private val recipeList: ArrayList<SearchRecipe> = arrayListOf()
     private var isFirstLoad = true  // Track if it's the first API call
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.search_result)
 
+        // Find views
         val recyclerView: RecyclerView = findViewById(R.id.searchResultRecyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+//        swipeRefreshLayout = findViewById(R.id.search_pull_to_refresh)
 
         // Initialize adapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
         searchAdapter = SearchAdapter(this, recipeList)
         recyclerView.adapter = searchAdapter
 
         val view: CoordinatorLayout = findViewById(R.id.search_result_layout)
 
         // Initial API call
-        HandleSearchApiCall(view, "RECIPE TITLE HERE", currentPage) { result ->
-            recipeList.addAll(result as ArrayList<SearchRecipe>)
-            searchAdapter.notifyDataSetChanged()
-        }
+        fetchRecipes(view)
+
+        // Handle Pull-to-Refresh
+//        swipeRefreshLayout.setOnRefreshListener {
+//            refreshRecipes(view)
+//        }
 
         // Add ScrollListener for infinite scroll
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -86,6 +92,14 @@ class SearchResultActivity : AppCompatActivity() {
         val backButton = findViewById<ImageView>(R.id.back_button_search_result)
         backButton.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
+        }
+    }
+
+    private fun fetchRecipes(view: View) {
+        HandleSearchApiCall(view, "RECIPE TITLE HERE", currentPage) { result ->
+            recipeList.clear()
+            recipeList.addAll(result as ArrayList<SearchRecipe>)
+            searchAdapter.notifyDataSetChanged()
         }
     }
 
@@ -147,6 +161,22 @@ class SearchResultActivity : AppCompatActivity() {
 
         // Fetch data initially
         searchApi.searchRecipes(title, page)
+    }
+
+    private fun refreshRecipes(view: View) {
+        swipeRefreshLayout.isRefreshing = true
+        currentPage = 1
+        isLastPage = false
+        isFirstLoad = true
+
+        searchApi.reload()
+        recipeList.clear()
+
+        HandleSearchApiCall(view, "RECIPE TITLE HERE", currentPage) { result ->
+            recipeList.addAll(result as ArrayList<SearchRecipe>)
+            searchAdapter.notifyDataSetChanged()
+            swipeRefreshLayout.isRefreshing = false
+        }
     }
 
     private fun loadMoreRecipes() {
