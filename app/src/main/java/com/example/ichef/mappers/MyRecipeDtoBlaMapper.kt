@@ -8,10 +8,10 @@ object MyRecipeDtoBlaMapper {
         if (myRecipe == null)
             return MyRecipe("","","")
 
-        return MyRecipe(myRecipe.title,myRecipe.description,myRecipe.imageResId)
+        return MyRecipe(myRecipe.title,myRecipe.description,myRecipe.imageUrl)
     }
 
     fun ToDto(myRecipe: MyRecipe) : MyRecipesResultItem {
-        return MyRecipesResultItem(myRecipe.title,myRecipe.description,myRecipe.imageResId)
+        return MyRecipesResultItem(myRecipe.title,myRecipe.description,myRecipe.imageUrl)
     }
 }

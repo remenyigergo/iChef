@@ -8,5 +8,5 @@ data class MyRecipesResultItem(
     @SerializedName("recipe_description")
     val description: String,
     @SerializedName("recipe_image")
-    val imageResId: String
+    val imageUrl: String
 )

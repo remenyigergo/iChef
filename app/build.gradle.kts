@@ -70,11 +70,14 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     // and for converting responses/requests
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
-    //mocking APIs
+    // mocking APIs
     implementation("co.infinum:retromock:1.1.1")
 
-    //pull-to-refresh
+    // pull-to-refresh
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
+    // for loading URL images to recipe cards
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+    ksp("com.github.bumptech.glide:compiler:4.15.1")
 
 }

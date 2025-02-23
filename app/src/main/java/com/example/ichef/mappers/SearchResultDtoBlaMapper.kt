@@ -8,6 +8,6 @@ object SearchResultDtoBlaMapper {
         if (search == null)
             return SearchRecipe("","","")
 
-        return SearchRecipe(search.title,search.description,search.imageResId)
+        return SearchRecipe(search.title,search.description,search.imageUrl)
     }
 }

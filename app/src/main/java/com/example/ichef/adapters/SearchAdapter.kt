@@ -7,7 +7,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.view.marginTop
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.ichef.R
 import com.example.ichef.models.activities.search.SearchRecipe
 
@@ -39,7 +42,13 @@ class SearchAdapter(
             val recipe = searchResultRecipes[position]
             holder.recipeTitle.text = recipe.title
             holder.recipeDescription.text = recipe.description
-            holder.recipeImage.setImageResource(R.mipmap.jenkins_foreground) // HARDCODED FOR NOW
+
+            Glide.with(context)
+                .load(recipe.imageUrl) // Assuming your SearchRecipe model has an imageUrl field
+                .placeholder(R.mipmap.ichef_foreground) // Image to show while loading
+                .error(R.mipmap.error_image_foreground) // Image to show in case of error
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(holder.recipeImage)
         }
     }
 
