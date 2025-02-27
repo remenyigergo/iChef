@@ -1,14 +1,23 @@
 package com.example.ichef.activities
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ListView
 import android.widget.ProgressBar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -154,5 +163,54 @@ class SearchResultActivity : AppCompatActivity() {
         currentPage += 1
         Log.w("SearchResultActivity", "Loading page $currentPage")
         searchApi.loadNextPage("RECIPE TITLE HERE", currentPage)
+    }
+
+    fun setupExpandableCard(cardView: CardView, ingredientsLayout: View, ingredientsList: ListView, missingIngredients: List<String>) {
+        // Populate ListView with missing ingredients
+        val adapter = ArrayAdapter(cardView.context, android.R.layout.simple_list_item_1, missingIngredients)
+        ingredientsList.adapter = adapter
+
+        cardView.setOnClickListener {
+            val isExpanded = ingredientsLayout.visibility == View.VISIBLE
+            animateViewHeight(ingredientsLayout, !isExpanded)
+        }
+    }
+
+    private fun animateViewHeight(view: View, collapse: Boolean) {
+        if (collapse) {
+            val initialHeight = view.measuredHeight
+            val animator = ValueAnimator.ofInt(initialHeight, 0)
+            animator.addUpdateListener { animation ->
+                val value = animation.animatedValue as Int
+                val layoutParams = view.layoutParams
+                layoutParams.height = value
+                view.layoutParams = layoutParams
+            }
+            animator.duration = 300
+            animator.interpolator = AccelerateDecelerateInterpolator()
+            animator.start()
+
+            animator.addListener(object : android.animation.AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: android.animation.Animator) {
+                    view.visibility = View.GONE
+                }
+            })
+        } else {
+            view.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            val targetHeight = view.measuredHeight
+            view.layoutParams.height = 0
+            view.visibility = View.VISIBLE
+
+            val animator = ValueAnimator.ofInt(0, targetHeight)
+            animator.addUpdateListener { animation ->
+                val value = animation.animatedValue as Int
+                val layoutParams = view.layoutParams
+                layoutParams.height = value
+                view.layoutParams = layoutParams
+            }
+            animator.duration = 300
+            animator.interpolator = AccelerateDecelerateInterpolator()
+            animator.start()
+        }
     }
 }

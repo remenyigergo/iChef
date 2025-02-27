@@ -80,4 +80,6 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.15.1")
     ksp("com.github.bumptech.glide:compiler:4.15.1")
 
+    // this is for using a layout that automatically breaks line when its not fitting to the screen or it would go out of screen
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
 }
