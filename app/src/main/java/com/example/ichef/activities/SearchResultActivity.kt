@@ -50,7 +50,7 @@ class SearchResultActivity : AppCompatActivity() {
 
         // Find views
         val recyclerView: RecyclerView = findViewById(R.id.searchResultRecyclerView)
-//        swipeRefreshLayout = findViewById(R.id.search_pull_to_refresh)
+        swipeRefreshLayout = findViewById(R.id.search_pull_to_refresh)
 
         // Initialize adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -63,9 +63,9 @@ class SearchResultActivity : AppCompatActivity() {
         fetchRecipes(view)
 
         // Handle Pull-to-Refresh
-//        swipeRefreshLayout.setOnRefreshListener {
-//            refreshRecipes(view)
-//        }
+        swipeRefreshLayout.setOnRefreshListener {
+            refreshRecipes(view)
+        }
 
         // Add ScrollListener for infinite scroll
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -105,9 +105,15 @@ class SearchResultActivity : AppCompatActivity() {
     }
 
     private fun fetchRecipes(view: View) {
+        Log.e("SearchResultActivity","FetchRecipes called")
+
         HandleSearchApiCall(view, "RECIPE TITLE HERE", currentPage) { result ->
-            recipeList.clear()
+            if (currentPage==1){
+                recipeList.clear()
+            }
             recipeList.addAll(result as ArrayList<SearchRecipe>)
+
+            Log.e("SearchResultActivity","recipeList: ${recipeList.count()}")
             searchAdapter.notifyDataSetChanged()
         }
     }
@@ -178,14 +184,21 @@ class SearchResultActivity : AppCompatActivity() {
         isLastPage = false
         isFirstLoad = true
 
-        searchApi.reload()
+        // Ensure loading footer is removed before clearing
+        searchAdapter.removeLoadingFooter()
+
+        // reset the API
+        searchApi.reload()  // Reset API state
+
+        // Clear the list safely
         recipeList.clear()
 
-        HandleSearchApiCall(view, "RECIPE TITLE HERE", currentPage) { result ->
-            recipeList.addAll(result as ArrayList<SearchRecipe>)
-            searchAdapter.notifyDataSetChanged()
-            swipeRefreshLayout.isRefreshing = false
-        }
+        // Notify adapter before clearing to prevent RecyclerView inconsistency
+        searchAdapter.notifyDataSetChanged()
+
+        fetchRecipes(view)
+
+        swipeRefreshLayout.isRefreshing = false
     }
 
     private fun loadMoreRecipes() {

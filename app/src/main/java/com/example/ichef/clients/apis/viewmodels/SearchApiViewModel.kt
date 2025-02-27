@@ -36,7 +36,7 @@ class SearchApiViewModel @Inject constructor() : ViewModel() {
         if (isLoading) return
 
         /*
-        * HACK FOR IMITATING THERE IS ONLY 4 PAGES
+        * HACK FOR IMITATING THERE IS ONLY 2 PAGES
         * */
         if (page == 3 || page < currentPage) {
             return
@@ -101,5 +101,6 @@ class SearchApiViewModel @Inject constructor() : ViewModel() {
         isLoading = false
         pageSize = 3
         totalPages = 2
+        _searchApiState.value = ApiState.Loading  // Ensures fresh loading state
     }
 }
