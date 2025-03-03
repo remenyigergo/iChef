@@ -222,6 +222,7 @@
             android:text="Only I can cook"
             android:layout_marginTop="15dp"
             android:checked="true"
+            android:gravity="center"
             android:backgroundTint="@color/topbar"
             app:layout_constraintTop_toBottomOf="@id/exclude_filter_toggle_divider"
             app:layout_constraintStart_toStartOf="parent"
@@ -238,6 +239,46 @@
             app:layout_constraintStart_toEndOf="@id/only_pantry_ingredient_switch"
             app:layout_constraintEnd_toEndOf="parent"/>
 
+        <LinearLayout
+            android:id="@+id/only_i_can_cook_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/only_pantry_ingredient_switch"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginLeft="15dp"
+            android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Max missing ingredients"/>
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/spinner_threshold"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:dropDownWidth="0dp"
+            android:tooltipText="ASD"
+            style="@style/CustomSpinnerStyle"
+            android:background="@drawable/spinner_item_selector"
+            app:layout_constraintTop_toBottomOf="@id/only_pantry_ingredient_switch"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+            <ImageView
+                android:id="@+id/treshold_tip_icon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@android:drawable/ic_menu_info_details"
+                android:backgroundTint="#46a0fa" />
+
+        </LinearLayout>
+
         <!-- Divider -->
         <View
             android:id="@+id/only_pantry_ingredients_divider"
@@ -245,7 +286,7 @@
             android:layout_height="1dp"
             android:background="@color/gray"
             android:layout_marginVertical="15dp"
-            app:layout_constraintTop_toBottomOf="@id/only_pantry_ingredient_switch"
+            app:layout_constraintTop_toBottomOf="@id/only_i_can_cook_layout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             />

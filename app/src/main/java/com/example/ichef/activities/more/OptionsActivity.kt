@@ -4,23 +4,18 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Switch
 import android.widget.TextView
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.ichef.R
-import com.example.ichef.clients.apis.viewmodels.TooltipViewModel
 import com.example.ichef.constants.Constants
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class OptionsActivity : AppCompatActivity() {
-
-    private val sharedViewModel: TooltipViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,26 +56,19 @@ class OptionsActivity : AppCompatActivity() {
 
         tooltipText.setOnClickListener {
             Log.i("OptionsActivity", "TooltipLayout tapped")
-            handleLayoutTap(tooltipSwitch)
-            saveTooltipChange(tooltipSwitch)
+            tooltipSwitch.performClick()
         }
 
-//        tooltipSwitch.setOnCheckedChangeListener { _, checked ->
-//            Log.i("OptionsActivity", "TooltipSwitch tapped")
-//            handleLayoutTap(tooltipSwitch)
-//            saveTooltipChange(tooltipSwitch)
-//        }
-    }
+        tooltipSwitch.setOnCheckedChangeListener { tooltip, checked ->
+            if (!checked) {
+                tooltip.isChecked = false
+                Log.e("OptionsActivity","Setting tooltip to disabled. Value is ${checked}")
+            } else {
+                tooltip.isChecked = true
+                Log.e("OptionsActivity","Setting tooltip to enabled. Value is ${checked}")
+            }
 
-    private fun handleLayoutTap(tooltipSwitch: Switch) {
-        if (tooltipSwitch.isChecked) {
-            tooltipSwitch.isChecked = false
-            sharedViewModel.setTooltipEnabled(false)
-            Log.e("OptionsActivity","Setting tooltip to disabled. Value is ${sharedViewModel.tooltipEnabled.value}")
-        } else {
-            tooltipSwitch.isChecked = true
-            sharedViewModel.setTooltipEnabled(true)
-            Log.e("OptionsActivity","Setting tooltip to enabled. Value is ${sharedViewModel.tooltipEnabled.value}")
+            saveTooltipChange(tooltip.isChecked)
         }
     }
 
@@ -98,11 +86,10 @@ class OptionsActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveTooltipChange(tooltipSwitch: Switch) {
+    private fun saveTooltipChange(checked: Boolean) {
         val sharedPreferences: SharedPreferences = getSharedPreferences(Constants.SHAREDPREFERENCES_NAME, MODE_PRIVATE)
-        val isSwitchChecked = tooltipSwitch.isChecked
-        sharedPreferences.edit().putBoolean(Constants.TOOLTIPS_ENABLED, isSwitchChecked).commit()
-        Log.e("OptionsActivity", "Saved tooltip as enabled: $isSwitchChecked")
+        sharedPreferences.edit().putBoolean(Constants.TOOLTIPS_ENABLED, checked).commit()
+        Log.e("OptionsActivity", "Saved tooltip as enabled: $checked")
     }
 
     private fun getSavedTheme(): Int {

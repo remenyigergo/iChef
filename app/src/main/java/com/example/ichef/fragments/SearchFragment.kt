@@ -1,9 +1,7 @@
 package com.example.ichef.fragments
 
-import android.app.AlertDialog
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +13,7 @@ import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -22,7 +21,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.ichef.R
 import com.example.ichef.activities.SearchResultActivity
-import com.example.ichef.clients.apis.viewmodels.TooltipViewModel
 import com.example.ichef.constants.Constants
 import com.example.ichef.models.IngredientsViewModel
 import com.google.android.flexbox.FlexboxLayout
@@ -49,6 +47,8 @@ class SearchFragment : Fragment() {
         HandleInclude(view)
         HandleExclude(view)
 
+        LoadThresholdSpinner(view)
+
         val searchButton: Button = view.findViewById(R.id.btn_search)
         searchButton.setOnClickListener({
             val intent = Intent(context, SearchResultActivity::class.java)
@@ -58,26 +58,32 @@ class SearchFragment : Fragment() {
         return view
     }
 
-    private val preferenceListener = SharedPreferences.OnSharedPreferenceChangeListener { prefs, key ->
-        if (key == Constants.TOOLTIPS_ENABLED) {
-            val isEnabled = prefs.getBoolean(key, true)
-            Log.e("SearchFragment", "Observed isEnabled: $isEnabled")
-            HandleTooltips(requireView(), isEnabled)
-        }
-    } 
+    private fun LoadThresholdSpinner(view: View) {
+        val spinner: Spinner = view.findViewById(R.id.spinner_threshold)
+
+        // Create a list of numbers from 1 to 10
+        val numbers = (0..10).map { it.toString() }
+
+        // Create an ArrayAdapter using the number list and a default spinner layout
+        val adapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, numbers)
+
+        // Set the adapter to the spinner
+        spinner.adapter = adapter
+
+        val screenWidth = resources.displayMetrics.widthPixels
+        spinner.dropDownWidth = (screenWidth * 0.5).toInt()
+
+        // Center the dropdown
+        val spinnerWidth = spinner.width
+        spinner.dropDownHorizontalOffset = (spinnerWidth / 2) - (spinner.dropDownWidth / 2)
+    }
 
     override fun onResume() {
         super.onResume()
-        sharedPreferences.registerOnSharedPreferenceChangeListener(preferenceListener)
         val isEnabled = sharedPreferences.getBoolean(Constants.TOOLTIPS_ENABLED, false)
         Log.e("SearchFragment", "🟡 Manually fetched tooltip_enabled onResume(): $isEnabled")
         HandleTooltips(requireView(), isEnabled)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        sharedPreferences.unregisterOnSharedPreferenceChangeListener(preferenceListener)
-        Log.e("SearchFragment", "❌ Unregistered SharedPreferences listener in onPause()")
     }
 
     private fun HandleTooltips(view: View, enabled: Boolean) {
@@ -86,12 +92,14 @@ class SearchFragment : Fragment() {
         val includeInfo = view.findViewById<ImageView>(R.id.include_info)
         val excludeInfo = view.findViewById<ImageView>(R.id.exclude_info)
         val switchInfo = view.findViewById<ImageView>(R.id.info_icon)
+        val thresholdInfo = view.findViewById<ImageView>(R.id.treshold_tip_icon)
 
         if (enabled) {
             searchTitleInfo.visibility = View.VISIBLE
             includeInfo.visibility = View.VISIBLE
             excludeInfo.visibility = View.VISIBLE
             switchInfo.visibility = View.VISIBLE
+            thresholdInfo.visibility = View.VISIBLE
 
             searchTitleInfo?.setOnClickListener {
                 // Display a tooltip, toast, or dialog with information
@@ -112,11 +120,17 @@ class SearchFragment : Fragment() {
                 // Display a tooltip, toast, or dialog with information
                 showInfoDialog(view, "Only cookable tip","This going to show you only recipes, that you can cook based on your pantry ingredients. This is exact matching the ingredients (as per you have that ingredient or not) to recipes.", switchInfo.drawable)
             }
+
+            thresholdInfo?.setOnClickListener {
+                // Display a tooltip, toast, or dialog with information
+                showInfoDialog(view, "Threshold tip","You can set your ingredients threshold limit. This means that a maximum of this number of ingredients will be missing in your search result.", switchInfo.drawable)
+            }
         } else {
             searchTitleInfo.visibility = View.GONE
             includeInfo.visibility = View.GONE
             excludeInfo.visibility = View.GONE
             switchInfo.visibility = View.GONE
+            thresholdInfo.visibility = View.GONE
         }
 
     }
