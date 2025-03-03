@@ -1,22 +1,32 @@
 package com.example.ichef.fragments
 
+import android.app.AlertDialog
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
+import android.content.SharedPreferences
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
-import android.widget.GridLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.ichef.R
 import com.example.ichef.activities.SearchResultActivity
+import com.example.ichef.clients.apis.viewmodels.TooltipViewModel
+import com.example.ichef.constants.Constants
 import com.example.ichef.models.IngredientsViewModel
+import com.google.android.flexbox.FlexboxLayout
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -25,6 +35,9 @@ class SearchFragment : Fragment() {
         ViewModels
     */
     private val ingredientsViewModel: IngredientsViewModel by viewModels()
+    private val sharedPreferences by lazy {
+        requireContext().getSharedPreferences(Constants.SHAREDPREFERENCES_NAME, MODE_PRIVATE)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,6 +56,77 @@ class SearchFragment : Fragment() {
         })
 
         return view
+    }
+
+    private val preferenceListener = SharedPreferences.OnSharedPreferenceChangeListener { prefs, key ->
+        if (key == Constants.TOOLTIPS_ENABLED) {
+            val isEnabled = prefs.getBoolean(key, true)
+            Log.e("SearchFragment", "Observed isEnabled: $isEnabled")
+            HandleTooltips(requireView(), isEnabled)
+        }
+    } 
+
+    override fun onResume() {
+        super.onResume()
+        sharedPreferences.registerOnSharedPreferenceChangeListener(preferenceListener)
+        val isEnabled = sharedPreferences.getBoolean(Constants.TOOLTIPS_ENABLED, false)
+        Log.e("SearchFragment", "🟡 Manually fetched tooltip_enabled onResume(): $isEnabled")
+        HandleTooltips(requireView(), isEnabled)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(preferenceListener)
+        Log.e("SearchFragment", "❌ Unregistered SharedPreferences listener in onPause()")
+    }
+
+    private fun HandleTooltips(view: View, enabled: Boolean) {
+        Log.e("SearchFragment", "HandleTooltips")
+        val searchTitleInfo = view.findViewById<ImageView>(R.id.title_search_info)
+        val includeInfo = view.findViewById<ImageView>(R.id.include_info)
+        val excludeInfo = view.findViewById<ImageView>(R.id.exclude_info)
+        val switchInfo = view.findViewById<ImageView>(R.id.info_icon)
+
+        if (enabled) {
+            searchTitleInfo.visibility = View.VISIBLE
+            includeInfo.visibility = View.VISIBLE
+            excludeInfo.visibility = View.VISIBLE
+            switchInfo.visibility = View.VISIBLE
+
+            searchTitleInfo?.setOnClickListener {
+                // Display a tooltip, toast, or dialog with information
+                showInfoDialog(view, "Title search tip","Basic recipe search by title matching. This is only doing search by containing these words in the recipe title.", searchTitleInfo.drawable)
+            }
+
+            includeInfo?.setOnClickListener {
+                // Display a tooltip, toast, or dialog with information
+                showInfoDialog(view, "Include tip","Includes the ingredients in the search results even if other search filters are selected. To delete an ingredient, just tap the ingredient you added.", includeInfo.drawable)
+            }
+
+            excludeInfo?.setOnClickListener {
+                // Display a tooltip, toast, or dialog with information
+                showInfoDialog(view, "Exclude tip","Excludes the ingredients from the search results even if other search filters are selected. To delete an ingredient, just tap the ingredient you added.", excludeInfo.drawable)
+            }
+
+            switchInfo?.setOnClickListener {
+                // Display a tooltip, toast, or dialog with information
+                showInfoDialog(view, "Only cookable tip","This going to show you only recipes, that you can cook based on your pantry ingredients. This is exact matching the ingredients (as per you have that ingredient or not) to recipes.", switchInfo.drawable)
+            }
+        } else {
+            searchTitleInfo.visibility = View.GONE
+            includeInfo.visibility = View.GONE
+            excludeInfo.visibility = View.GONE
+            switchInfo.visibility = View.GONE
+        }
+
+    }
+    private fun showInfoDialog(view: View, hint: String, msg: String, icon: Drawable) {
+        MaterialAlertDialogBuilder(requireContext(), R.style.FancyDialogStyle)
+            .setTitle(hint)
+            .setMessage(msg)
+            .setIcon(icon)
+            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+            .show()
     }
 
     private val searchIntent = registerForActivityResult(
@@ -67,12 +151,12 @@ class SearchFragment : Fragment() {
         val adapter =
             SetAutoCompleteIngredients(ingredientExcludeEditText, ingredientsViewModel.ingredients)
 
-        val excludeIngredientLayout: GridLayout = view.findViewById(R.id.exclude_ingredient_layout)
+        val excludeIngredientLayout: FlexboxLayout = view.findViewById(R.id.exclude_ingredient_layout)
 
         // Handle item selection event
         ingredientExcludeEditText.setOnItemClickListener { _, _, position, _ ->
             val selectedIngredient = adapter?.getItem(position) ?: return@setOnItemClickListener
-            createNewButton(selectedIngredient, excludeIngredientLayout)
+            createNewButton(selectedIngredient, excludeIngredientLayout, R.drawable.exclude_ingredient_button_style)
             ingredientExcludeEditText.setText("") // Clear text after selection
         }
     }
@@ -94,28 +178,35 @@ class SearchFragment : Fragment() {
         val adapter =
             SetAutoCompleteIngredients(ingredientIncludeEditText, ingredientsViewModel.ingredients)
 
-        val includeIngredientLayout: GridLayout = view.findViewById(R.id.include_ingredient_layout)
+        val includeIngredientLayout: FlexboxLayout = view.findViewById(R.id.include_ingredient_layout)
 
         // Handle item selection event
         ingredientIncludeEditText.setOnItemClickListener { _, _, position, _ ->
             val selectedIngredient = adapter?.getItem(position) ?: return@setOnItemClickListener
-            createNewButton(selectedIngredient, includeIngredientLayout)
+            createNewButton(selectedIngredient, includeIngredientLayout, R.drawable.include_ingredient_button_style)
             ingredientIncludeEditText.setText("") // Clear text after selection
         }
     }
 
-    private fun createNewButton(text: String, container: GridLayout) {
+    private fun createNewButton(text: String, container: FlexboxLayout, drawable: Int) {
         // Create the button
         val newButton = Button(requireContext()).apply {
             this.text = text
-            this.layoutParams = GridLayout.LayoutParams().apply {
-                width = GridLayout.LayoutParams.WRAP_CONTENT
-                height = GridLayout.LayoutParams.WRAP_CONTENT
-                width = 0
-                columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
-                setMargins(5, 5, 5, 5) // Add some space around the button
+            this.textSize = 10f
+            this.layoutParams = FlexboxLayout.LayoutParams(
+                FlexboxLayout.LayoutParams.WRAP_CONTENT,
+                120
+            ).apply {
+                flexGrow = 1f  // Makes the button grow and take available space
+                marginStart = 5
+                marginEnd = 5
+                topMargin = 5
+                bottomMargin = 5
             }
+
+            this.background = ContextCompat.getDrawable(requireContext(), drawable)
         }
+
 
         newButton.setOnClickListener {
             container.removeView(newButton)

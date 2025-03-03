@@ -1,23 +1,17 @@
 package com.example.ichef.activities
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
+import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ListView
 import android.widget.ProgressBar
+import android.widget.Switch
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,7 +22,10 @@ import com.example.ichef.adapters.SearchAdapter
 import com.example.ichef.clients.apis.ApiState
 import com.example.ichef.clients.apis.viewmodels.SearchApiViewModel
 import com.example.ichef.models.activities.search.SearchRecipe
+import com.google.android.material.materialswitch.MaterialSwitch
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -43,6 +40,8 @@ class SearchResultActivity : AppCompatActivity() {
     private val recipeList: ArrayList<SearchRecipe> = arrayListOf()
     private var isFirstLoad = true  // Track if it's the first API call
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+
+    private var apiJob: Job? = null  // Keep track of the collector job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -128,8 +127,8 @@ class SearchResultActivity : AppCompatActivity() {
         val errorView = rootView.findViewById<LinearLayout>(R.id.errorView)
         val retryButton = rootView.findViewById<Button>(R.id.retryButton)
 
-        lifecycleScope.launch {
-            searchApi.apiState.collect { state ->
+        apiJob = lifecycleScope.launch {
+            searchApi.apiState.collectLatest { state ->
                 when (state) {
                     is ApiState.Loading -> {
                         if (isFirstLoad) {
@@ -179,7 +178,11 @@ class SearchResultActivity : AppCompatActivity() {
     }
 
     private fun refreshRecipes(view: View) {
+        if (isLoading) return  // Prevent duplicate calls
+
         swipeRefreshLayout.isRefreshing = true
+        isLoading = true
+
         currentPage = 1
         isLastPage = false
         isFirstLoad = true
@@ -196,9 +199,18 @@ class SearchResultActivity : AppCompatActivity() {
         // Notify adapter before clearing to prevent RecyclerView inconsistency
         searchAdapter.notifyDataSetChanged()
 
-        fetchRecipes(view)
+        // Only reset API state but avoid triggering another fetch
+        searchApi.reload()
 
-        swipeRefreshLayout.isRefreshing = false
+        //reset apijob
+        apiJob?.cancel()
+
+        // Delay fetch slightly to avoid state conflict
+        swipeRefreshLayout.postDelayed({
+            fetchRecipes(view)
+            swipeRefreshLayout.isRefreshing = false
+            isLoading = false
+        }, 100)
     }
 
     private fun loadMoreRecipes() {
@@ -206,54 +218,5 @@ class SearchResultActivity : AppCompatActivity() {
         currentPage += 1
         Log.w("SearchResultActivity", "Loading page $currentPage")
         searchApi.loadNextPage("RECIPE TITLE HERE", currentPage)
-    }
-
-    fun setupExpandableCard(cardView: CardView, ingredientsLayout: View, ingredientsList: ListView, missingIngredients: List<String>) {
-        // Populate ListView with missing ingredients
-        val adapter = ArrayAdapter(cardView.context, android.R.layout.simple_list_item_1, missingIngredients)
-        ingredientsList.adapter = adapter
-
-        cardView.setOnClickListener {
-            val isExpanded = ingredientsLayout.visibility == View.VISIBLE
-            animateViewHeight(ingredientsLayout, !isExpanded)
-        }
-    }
-
-    private fun animateViewHeight(view: View, collapse: Boolean) {
-        if (collapse) {
-            val initialHeight = view.measuredHeight
-            val animator = ValueAnimator.ofInt(initialHeight, 0)
-            animator.addUpdateListener { animation ->
-                val value = animation.animatedValue as Int
-                val layoutParams = view.layoutParams
-                layoutParams.height = value
-                view.layoutParams = layoutParams
-            }
-            animator.duration = 300
-            animator.interpolator = AccelerateDecelerateInterpolator()
-            animator.start()
-
-            animator.addListener(object : android.animation.AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: android.animation.Animator) {
-                    view.visibility = View.GONE
-                }
-            })
-        } else {
-            view.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            val targetHeight = view.measuredHeight
-            view.layoutParams.height = 0
-            view.visibility = View.VISIBLE
-
-            val animator = ValueAnimator.ofInt(0, targetHeight)
-            animator.addUpdateListener { animation ->
-                val value = animation.animatedValue as Int
-                val layoutParams = view.layoutParams
-                layoutParams.height = value
-                view.layoutParams = layoutParams
-            }
-            animator.duration = 300
-            animator.interpolator = AccelerateDecelerateInterpolator()
-            animator.start()
-        }
     }
 }

@@ -6,17 +6,17 @@
     android:layout_height="match_parent"
     android:id="@+id/search_result_layout">
 
-    <!-- Toolbar at the top -->
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Toolbar with Back Button -->
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
             android:elevation="4dp"
             android:background="@color/topbar"
             android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
@@ -46,20 +46,17 @@
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/search_pull_to_refresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Scrollable content with RecyclerView -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/searchResultRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/background"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" >
-        </androidx.recyclerview.widget.RecyclerView>
-
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <include
-        layout="@layout/loading_screen"/>
+    <include layout="@layout/loading_screen"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

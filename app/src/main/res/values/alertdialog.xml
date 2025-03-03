@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="FancyDialogStyle" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="android:background">@color/topbar</item> <!-- Dark background -->
+        <item name="android:textColorPrimary">#FFFFFF</item> <!-- White text -->
+        <item name="android:textColorSecondary">#B0BEC5</item> <!-- Secondary text -->
+        <item name="android:windowMinWidthMajor">90%</item> <!-- Wider dialog -->
+        <item name="android:windowMinWidthMinor">90%</item>
+    </style>
+</resources>

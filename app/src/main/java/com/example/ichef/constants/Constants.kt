@@ -6,4 +6,5 @@ object Constants {
 
     const val SHAREDPREFERENCES_NAME = "AppPrefs"
     const val THEME_KEY = "theme_mode"
+    const val TOOLTIPS_ENABLED = "tooltips_enabled"
 }

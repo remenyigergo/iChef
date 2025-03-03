@@ -139,7 +139,7 @@
             android:id="@+id/section_title_filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Search Filters"
+            android:text="Default Search Filters"
             android:textSize="20sp"
             android:textColor="?attr/colorOnPrimary"
             android:textStyle="bold"
@@ -265,6 +265,52 @@
                 android:buttonTint="@color/black"
                 android:textColor="?attr/colorOnPrimary" />
         </RadioGroup>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray"
+            android:layout_marginVertical="16dp" />
+
+        <!-- Unit Preference Section -->
+        <TextView
+            android:id="@+id/section_title_Tips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tips"
+            android:textSize="20sp"
+            android:textColor="?attr/colorOnPrimary"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Units Dropdown -->
+        <LinearLayout
+            android:id="@+id/linearlayout_enable_tips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tips_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="12dp"
+                android:text="Enable tooltips"
+                android:textSize="16sp"
+                android:textColor="?attr/colorOnPrimary" />
+
+            <Switch
+                android:id="@+id/switch_enable_tips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"/>
+
+        </LinearLayout>
+
+
     </LinearLayout>
 </ScrollView>
 
